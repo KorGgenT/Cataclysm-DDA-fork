@@ -233,6 +233,7 @@ class game
         void draw();
         void draw_ter( bool draw_sounds = true );
         void draw_ter( const tripoint &center, bool looking = false, bool draw_sounds = true );
+        void draw_mypanel();
         /**
          * Returns the location where the indicator should go relative to the reality bubble,
          * or nothing to indicate no indicator should be drawn.
@@ -673,6 +674,7 @@ class game
         catacurses::window w_messages_short_ptr;
         catacurses::window w_messages_long_ptr;
         catacurses::window w_location_ptr;
+        catacurses::window w_panel1_ptr;
         catacurses::window w_status_ptr;
         catacurses::window w_status2_ptr;
 
@@ -688,6 +690,7 @@ class game
         catacurses::window w_messages_short;
         catacurses::window w_messages_long;
         catacurses::window w_location;
+        catacurses::window w_panel1;
         catacurses::window w_status;
         catacurses::window w_status2;
         catacurses::window w_blackspace;
