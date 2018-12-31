@@ -8,23 +8,20 @@
 #include "player.h"
 
 
-void draw_mypanel( const player &u, const catacurses::window &w_panel1 )
+void draw_character( const player &u, const catacurses::window &w_panel1 )
 {
 
     werase( w_panel1 );
     draw_border( w_panel1 );
 
     static const char *title_prefix = "< ";
-    static const char *title = _( "Look Around" );
+    static const char *title = _( "Character" );
     static const char *title_suffix = " >";
     static const std::string full_title = string_format( "%s%s%s", title_prefix, title, title_suffix );
     const int start_pos = center_text_pos( full_title.c_str(), 0, getmaxx( w_panel1 ) - 1 );
     mvwprintz( w_panel1, 0, start_pos, c_white, title_prefix );
     wprintz( w_panel1, c_green, title );
     wprintz( w_panel1, c_white, title_suffix );
-    // wmove( w_panel1, 1, 1 );
-    // std::string bleh = string_format( "saussage %s", u.hp_cur[1] );
-    // wprintz( w_panel1, c_white, bleh );
 
     const int dy  = 1;
     static std::array<body_part, 7> part = {{
@@ -40,9 +37,6 @@ void draw_mypanel( const player &u, const catacurses::window &w_panel1 )
                  str + " : " + std::to_string( u.hp_cur[i] ) );
 
     }
-
-
-
 
     wrefresh( w_panel1 );
 }

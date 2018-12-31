@@ -3621,7 +3621,12 @@ void game::draw()
 
 void game::draw_panels()
 {
-    draw_mypanel( u, w_panel1 );
+    draw_character( u, w_panel1 );
+    // draw_environment();
+    // draw_messages();
+    // draw_lookaround();
+    // draw_mminimap();
+    // draw_compass();
 }
 
 void game::draw_pixel_minimap()

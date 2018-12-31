@@ -9,5 +9,5 @@ namespace catacurses
 class window;
 } // namespace catacurses
 
-void draw_mypanel( const player &p, const catacurses::window &w );
+void draw_character( const player &p, const catacurses::window &w );
 #endif
