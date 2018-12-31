@@ -69,6 +69,7 @@
 #include "overmap.h"
 #include "overmap_ui.h"
 #include "overmapbuffer.h"
+#include "panels.h"
 #include "path_info.h"
 #include "pickup.h"
 #include "popup.h"
@@ -3615,23 +3616,12 @@ void game::draw()
     werase( w_terrain );
     draw_ter();
     wrefresh( w_terrain );
-    draw_mypanel();
+    draw_panels();
 }
 
-void game::draw_mypanel()
+void game::draw_panels()
 {
-    werase( w_panel1 );
-    draw_border( w_panel1 );
-
-    static const char *title_prefix = "< ";
-    static const char *title = _( "Look Around" );
-    static const char *title_suffix = " >";
-    static const std::string full_title = string_format( "%s%s%s", title_prefix, title, title_suffix );
-    const int start_pos = center_text_pos( full_title.c_str(), 0, getmaxx( w_panel1 ) - 1 );
-    mvwprintz( w_panel1, 0, start_pos, c_white, title_prefix );
-    wprintz( w_panel1, c_green, title );
-    wprintz( w_panel1, c_white, title_suffix );
-    wrefresh( w_panel1 );
+    draw_mypanel( u, w_panel1 );
 }
 
 void game::draw_pixel_minimap()

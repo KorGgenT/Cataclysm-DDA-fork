@@ -230,10 +230,11 @@ class game
         void start_calendar();
         /** MAIN GAME LOOP. Returns true if game is over (death, saved, quit, etc.). */
         bool do_turn();
+        // void draw_mypanel( const player &u, const catacurses::window &w_panel1 );
         void draw();
         void draw_ter( bool draw_sounds = true );
         void draw_ter( const tripoint &center, bool looking = false, bool draw_sounds = true );
-        void draw_mypanel();
+        void draw_panels();
         /**
          * Returns the location where the indicator should go relative to the reality bubble,
          * or nothing to indicate no indicator should be drawn.
