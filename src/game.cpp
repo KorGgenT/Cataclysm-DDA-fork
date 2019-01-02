@@ -684,8 +684,20 @@ void game::init_ui( const bool resized )
     w_location = w_location_ptr = catacurses::newwin( locH, locW, _y + locY, _x + locX );
     werase( w_location );
 
-    w_panel1 = w_panel1_ptr = catacurses::newwin( 10, 30, 1, 88 );
+    w_panel1 = w_panel1_ptr = catacurses::newwin( 9, 32, 0, 88 );
     werase( w_panel1 );
+
+    w_panel2 = w_panel2_ptr = catacurses::newwin( 9, 32, 9, 88 );
+    werase( w_panel2 );
+
+    w_panel3 = w_panel3_ptr = catacurses::newwin( 9, 32, 18, 88 );
+    werase( w_panel3 );
+
+    w_panel4 = w_panel4_ptr = catacurses::newwin( 9, 32, 27, 88 );
+    werase( w_panel4 );
+
+    w_panel5 = w_panel5_ptr = catacurses::newwin( 9, 32, 36, 88 );
+    werase( w_panel5 );
 
     w_status = w_status_ptr = catacurses::newwin( statH, statW, _y + statY, _x + statX );
     werase( w_status );
@@ -3622,11 +3634,11 @@ void game::draw()
 void game::draw_panels()
 {
     draw_character( u, w_panel1 );
-    // draw_environment();
-    // draw_messages();
+    draw_environment( u, w_panel2 );
+    draw_messages( w_panel3 );
+    draw_mminimap( w_panel4 );
     // draw_lookaround();
-    // draw_mminimap();
-    // draw_compass();
+    draw_compass( w_panel5 );
 }
 
 void game::draw_pixel_minimap()
@@ -3942,6 +3954,7 @@ void game::refresh_all()
 
 void game::draw_minimap()
 {
+
     // Draw the box
     werase( w_minimap );
     draw_border( w_minimap );

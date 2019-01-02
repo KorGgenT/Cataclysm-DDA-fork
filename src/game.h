@@ -676,6 +676,10 @@ class game
         catacurses::window w_messages_long_ptr;
         catacurses::window w_location_ptr;
         catacurses::window w_panel1_ptr;
+        catacurses::window w_panel2_ptr;
+        catacurses::window w_panel3_ptr;
+        catacurses::window w_panel4_ptr;
+        catacurses::window w_panel5_ptr;
         catacurses::window w_status_ptr;
         catacurses::window w_status2_ptr;
 
@@ -692,6 +696,10 @@ class game
         catacurses::window w_messages_long;
         catacurses::window w_location;
         catacurses::window w_panel1;
+        catacurses::window w_panel2;
+        catacurses::window w_panel3;
+        catacurses::window w_panel4;
+        catacurses::window w_panel5;
         catacurses::window w_status;
         catacurses::window w_status2;
         catacurses::window w_blackspace;
