@@ -684,19 +684,19 @@ void game::init_ui( const bool resized )
     w_location = w_location_ptr = catacurses::newwin( locH, locW, _y + locY, _x + locX );
     werase( w_location );
 
-    w_panel1 = w_panel1_ptr = catacurses::newwin( 9, 32, 0, 88 );
+    w_panel1 = w_panel1_ptr = catacurses::newwin( 13, 32, 0, 88 );
     werase( w_panel1 );
 
-    w_panel2 = w_panel2_ptr = catacurses::newwin( 9, 32, 9, 88 );
+    w_panel2 = w_panel2_ptr = catacurses::newwin( 13, 32, 13, 88 );
     werase( w_panel2 );
 
-    w_panel3 = w_panel3_ptr = catacurses::newwin( 9, 32, 18, 88 );
+    w_panel3 = w_panel3_ptr = catacurses::newwin( 13, 32, 26, 88 );
     werase( w_panel3 );
 
-    w_panel4 = w_panel4_ptr = catacurses::newwin( 9, 32, 27, 88 );
+    w_panel4 = w_panel4_ptr = catacurses::newwin( 13, 32, 39, 88 );
     werase( w_panel4 );
 
-    w_panel5 = w_panel5_ptr = catacurses::newwin( 9, 32, 36, 88 );
+    w_panel5 = w_panel5_ptr = catacurses::newwin( 13, 32, 52, 88 );
     werase( w_panel5 );
 
     w_status = w_status_ptr = catacurses::newwin( statH, statW, _y + statY, _x + statX );
@@ -1717,6 +1717,9 @@ bool game::do_turn()
     }
     sfx::do_danger_music();
     sfx::do_fatigue();
+
+    // reset player noise
+    u.volume = 0;
 
     return false;
 }
@@ -3636,9 +3639,9 @@ void game::draw_panels()
     draw_character( u, w_panel1 );
     draw_environment( u, w_panel2 );
     draw_messages( w_panel3 );
-    draw_mminimap( w_panel4 );
+    draw_compass( w_panel4 );
+    // draw_mminimap( w_panel5 );
     // draw_lookaround();
-    draw_compass( w_panel5 );
 }
 
 void game::draw_pixel_minimap()

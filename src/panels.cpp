@@ -31,25 +31,31 @@ void decorate_panel( const std::string name, const catacurses::window &w )
     wprintz( w, c_white, title_suffix );
 }
 
-void draw_character( const player &u, const catacurses::window &w )
+void draw_character( player &u, const catacurses::window &w )
 {
     // character panel
     static const std::string title = _( "Character" );
     decorate_panel( title, w );
-    const int dy  = 1;
-    static std::array<body_part, 7> part = {{
-            bp_head, bp_torso, bp_arm_l, bp_arm_r, bp_leg_l, bp_leg_r, num_bp
-        }
-    };
-    for( size_t i = 0; i < part.size(); i++ ) {
-        const std::string str = ( i == part.size() - 1 ) ?
-                                _( "POWER" ) : body_part_hp_bar_ui_text( part[i] );
-        wmove( w, ( i + 1 ) * dy, 1 );
-        wprintz( w, u.limb_color( part[i], true, true, true ), " " );
-        wprintz( w, u.limb_color( part[i], true, true, true ),
-                 str + " : " + std::to_string( u.hp_cur[i] ) );
 
-    }
+    mvwprintz( w,  1, 1,  c_light_gray, "%s %d", _( "Head    :" ), u.hp_cur[hp_head] );
+    mvwprintz( w,  2, 1,  c_light_gray, "%s %d", _( "L_arm   :" ), u.hp_cur[hp_arm_l] );
+    mvwprintz( w,  3, 1,  c_light_gray, "%s %d", _( "L_leg   :" ), u.hp_cur[hp_leg_l] );
+    mvwprintz( w,  5, 1,  c_light_gray, "%s %d", _( "Sound   :" ), u.volume );
+    mvwprintz( w,  6, 1,  c_light_gray, "%s %d", _( "Stamina :" ), int( u.stamina / 10 ) );
+    mvwprintz( w,  7, 1,  c_light_gray, "%s %d", _( "Focus   :" ), u.focus_pool );
+    mvwprintz( w,  9, 1,  c_light_gray, "%s %d", _( "Strength:" ), u.str_cur );
+    mvwprintz( w, 10, 1,  c_light_gray, "%s %d", _( "Intel   :" ), u.int_cur );
+
+    mvwprintz( w,  1, 15, c_light_gray, "%s %d", _( "|  Torso   :" ), u.hp_cur[hp_torso] );
+    mvwprintz( w,  2, 15, c_light_gray, "%s %d", _( "|  R_arm   :" ), u.hp_cur[hp_arm_r] );
+    mvwprintz( w,  3, 15, c_light_gray, "%s %d", _( "|  R_leg   :" ), u.hp_cur[hp_leg_r] );
+    mvwprintz( w,  5, 15, c_light_gray, "%s %d", _( "|  Morale  :" ), u.get_morale_level() );
+    mvwprintz( w,  6, 15, c_light_gray, "%s %d", _( "|  Speed   :" ), u.get_speed() );
+    mvwprintz( w,  7, 15, c_light_gray, "%s %d", _( "|  move    :" ), u.movecounter );
+    mvwprintz( w,  9, 15, c_light_gray, "%s %d", _( "|  Dexter  :" ), u.dex_cur );
+    mvwprintz( w, 10, 15, c_light_gray, "%s %d", _( "|  Percep  :" ), u.per_cur );
+
+    // stat_color( get_speed_bonus() ),
 
     wrefresh( w );
 }
@@ -135,9 +141,9 @@ void draw_environment( const player &u, const catacurses::window &w )
     wprintz( w, c_white, _( "Time: ???" ) );
     }
     */
-    mvwprintz( w, 6, 1, c_light_gray, _( "Temp    : ???" ) );
-    mvwprintz( w, 7, 1, c_light_gray, _( "Rad     : ???" ) );
-    // mvwprintz( w, 8, 1, c_light_gray, _( "Moon    : ???" ) );
+    mvwprintz( w, 6, 1, c_light_gray, _( "Moon    : ???" ) );
+    mvwprintz( w, 8, 1, c_light_gray, _( "Temp    : ???" ) );
+    mvwprintz( w, 9, 1, c_light_gray, _( "Rad     : ???" ) );
     wrefresh( w );
 }
 
@@ -181,21 +187,15 @@ void draw_compass( const catacurses::window &w )
     const std::string title = _( "Compass" );
     decorate_panel( title, w );
     // const std::string compass = "";
-    mvwprintz( w, 1, 5, c_light_gray, "                      " );
-    mvwprintz( w, 2, 5, c_light_gray, "     --._ | _,--      " );
-    mvwprintz( w, 3, 5, c_light_gray, "       /  N  \\       " );
-    mvwprintz( w, 4, 5, c_light_gray, "    --< W + E >--     " );
-    mvwprintz( w, 5, 5, c_light_gray, "       \\_ S _/       " );
-    mvwprintz( w, 6, 5, c_light_gray, "     --'  |  `--      " );
-    mvwprintz( w, 7, 5, c_light_gray, "                      " );
-
-    //    mvwprintz( w, 1, 5, c_light_gray, "         oZz         " );
-    //    mvwprintz( w, 2, 5, c_light_gray, "  Zdd __|   |__ kzz  " );
-    //    mvwprintz( w, 3, 5, c_light_gray, "          N          " );
-    //    mvwprintz( w, 4, 5, c_light_gray, "  Zzk   W + E   dZzz " );
-    //    mvwprintz( w, 5, 5, c_light_gray, "      __  S  __      " );
-    //    mvwprintz( w, 6, 5, c_light_gray, "  ooZ   |   |   zzk  " );
-    //    mvwprintz( w, 7, 5, c_light_gray, "         Zzz         " );
+    mvwprintz( w, 1,   1, c_light_gray, "Detected : No  |  Total : 0" );
+    mvwprintz( w, 2,  11, c_light_gray, " " );
+    mvwprintz( w, 4,  11, c_light_gray, " _   |   _ " );
+    mvwprintz( w, 5,  11, c_light_gray, "  \\_ N _/ " );
+    mvwprintz( w, 6,  11, c_light_gray, "  /  |  \\ " );
+    mvwprintz( w, 7,  11, c_light_gray, " W --+-- E " );
+    mvwprintz( w, 8,  11, c_light_gray, "  \\_ | _/ " );
+    mvwprintz( w, 9,  11, c_light_gray, " _/  S  \\_" );
+    mvwprintz( w, 10, 11, c_light_gray, "     |     " );
 
     wrefresh( w );
 }
