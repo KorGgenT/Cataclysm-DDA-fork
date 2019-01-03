@@ -6,7 +6,6 @@
 #include "game.h"
 #include "gun_mode.h"
 #include "item.h"
-// #include "live_view.h"
 #include "messages.h"
 #include "overmap.h"
 #include "overmap_ui.h"
@@ -20,52 +19,56 @@
 
 static const trait_id trait_SELFAWARE( "SELFAWARE" );
 
-void decorate_panel( const std::string name, const catacurses::window &w )
-{
-    werase( w );
-    draw_border( w );
-
-    static const char *title_prefix = "< ";
-    const std::string title = name;
-    static const char *title_suffix = " >";
-    static const std::string full_title = string_format( "%s%s%s", title_prefix, title, title_suffix );
-    const int start_pos = center_text_pos( full_title.c_str(), 0, getmaxx( w ) - 1 );
-    mvwprintz( w, 0, start_pos, c_white, title_prefix );
-    wprintz( w, c_green, title );
-    wprintz( w, c_white, title_suffix );
-}
-
+// ===============================
+// panels code
+// ===============================
 void draw_character( player &u, const catacurses::window &w )
 {
     // character panel
     static const std::string title = _( "Character" );
     decorate_panel( title, w );
-
     std::pair<nc_color, int> morale_pair = morale_stat( u );
-    mvwprintz( w,  1, 1,  c_light_gray, "%s", _( "Head    :" ) );
-    mvwprintz( w,  1, 11,  stat_color2( int( u.hp_cur[hp_head] ) ),
-               std::to_string( u.hp_cur[hp_head] ) );
 
-    mvwprintz( w,  2, 1,  c_light_gray, "%s %d", _( "L_arm   :" ), u.hp_cur[hp_arm_l] );
-    mvwprintz( w,  3, 1,  c_light_gray, "%s %d", _( "L_leg   :" ), u.hp_cur[hp_leg_l] );
-    mvwprintz( w,  5, 1,  c_light_gray, "%s %d", _( "Sound   :" ), u.volume );
-    mvwprintz( w,  6, 1,  c_light_gray, "%s %d", _( "Stamina :" ), int( u.stamina / 10 ) );
-    mvwprintz( w,  7, 1,  c_light_gray, "%s %d", _( "Focus   :" ), u.focus_pool );
-    mvwprintz( w,  9, 1,  c_light_gray, "%s %d", _( "Strength:" ), u.str_cur );
-    mvwprintz( w, 10, 1,  c_light_gray, "%s %d", _( "Intel   :" ), u.int_cur );
+    mvwprintz( w,  1, 1,  c_light_gray, _( "Head    :" ) );
+    mvwprintz( w,  2, 1,  c_light_gray, _( "L_arm   :" ) );
+    mvwprintz( w,  3, 1,  c_light_gray, _( "L_leg   :" ) );
+    mvwprintz( w,  1, 15, c_light_gray, _( "|  " ) );
+    mvwprintz( w,  2, 15, c_light_gray, _( "|  " ) );
+    mvwprintz( w,  3, 15, c_light_gray, _( "|  " ) );
+    mvwprintz( w,  1, 18, c_light_gray, _( "Torso   :" ) );
+    mvwprintz( w,  2, 18, c_light_gray, _( "R_arm   :" ) );
+    mvwprintz( w,  3, 18, c_light_gray, _( "R_leg   :" ) );
 
-    mvwprintz( w,  1, 15, c_light_gray, "%s %d", _( "|  Torso   :" ), u.hp_cur[hp_torso] );
-    mvwprintz( w,  2, 15, c_light_gray, "%s %d", _( "|  R_arm   :" ), u.hp_cur[hp_arm_r] );
-    mvwprintz( w,  3, 15, c_light_gray, "%s %d", _( "|  R_leg   :" ), u.hp_cur[hp_leg_r] );
-    mvwprintz( w,  5, 15, c_light_gray, "%s", _( "|  Morale  :" ), u.get_morale_level() );
-    mvwprintz( w,  5, 27, morale_pair.first, std::to_string( morale_pair.second ) );
+    mvwprintz( w,  1, 11, stat_color( u.hp_cur[hp_head] ),  "%s", u.hp_cur[hp_head] );
+    mvwprintz( w,  2, 11, stat_color( u.hp_cur[hp_arm_l] ), "%s", u.hp_cur[hp_arm_l] );
+    mvwprintz( w,  3, 11, stat_color( u.hp_cur[hp_leg_l] ), "%s", u.hp_cur[hp_leg_l] );
+    mvwprintz( w,  1, 28, stat_color( u.hp_cur[hp_torso] ), "%s", u.hp_cur[hp_torso] );
+    mvwprintz( w,  2, 28, stat_color( u.hp_cur[hp_arm_r] ), "%s", u.hp_cur[hp_arm_r] );
+    mvwprintz( w,  3, 28, stat_color( u.hp_cur[hp_leg_r] ), "%s", u.hp_cur[hp_leg_r] );
 
-    mvwprintz( w,  6, 15, c_light_gray, "%s %d", _( "|  Speed   :" ), u.get_speed() );
-    mvwprintz( w,  7, 15, c_light_gray, "%s %d", _( "|  move    :" ), u.movecounter );
-    mvwprintz( w,  9, 15, c_light_gray, "%s %d", _( "|  Dexter  :" ), u.dex_cur );
-    mvwprintz( w, 10, 15, c_light_gray, "%s %d", _( "|  Percep  :" ), u.per_cur );
+    mvwprintz( w,  5, 1,  c_light_gray, _( "Sound   :" ) );
+    mvwprintz( w,  6, 1,  c_light_gray, _( "Stamina :" ) );
+    mvwprintz( w,  7, 1,  c_light_gray, _( "Focus   :" ) );
+    mvwprintz( w,  9, 1,  c_light_gray, _( "Strength:" ) );
+    mvwprintz( w, 10, 1,  c_light_gray, _( "Intel   :" ) );
 
-    // stat_color( get_speed_bonus() ),
+    mvwprintz( w,  5, 11, c_light_gray, "%s", u.volume );
+    mvwprintz( w,  6, 11, stat_color( u.stamina / 10 ), "%s", u.stamina / 10 );
+    mvwprintz( w,  7, 11, stat_color( u.focus_pool ), "%s", u.focus_pool );
+    mvwprintz( w,  9, 11, stat_color( u.str_cur * 10 ), "%s", u.str_cur * 10 );
+    mvwprintz( w, 10, 11, stat_color( u.int_cur * 10 ), "%s", u.int_cur * 10 );
+
+    mvwprintz( w,  5, 15, c_light_gray, _( "|  Morale  :" ) );
+    mvwprintz( w,  6, 15, c_light_gray, _( "|  Speed   :" ) );
+    mvwprintz( w,  7, 15, c_light_gray, _( "|  move    :" ) );
+    mvwprintz( w,  9, 15, c_light_gray, _( "|  Dexter  :" ) );
+    mvwprintz( w, 10, 15, c_light_gray, _( "|  Percep  :" ) );
+
+    mvwprintz( w,  5, 28, morale_pair.first, "%s", morale_pair.second );
+    mvwprintz( w,  6, 28, stat_color( u.get_speed() ), "%s", u.get_speed() );
+    mvwprintz( w,  7, 28, c_light_gray, "%s", u.movecounter );
+    mvwprintz( w,  9, 28, stat_color( u.dex_cur * 10 ), "%s", u.dex_cur * 10 );
+    mvwprintz( w, 10, 28, stat_color( u.per_cur * 10 ), "%s", u.per_cur * 10 );
 
     wrefresh( w );
 }
@@ -75,89 +78,47 @@ void draw_environment( const player &u, const catacurses::window &w )
     // environment panel
     const std::string title = _( "Environment" );
     decorate_panel( title, w );
+
     // display location
     const oter_id &cur_ter = overmap_buffer.ter( u.global_omt_location() );
-    // wrefresh( s_window );
     mvwprintz( w, 1, 1, c_light_gray, "Location: " );
     wprintz( w, c_white, utf8_truncate( cur_ter->get_name(), getmaxx( w ) ) );
+
     // display weather
     if( g->get_levz() < 0 ) {
         mvwprintz( w, 2, 1, c_light_gray, _( "Underground" ) );
     } else {
         mvwprintz( w, 2, 1, c_light_gray, _( "Weather :" ) );
-        wprintz( w, weather_data( g->weather ).color, " %s", weather_data( g->weather ).name.c_str() );
+        wprintz( w, weather_data( g->weather ).color, " %s",
+                 weather_data( g->weather ).name.c_str() );
     }
+
     // display lighting
     const auto ll = get_light_level( g->u.fine_detail_vision_mod() );
     mvwprintz( w, 3, 1, c_light_gray, "%s ", _( "Lighting:" ) );
     wprintz( w, ll.second, ll.first.c_str() );
+
     // display date
     mvwprintz( w, 4, 1, c_light_gray, _( "Date    : %s, day %d" ),
                calendar::name_season( season_of_year( calendar::turn ) ),
                day_of_season<int>( calendar::turn ) + 1 );
+
     // display time
     if( u.has_watch() ) {
-        mvwprintz( w, 5, 1, c_light_gray, _( "Time    : %s, day %d" ),
+        mvwprintz( w, 5, 1, c_light_gray, _( "Time    : %s" ),
                    to_string_time_of_day( calendar::turn ) );
-        // wprintz( time_window, c_white, to_string_time_of_day( calendar::turn ) );
     } else if( g->get_levz() >= 0 ) {
-        // const int iHour = hour_of_day<int>( calendar::turn );
-        mvwprintz( w, 5, 1, c_light_gray, _( "Time    : Around noon" ) );
+        mvwprintz( w, 5, 1, c_light_gray, _( "Time    : %s" ), time_approx() );
     } else {
         mvwprintz( w, 5, 1, c_light_gray, _( "Time    : ???" ) );
     }
-    /*
-    std::vector<std::pair<char, nc_color> > vGlyphs;
-    vGlyphs.push_back( std::make_pair( '_', c_red ) );
-    vGlyphs.push_back( std::make_pair( '_', c_cyan ) );
-    vGlyphs.push_back( std::make_pair( '.', c_brown ) );
-    vGlyphs.push_back( std::make_pair( ',', c_blue ) );
-    vGlyphs.push_back( std::make_pair( '+', c_yellow ) );
-    vGlyphs.push_back( std::make_pair( 'c', c_light_blue ) );
-    vGlyphs.push_back( std::make_pair( '*', c_yellow ) );
-    vGlyphs.push_back( std::make_pair( 'C', c_white ) );
-    vGlyphs.push_back( std::make_pair( '+', c_yellow ) );
-    vGlyphs.push_back( std::make_pair( 'c', c_light_blue ) );
-    vGlyphs.push_back( std::make_pair( '.', c_brown ) );
-    vGlyphs.push_back( std::make_pair( ',', c_blue ) );
-    vGlyphs.push_back( std::make_pair( '_', c_red ) );
-    vGlyphs.push_back( std::make_pair( '_', c_cyan ) );
 
-    const int iHour = hour_of_day<int>( calendar::turn );
-    wprintz( w, c_white, "[" );
-    bool bAddTrail = false;
-
-    for( int i = 0; i < 14; i += 2 ) {
-        if( iHour >= 8 + i && iHour <= 13 + ( i / 2 ) ) {
-            wputch( w, hilite( c_white ), ' ' );
-
-        } else if( iHour >= 6 + i && iHour <= 7 + i ) {
-            wputch( w, hilite( vGlyphs[i].second ), vGlyphs[i].first );
-            bAddTrail = true;
-
-        } else if( iHour >= ( 18 + i ) % 24 && iHour <= ( 19 + i ) % 24 ) {
-            wputch( w, vGlyphs[i + 1].second, vGlyphs[i + 1].first );
-
-        } else if( bAddTrail && iHour >= 6 + ( i / 2 ) ) {
-            wputch( w, hilite( c_white ), ' ' );
-
-        } else {
-            wputch( w, c_white, ' ' );
-        }
-    }
-    wprintz( w, c_white, "]" );
-
-    } else {
-    wprintz( w, c_white, _( "Time: ???" ) );
-    }
-    */
-    mvwprintz( w, 6, 1, c_light_gray, _( "Moon    : ???" ) );
-    mvwprintz( w, 8, 1, c_light_gray, _( "Temp    : ???" ) );
-    mvwprintz( w, 9, 1, c_light_gray, _( "Rad     : ???" ) );
+    mvwprintz( w, 6, 1, c_light_gray, _( "Moon    : %s" ), get_moon( ) );
+    mvwprintz( w, 8, 1, c_light_gray, _( "Temp    : %s" ), get_temp( u ) );
+    mvwprintz( w, 9, 1, c_light_gray, _( "Rad     : -" ) );
     wrefresh( w );
 }
 
-// static std::string print_gun_mode( const player &u );
 void draw_modifiers( const player &u, const catacurses::window &w )
 {
     // modifiers panel
@@ -196,16 +157,10 @@ void draw_messages( const catacurses::window &w )
     // messages panel
     const std::string title = _( "Messages" );
     decorate_panel( title, w );
-    // werase( w_messages );
-
-    // Print liveview or monster info and start log messages output below it.
-    // int topline = liveview.draw( w_messages, getmaxy( w_messages ) );
-    // if( topline == 0 ) {
-    //     topline = mon_info( w_messages ) + 2;
-    // }
     int line = getmaxy( w ) - 2;
     int maxlength = getmaxx( w );
-    Messages::display_messages( w, 1, 1 /*topline*/, maxlength, line );
+    Messages::display_messages( w, 1, 1 /*topline*/, maxlength -
+                                1, line );
     wrefresh( w );
 }
 
@@ -244,41 +199,85 @@ void draw_compass( const catacurses::window &w )
     wrefresh( w );
 }
 
-//std::string print_gun_mode( const player &u )
-//{
-//    auto m = u.weapon.gun_current_mode();
-//    if( m ) {
-//        if( m.melee() || !m->is_gunmod() ) {
-//            if( u.ammo_location && u.weapon.can_reload_with( u.ammo_location->typeId() ) ) {
-//                return string_format( "%s (%d)", u.weapname().c_str(),
-//                                      u.ammo_location->charges );
-//            }
-//            return string_format( m.name().empty() ? "%s" : "%s (%s)",
-//                                  u.weapname().c_str(), m.name() );
-//        } else {
-//            return string_format( "%s (%i/%i)", m->tname().c_str(),
-//                                  m->ammo_remaining(), m->ammo_capacity() );
-//        }
-//    } else {
-//        return u.weapname();
-//    }
-//}
 
+// ====================================
+// panels prettify and helper functions
+// ====================================
 
-nc_color stat_color2( int stat )
+void decorate_panel( const std::string name, const catacurses::window &w )
 {
-    nc_color statcolor = c_white;
-    if( stat >= 70 ) {
-        statcolor = c_green;
-    } else if( stat >= 50 ) {
-        statcolor = c_brown_red;
-    } else if( stat >= 30 ) {
-        statcolor = c_red;
-    }
+    werase( w );
+    draw_border( w );
 
-    return statcolor;
+    static const char *title_prefix = "< ";
+    const std::string title = name;
+    static const char *title_suffix = " >";
+    static const std::string full_title = string_format( "%s%s%s",
+                                          title_prefix, title, title_suffix );
+    const int start_pos = center_text_pos( full_title.c_str(), 0, getmaxx( w ) - 1 );
+    mvwprintz( w, 0, start_pos, c_white, title_prefix );
+    wprintz( w, c_blue, title );
+    wprintz( w, c_white, title_suffix );
 }
 
+std::string get_temp( const player &u )
+{
+    std::string temp = "";
+    if( u.has_item_with_flag( "THERMOMETER" ) ||
+        u.has_bionic( bionic_id( "bio_meteorologist" ) ) ) {
+        temp = print_temperature( g->get_temperature( u.pos() ) ).c_str();
+    }
+    return temp;
+}
+
+std::string get_moon()
+{
+    std::string moon = "";
+    const int iPhase = static_cast<int>( get_moon_phase( calendar::turn ) );
+    moon = std::to_string( iPhase );
+    // std::cout << "iphase=" << iPhase << "\n";
+    // fflush( stdio );
+    return moon;
+}
+
+std::string time_approx()
+{
+    const int iHour = hour_of_day<int>( calendar::turn );
+    std::string time_approx = "";
+    if( iHour >= 22 ) {
+        time_approx = "Around midnight";
+    } else if( iHour >= 20 ) {
+        time_approx = "It's getting darker";
+    } else if( iHour >= 16 ) {
+        time_approx = "This is the Evening";
+    } else if( iHour >= 13 ) {
+        time_approx = "In the afternoon";
+    } else if( iHour >= 11 ) {
+        time_approx = "Around noon";
+    } else if( iHour >= 8 ) {
+        time_approx = "In the Morning";
+    } else if( iHour >= 5 ) {
+        time_approx = "Around Dawn";
+    } else if( iHour >= 0 ) {
+        time_approx = "Dead of Night";
+    }
+    return time_approx;
+}
+
+nc_color stat_color( int stat )
+{
+    nc_color statcolor = c_light_gray;
+    if( stat >= 75 ) {
+        statcolor = c_green;
+    } else if( stat >= 50 ) {
+        statcolor = c_yellow;
+    } else if( stat >= 25 ) {
+        statcolor = c_red;
+    } else if( stat >= 0 ) {
+        statcolor = c_magenta;
+    }
+    return statcolor;
+}
 
 std::pair<nc_color, int> morale_stat( const player &u )
 {

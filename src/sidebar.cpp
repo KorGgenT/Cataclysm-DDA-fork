@@ -269,7 +269,7 @@ int define_temp_level( const int lvl )
     return 1;
 }
 
-nc_color stat_color( const int bonus )
+nc_color stat_color2( const int bonus )
 {
     if( bonus > 0 ) {
         return c_green;
@@ -533,14 +533,14 @@ void player::disp_status( const catacurses::window &w, const catacurses::window 
         const int wy = sideStyle ?  0 :  3;
         const int dx = sideStyle ?  0 :  7;
         const int dy = sideStyle ?  1 :  0;
-        mvwprintz( w, wy + dy * 0, wx + dx * 0, stat_color( get_str_bonus() ), _( "Str %d" ), str_cur );
-        mvwprintz( w, wy + dy * 1, wx + dx * 1, stat_color( get_dex_bonus() ), _( "Dex %d" ), dex_cur );
-        mvwprintz( w, wy + dy * 2, wx + dx * 2, stat_color( get_int_bonus() ), _( "Int %d" ), int_cur );
-        mvwprintz( w, wy + dy * 3, wx + dx * 3, stat_color( get_per_bonus() ), _( "Per %d" ), per_cur );
+        mvwprintz( w, wy + dy * 0, wx + dx * 0, stat_color2( get_str_bonus() ), _( "Str %d" ), str_cur );
+        mvwprintz( w, wy + dy * 1, wx + dx * 1, stat_color2( get_dex_bonus() ), _( "Dex %d" ), dex_cur );
+        mvwprintz( w, wy + dy * 2, wx + dx * 2, stat_color2( get_int_bonus() ), _( "Int %d" ), int_cur );
+        mvwprintz( w, wy + dy * 3, wx + dx * 3, stat_color2( get_per_bonus() ), _( "Per %d" ), per_cur );
 
         const int spdx = sideStyle ?  0 : wx + dx * 4 + 1;
         const int spdy = sideStyle ?  5 : wy + dy * 4;
-        mvwprintz( w, spdy, spdx, stat_color( get_speed_bonus() ), _( "Spd %d" ), get_speed() );
+        mvwprintz( w, spdy, spdx, stat_color2( get_speed_bonus() ), _( "Spd %d" ), get_speed() );
 
         nc_color col_time = c_white;
         if( this->weight_carried() > this->weight_capacity() ) {
