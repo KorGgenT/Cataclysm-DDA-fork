@@ -3639,7 +3639,8 @@ void game::draw_panels()
     draw_character( u, w_panel1 );
     draw_environment( u, w_panel2 );
     draw_messages( w_panel3 );
-    draw_compass( w_panel4 );
+    //draw_compass( w_panel4 );
+    draw_modifiers( u, w_panel4 );
     // draw_mminimap( w_panel5 );
     // draw_lookaround();
 }

@@ -11043,7 +11043,7 @@ std::string player::weapname() const
         return _( "fists" );
 
     } else {
-        return weapon.tname();
+        return weapon.tname( false );
     }
 }
 
