@@ -3547,11 +3547,19 @@ void game::draw()
 
 void game::draw_panels()
 {
+    //    if( pixel_minimap_option ) {
+    //        clear_window_area( w_pixel_minimap );
+    //    }
+    //    pixel_minimap_option = !pixel_minimap_option;
+    //    init_ui();
+    //    refresh_all();
     draw_character( u, w_panel1 );
     draw_environment( u, w_panel2 );
     draw_messages( w_panel3 );
     //draw_compass( w_panel4 );
-    draw_modifiers( u, w_panel4 );
+    if( pixel_minimap_option ) {
+        draw_modifiers( u, w_panel4 );
+    }
     // draw_mminimap( w_panel5 );
     // draw_lookaround();
 }

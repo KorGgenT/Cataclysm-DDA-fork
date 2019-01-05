@@ -740,10 +740,10 @@ void Pickup::pick_up( const tripoint &pos, int min )
     if( min != -1 ) { // don't bother if we're just autopickuping
         g->temp_exit_fullscreen();
     }
-    bool sideStyle = use_narrow_sidebar();
+    // bool sideStyle = use_narrow_sidebar();
 
     // Otherwise, we have Autopickup, 2 or more items and should list them, etc.
-    int maxmaxitems = sideStyle ? TERMY : getmaxy( g->w_messages ) - 3;
+    int maxmaxitems = TERMY;
 
     int itemsH = std::min( 25, TERMY / 2 );
     int pickupBorderRows = 3;
@@ -755,7 +755,7 @@ void Pickup::pick_up( const tripoint &pos, int min )
         maxmaxitems = TERMY - minleftover;
     }
 
-    const int minmaxitems = sideStyle ? 6 : 9;
+    const int minmaxitems = 9;
 
     std::vector<pickup_count> getitem( stacked_here.size() );
 
@@ -773,11 +773,11 @@ void Pickup::pick_up( const tripoint &pos, int min )
     } else {
         int pickupH = maxitems + pickupBorderRows;
         int pickupW = 60; // getmaxx( g->w_messages );
-        int pickupY = 5; // VIEW_OFFSET_Y;
+        int pickupY = 10; // VIEW_OFFSET_Y;
         int pickupX = getbegx( g->w_messages );
 
         int itemsW = pickupW;
-        int itemsY = sideStyle ? pickupY + pickupH : TERMY - itemsH;
+        int itemsY = pickupY + pickupH;
         int itemsX = pickupX;
 
         catacurses::window w_pickup = catacurses::newwin( pickupH, pickupW, pickupY, pickupX );
@@ -971,7 +971,8 @@ void Pickup::pick_up( const tripoint &pos, int min )
                     start = 0;
                     iScrollPos = 0;
                 }
-                wrefresh( g->w_terrain );
+                // wrefresh( g->w_terrain );
+                g->draw_panels();
             }
             item &selected_item = stacked_here[matches[selected]].begin()->_item;
 
