@@ -80,7 +80,6 @@
 #include "safemode_ui.h"
 #include "scenario.h"
 #include "scent_map.h"
-#include "sidebar.h"
 #include "sounds.h"
 #include "start_location.h"
 #include "string_formatter.h"
@@ -266,8 +265,8 @@ void game::load_static_data()
     inp_mngr.init();            // Load input config JSON
     // Init mappings for loading the json stuff
     DynamicDataLoader::get_instance();
-    narrow_sidebar = get_option<std::string>( "SIDEBAR_STYLE" ) == "narrow";
-    right_sidebar = get_option<std::string>( "SIDEBAR_POSITION" ) == "right";
+    //    narrow_sidebar = get_option<std::string>( "SIDEBAR_STYLE" ) == "narrow";
+    //    right_sidebar = get_option<std::string>( "SIDEBAR_POSITION" ) == "right";
     fullscreen = false;
     was_fullscreen = false;
 
@@ -417,9 +416,6 @@ void game::init_ui( const bool resized )
 #endif // TILES
     }
 
-    // mytest
-    // int sidebarWidth = narrow_sidebar ? 45 : 55;
-
     // First get TERMX, TERMY
 #if (defined TILES || defined _WIN32 || defined __WIN32__)
     TERMX = get_terminal_width();
@@ -444,20 +440,11 @@ void game::init_ui( const bool resized )
         FULL_SCREEN_HEIGHT = 24;
     }
 
-    // now that TERMX and TERMY are set,
-    // check if sidebar style needs to be overridden
-    // mytest
-    // sidebarWidth = use_narrow_sidebar() ? 45 : 55;
-    if( fullscreen ) {
-        // sidebarWidth = 0;
-    }
 #endif
     // remove some space for the sidebar, this is the maximal space
     // (using standard font) that the terrain window can have
     TERRAIN_WINDOW_HEIGHT = TERMY;
-    // mytest
-    // TERRAIN_WINDOW_WIDTH = TERMX - sidebarWidth;
-    TERRAIN_WINDOW_WIDTH = TERMX; // - sidebarWidth;
+    TERRAIN_WINDOW_WIDTH = TERMX;
     TERRAIN_WINDOW_TERM_WIDTH = TERRAIN_WINDOW_WIDTH;
     TERRAIN_WINDOW_TERM_HEIGHT = TERRAIN_WINDOW_HEIGHT;
 
@@ -504,12 +491,6 @@ void game::init_ui( const bool resized )
     // Position of the player in the terrain window, it is always in the center
     POSX = TERRAIN_WINDOW_WIDTH / 2;
     POSY = TERRAIN_WINDOW_HEIGHT / 2;
-
-    // Set up the main UI windows.
-    // mytest
-    //    w_terrain = w_terrain_ptr = catacurses::newwin( TERRAIN_WINDOW_HEIGHT, TERRAIN_WINDOW_WIDTH,
-    //                                VIEW_OFFSET_Y, right_sidebar ? VIEW_OFFSET_X :
-    //                                VIEW_OFFSET_X + sidebarWidth );
 
     w_terrain = w_terrain_ptr = catacurses::newwin( TERRAIN_WINDOW_HEIGHT, TERRAIN_WINDOW_WIDTH,
                                 VIEW_OFFSET_Y, VIEW_OFFSET_X );
@@ -561,47 +542,7 @@ void game::init_ui( const bool resized )
 #ifdef TILES
     pixel_minimap_custom_height = get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) > 0;
 #endif // TILES
-    // mytest
-    //    if( use_narrow_sidebar() ) {
-    //        // First, figure out how large each element will be.
-    //        hpH = 7;
-    //        hpW = 14;
-    //        statH = 7;
-    //        statW = sidebarWidth - MINIMAP_WIDTH - hpW;
-    //        locH = 3;
-    //        locW = sidebarWidth;
-    //        stat2H = 2;
-    //        stat2W = sidebarWidth;
-    //        pixelminimapW = sidebarWidth;
-    //        pixelminimapH = ( pixelminimapW / 2 );
-    //        if( pixel_minimap_custom_height && pixelminimapH > get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) ) {
-    //            pixelminimapH = get_option<int>( "PIXEL_MINIMAP_HEIGHT" );
-    //        }
-    //        messHshort = TERRAIN_WINDOW_TERM_HEIGHT - ( statH + locH + stat2H + pixelminimapH );
-    //        messW = sidebarWidth;
-    //        if( messHshort < 9 ) {
-    //            pixelminimapH -= 9 - messHshort;
-    //            messHshort = 9;
-    //        }
-    //        messHlong = TERRAIN_WINDOW_TERM_HEIGHT - ( statH + locH + stat2H );
 
-    //        // Now position the elements relative to each other.
-    //        minimapX = 0;
-    //        minimapY = 0;
-    //        hpX = minimapX + MINIMAP_WIDTH;
-    //        hpY = 0;
-    //        locX = 0;
-    //        locY = minimapY + MINIMAP_HEIGHT;
-    //        statX = hpX + hpW;
-    //        statY = 0;
-    //        stat2X = 0;
-    //        stat2Y = locY + locH;
-    //        messX = 0;
-    //        messY = stat2Y + stat2H;
-    //        pixelminimapX = 0;
-    //        pixelminimapY = messY + messHshort;
-    //    } else {
-    // standard sidebar style
     locH = 3;
     statX = 0;
     statH = 4;
@@ -609,9 +550,7 @@ void game::init_ui( const bool resized )
     minimapY = 0;
     messX = MINIMAP_WIDTH;
     messY = 0;
-    // mytest
     messW = messX;
-    //        messW = sidebarWidth - messX;
     pixelminimapW = messW;
     pixelminimapH = ( pixelminimapW / 2 );
     if( pixel_minimap_custom_height && pixelminimapH > get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) ) {
@@ -634,27 +573,19 @@ void game::init_ui( const bool resized )
     hpW = 7;
     locX = MINIMAP_WIDTH;
     locY = messY + messHshort + pixelminimapH;
-    // mytest
-    //        locW = sidebarWidth - locX;
+
     locW = locX;
     statY = locY + locH;
-    // mytest
-    //        statW = sidebarWidth;
-    statW = 0; // sidebarWidth;
+
+    statW = 0;
 
     // The default style only uses one status window.
     stat2X = 0;
     stat2Y = statY + statH;
     stat2H = 1;
-    // mytest
-    // stat2W = sidebarWidth;
-    stat2W = 0; //sidebarWidth;
-    // mytest
-    //    }
+    stat2W = 0;
 
     int _y = VIEW_OFFSET_Y;
-    // mytest
-    // int _x = right_sidebar ? TERMX - VIEW_OFFSET_X - sidebarWidth : VIEW_OFFSET_X;
     int _x = VIEW_OFFSET_X;
 
     w_minimap = w_minimap_ptr = catacurses::newwin( MINIMAP_HEIGHT, MINIMAP_WIDTH, _y + minimapY,
@@ -714,16 +645,6 @@ void game::init_ui( const bool resized )
     }
 }
 
-void game::toggle_sidebar_style()
-{
-    // mytest
-    //    narrow_sidebar = !narrow_sidebar;
-    //#ifdef TILES
-    //    tilecontext->reinit_minimap();
-    //#endif // TILES
-    //    init_ui();
-    //    refresh_all();
-}
 
 void game::toggle_fullscreen()
 {
@@ -1100,7 +1021,6 @@ void game::create_starting_npcs()
 
 bool game::cleanup_at_end()
 {
-    draw_sidebar();
     if( uquit == QUIT_DIED || uquit == QUIT_SUICIDE ) {
         // Put (non-hallucinations) into the overmap so they are not lost.
         for( monster &critter : all_monsters() ) {
@@ -2281,13 +2201,9 @@ bool game::handle_mouseview( input_context &ctxt, std::string &action )
             if( mouse_pos && ( !liveview_pos || *mouse_pos != *liveview_pos ) ) {
                 liveview_pos = mouse_pos;
                 liveview.show( *liveview_pos );
-                // mytest
-                //                draw_sidebar_messages();
             } else if( !mouse_pos ) {
                 liveview_pos.reset();
                 liveview.hide();
-                // mytest
-                //                draw_sidebar_messages();
             }
         }
     } while( action == "MOUSE_MOVE" ); // Freeze animation when moving the mouse
@@ -2408,7 +2324,6 @@ input_context get_default_mode_input_context()
     ctxt.register_action( "debug_mode" );
     ctxt.register_action( "zoom_out" );
     ctxt.register_action( "zoom_in" );
-    ctxt.register_action( "toggle_sidebar_style" );
 #ifndef __ANDROID__
     ctxt.register_action( "toggle_fullscreen" );
 #endif
@@ -3224,8 +3139,6 @@ void game::debug()
             if( query_int( dbg_damage, _( "Damage self for how much? hp: %d" ), u.hp_cur[hp_torso] ) ) {
                 u.hp_cur[hp_torso] -= dbg_damage;
                 u.die( nullptr );
-                // mytest
-                // draw_sidebar();
             }
         }
         break;
@@ -3625,8 +3538,6 @@ void game::draw()
     ter_view_z = ( u.pos() + u.view_offset ).z;
     m.build_map_cache( ter_view_z );
     m.update_visibility_cache( ter_view_z );
-    // mytest
-    // draw_sidebar();
 
     werase( w_terrain );
     draw_ter();
@@ -3655,161 +3566,6 @@ void game::draw_pixel_minimap()
         mvwputch( w_pixel_minimap, 0, 0, c_black, ' ' );
         wrefresh( w_pixel_minimap );
     }
-}
-
-void game::draw_sidebar()
-{
-    if( fullscreen ) {
-        return;
-    }
-    // mytest
-    const oter_id &cur_ter = overmap_buffer.ter( u.global_omt_location() );
-    mvwprintz( w_terrain, 0, 0, cur_ter->get_color(), utf8_truncate( cur_ter->get_name(),
-               getmaxx( w_location ) ) );
-    /*
-        // w_status2 is not used with the wide sidebar (wide == !narrow)
-        // Don't draw anything on it (no werase, wrefresh) in this case to avoid flickering
-        // (it overlays other windows)
-        const bool sideStyle = use_narrow_sidebar();
-
-        // Draw Status
-        draw_HP( u, w_HP );
-        werase( w_status );
-        if( sideStyle ) {
-            werase( w_status2 );
-        }
-        u.disp_status( w_status, w_status2 );
-
-        const catacurses::window &time_window = sideStyle ? w_status2 : w_status;
-        wmove( time_window, sideStyle ? 0 : 1, sideStyle ? 15 : 41 );
-        if( u.has_watch() ) {
-            wprintz( time_window, c_white, to_string_time_of_day( calendar::turn ) );
-        } else if( get_levz() >= 0 ) {
-            std::vector<std::pair<char, nc_color> > vGlyphs;
-            vGlyphs.push_back( std::make_pair( '_', c_red ) );
-            vGlyphs.push_back( std::make_pair( '_', c_cyan ) );
-            vGlyphs.push_back( std::make_pair( '.', c_brown ) );
-            vGlyphs.push_back( std::make_pair( ',', c_blue ) );
-            vGlyphs.push_back( std::make_pair( '+', c_yellow ) );
-            vGlyphs.push_back( std::make_pair( 'c', c_light_blue ) );
-            vGlyphs.push_back( std::make_pair( '*', c_yellow ) );
-            vGlyphs.push_back( std::make_pair( 'C', c_white ) );
-            vGlyphs.push_back( std::make_pair( '+', c_yellow ) );
-            vGlyphs.push_back( std::make_pair( 'c', c_light_blue ) );
-            vGlyphs.push_back( std::make_pair( '.', c_brown ) );
-            vGlyphs.push_back( std::make_pair( ',', c_blue ) );
-            vGlyphs.push_back( std::make_pair( '_', c_red ) );
-            vGlyphs.push_back( std::make_pair( '_', c_cyan ) );
-
-            const int iHour = hour_of_day<int>( calendar::turn );
-            wprintz( time_window, c_white, "[" );
-            bool bAddTrail = false;
-
-            for( int i = 0; i < 14; i += 2 ) {
-                if( iHour >= 8 + i && iHour <= 13 + ( i / 2 ) ) {
-                    wputch( time_window, hilite( c_white ), ' ' );
-
-                } else if( iHour >= 6 + i && iHour <= 7 + i ) {
-                    wputch( time_window, hilite( vGlyphs[i].second ), vGlyphs[i].first );
-                    bAddTrail = true;
-
-                } else if( iHour >= ( 18 + i ) % 24 && iHour <= ( 19 + i ) % 24 ) {
-                    wputch( time_window, vGlyphs[i + 1].second, vGlyphs[i + 1].first );
-
-                } else if( bAddTrail && iHour >= 6 + ( i / 2 ) ) {
-                    wputch( time_window, hilite( c_white ), ' ' );
-
-                } else {
-                    wputch( time_window, c_white, ' ' );
-                }
-            }
-
-            wprintz( time_window, c_white, "]" );
-        } else {
-            wprintz( time_window, c_white, _( "Time: ???" ) );
-        }
-
-        const oter_id &cur_ter = overmap_buffer.ter( u.global_omt_location() );
-
-        werase( w_location );
-        mvwprintz( w_location, 0, 0, cur_ter->get_color(), utf8_truncate( cur_ter->get_name(),
-                   getmaxx( w_location ) ) );
-
-        if( get_levz() < 0 ) {
-            mvwprintz( w_location, 1, 0, c_light_gray, _( "Underground" ) );
-        } else {
-            mvwprintz( w_location, 1, 0, c_light_gray, _( "Weather:" ) );
-            wprintz( w_location, weather_data( weather ).color, " %s", weather_data( weather ).name.c_str() );
-        }
-
-        if( u.has_item_with_flag( "THERMOMETER" ) || u.has_bionic( bionic_id( "bio_meteorologist" ) ) ) {
-            mvwprintz( w_location, 1, 19, c_light_gray, _( "Temperature:" ) );
-            wprintz( w_location, c_white, " %s", print_temperature( get_temperature( u.pos() ) ).c_str() );
-        }
-
-        //moon phase display
-        static std::vector<std::string> vMoonPhase = {"(   )", "(  ))", "( | )", "((  )"};
-
-        const int iPhase = static_cast<int>( get_moon_phase( calendar::turn ) );
-        std::string sPhase = vMoonPhase[iPhase % 4];
-
-        if( iPhase > 0 ) {
-            sPhase.insert( 5 - ( ( iPhase > 4 ) ? iPhase % 4 : 0 ), "</color>" );
-            sPhase.insert( 5 - ( ( iPhase < 4 ) ? iPhase + 1 : 5 ),
-                           "<color_" + string_from_color( i_black ) + ">" );
-        }
-
-        trim_and_print( w_location, 2, 0, 10, c_white, _( "Moon %s" ), sPhase.c_str() );
-
-        const auto ll = get_light_level( g->u.fine_detail_vision_mod() );
-        mvwprintz( w_location, 2, 22, c_light_gray, "%s ", _( "Lighting:" ) );
-        wprintz( w_location, ll.second, ll.first.c_str() );
-
-        wrefresh( w_location );
-
-        //Safemode coloring
-        catacurses::window day_window = sideStyle ? w_status2 : w_status;
-        mvwprintz( day_window, 0, sideStyle ? 0 : 41, c_white, _( "%s, day %d" ),
-                   calendar::name_season( season_of_year( calendar::turn ) ),
-                   day_of_season<int>( calendar::turn ) + 1 );
-        if( safe_mode != SAFE_MODE_OFF || get_option<bool>( "AUTOSAFEMODE" ) ) {
-            int iPercent = turnssincelastmon * 100 / get_option<int>( "AUTOSAFEMODETURNS" );
-            wmove( w_status, sideStyle ? 4 : 1, getmaxx( w_status ) - 4 );
-            const std::array<std::string, 4> letters = {{ "S", "A", "F", "E" }};
-            for( int i = 0; i < 4; i++ ) {
-                nc_color c = ( safe_mode == SAFE_MODE_OFF && iPercent < ( i + 1 ) * 25 ) ? c_red : c_green;
-                wprintz( w_status, c, letters[i].c_str() );
-            }
-        }
-        wrefresh( w_status );
-        if( sideStyle ) {
-            wrefresh( w_status2 );
-        }
-
-        draw_minimap();
-        draw_pixel_minimap();
-        draw_sidebar_messages();
-        */
-}
-
-void game::draw_sidebar_messages()
-{
-    // mytest
-    //    if( fullscreen ) {
-    //        return;
-    //    }
-
-    //    werase( w_messages );
-
-    //    // Print liveview or monster info and start log messages output below it.
-    //    int topline = liveview.draw( w_messages, getmaxy( w_messages ) );
-    //    if( topline == 0 ) {
-    //        topline = mon_info( w_messages ) + 2;
-    //    }
-    //    int line = getmaxy( w_messages ) - 1;
-    //    int maxlength = getmaxx( w_messages );
-    //    Messages::display_messages( w_messages, 0, topline, maxlength, line );
-    //    wrefresh( w_messages );
 }
 
 void game::draw_critter( const Creature &critter, const tripoint &center )
@@ -4344,8 +4100,6 @@ int game::mon_info( const catacurses::window &w )
     const int width = getmaxx( w );
     const int maxheight = 12;
 
-    // mytest
-    // const int startrow = use_narrow_sidebar() ? 1 : 0;
     const int startrow = 0;
 
     int newseen = 0;
@@ -6458,8 +6212,6 @@ void game::examine( const tripoint &examp )
             m.has_flag( "CONTAINER", examp ) && none ) {
             add_msg( _( "It is empty." ) );
         } else {
-            // mytest
-            // draw_sidebar_messages();
             sounds::process_sound_markers( &u );
             Pickup::pick_up( examp, 0 );
         }
@@ -6896,10 +6648,7 @@ void game::zones_manager()
 
     int zone_ui_height = 12;
     int zone_options_height = 7;
-    // mytest
-    //    const int width = use_narrow_sidebar() ? 45 : 55;
-    //    const int offsetX = right_sidebar ? TERMX - VIEW_OFFSET_X - width :
-    //                        VIEW_OFFSET_X;
+
     const int width = 45;
     const int offsetX = VIEW_OFFSET_X;
     catacurses::window w_zones = catacurses::newwin( TERMY - 2 - zone_ui_height - VIEW_OFFSET_Y * 2,
@@ -7405,7 +7154,7 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
 
     bool bNewWindow = false;
     if( !w_info ) {
-        w_info = catacurses::newwin( getmaxy( w_messages ), lookWidth, lookY, lookX );
+        w_info = catacurses::newwin( 13, 32, 39, 88 ); //getmaxy( w_messages ), lookWidth, lookY, lookX );
         bNewWindow = true;
     }
 
@@ -7457,36 +7206,16 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
                 static const std::string full_title = string_format( "%s%s%s", title_prefix, title, title_suffix );
                 const int start_pos = center_text_pos( full_title.c_str(), 0, getmaxx( w_info ) - 1 );
                 mvwprintz( w_info, 0, start_pos, c_white, title_prefix );
-                wprintz( w_info, c_green, title );
+                wprintz( w_info, c_blue, title );
                 wprintz( w_info, c_white, title_suffix );
 
-                nc_color clr = c_white;
-                std::string colored_key = string_format( "<color_light_green>%s</color>",
-                                          ctxt.get_desc( "EXTENDED_DESCRIPTION", 1 ).c_str() );
-                print_colored_text( w_info, getmaxy( w_info ) - 2, 2, clr, clr,
-                                    string_format( _( "Press %s to view extended description" ),
-                                                   colored_key.c_str() ) );
-                colored_key = string_format( "<color_light_green>%s</color>",
-                                             ctxt.get_desc( "LIST_ITEMS", 1 ).c_str() );
-                print_colored_text( w_info, getmaxy( w_info ) - 1, 2, clr, clr,
-                                    string_format( _( "Press %s to list items and monsters" ),
-                                                   colored_key.c_str() ) );
-                if( peeking ) {
-                    colored_key = string_format( "<color_light_green>%s</color>", ctxt.get_desc( "throw_blind",
-                                                 1 ).c_str() );
-                    print_colored_text( w_info, getmaxy( w_info ) - 3, 2, clr, clr,
-                                        string_format( _( "Press %s to blind throw" ), colored_key.c_str() ) );
-                }
-
                 int first_line = 1;
-                const int last_line = getmaxy( w_messages ) - 2;
+                const int last_line = getmaxy( w_info ) - 2;
                 pre_print_all_tile_info( lp, w_info, first_line, last_line, cache );
                 if( fast_scroll ) {
                     //~ "Fast Scroll" mark below the top right corner of the info window
                     right_print( w_info, 1, 0, c_light_green, _( "F" ) );
                 }
-
-                wrefresh( w_info );
             }
 
             draw_ter( center, true );
@@ -7515,7 +7244,11 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
             //Draw select cursor
             g->draw_cursor( lp );
 
+            // redraw terrain then look_around and panels
             wrefresh( w_terrain );
+            draw_panels();
+            wrefresh( w_info );
+
         }
 
         if( select_zone && has_first_point ) {
@@ -7569,8 +7302,6 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
             }
         } else if( action == "EXTENDED_DESCRIPTION" ) {
             extended_description( lp );
-            // mytest
-            // draw_sidebar();
         } else if( action == "CENTER" ) {
             center = start_point;
             lp = start_point;
@@ -7723,8 +7454,6 @@ void game::draw_trail_to_square( const tripoint &t, bool bDrawX )
 //helper method so we can keep list_items shorter
 void game::reset_item_list_state( const catacurses::window &window, int height, bool bRadiusSort )
 {
-    // mytest
-    // const int width = use_narrow_sidebar() ? 45 : 55;
     const int width = 55;
     for( int i = 1; i < TERMX; i++ ) {
         if( i < width ) {
@@ -7930,9 +7659,6 @@ void game::list_items_monsters()
 game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
 {
     int iInfoHeight = std::min( 25, TERMY / 2 );
-    // mytest
-    //    const int width = use_narrow_sidebar() ? 45 : 55;
-    //    const int offsetX = right_sidebar ? TERMX - VIEW_OFFSET_X - width : VIEW_OFFSET_X;
     const int width = 55;
     const int offsetX = VIEW_OFFSET_X;
 
@@ -8305,10 +8031,6 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
 game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list )
 {
     int iInfoHeight = 12;
-    // mytest
-    //    const int width = use_narrow_sidebar() ? 45 : 55;
-    //    const int offsetX = right_sidebar ? TERMX - VIEW_OFFSET_X - width :
-    //                        VIEW_OFFSET_X;
     const int width = 55;
     const int offsetX = VIEW_OFFSET_X;
     catacurses::window w_monsters = catacurses::newwin( TERMY - 2 - iInfoHeight - VIEW_OFFSET_Y * 2,

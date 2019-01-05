@@ -2428,7 +2428,7 @@ std::string options_manager::show( bool ingame, const bool world_options_only )
 
     if( sidebar_style_changed ) {
         if( ingame ) {
-            g->toggle_sidebar_style();
+            //g->toggle_sidebar_style();
         } else {
 #ifdef TILES
             tilecontext->reinit_minimap();

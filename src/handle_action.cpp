@@ -273,11 +273,9 @@ input_context game::get_player_input( std::string &action )
             }
 
             wrefresh( w_terrain );
-            // mytest
             g->draw_panels();
 
             if( uquit == QUIT_WATCH ) {
-                draw_sidebar();
 
                 query_popup()
                 .wait_message( c_red, _( "Press %s to accept your fate..." ), ctxt.get_desc( "QUIT" ) )
@@ -1832,7 +1830,7 @@ bool game::handle_action()
                 break;
 
             case ACTION_TOGGLE_SIDEBAR_STYLE:
-                toggle_sidebar_style();
+                // toggle_sidebar_style();
                 break;
 
             case ACTION_TOGGLE_FULLSCREEN:

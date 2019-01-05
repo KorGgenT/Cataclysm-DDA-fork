@@ -82,7 +82,8 @@ void draw_environment( const player &u, const catacurses::window &w )
     // display location
     const oter_id &cur_ter = overmap_buffer.ter( u.global_omt_location() );
     mvwprintz( w, 1, 1, c_light_gray, "Location: " );
-    wprintz( w, c_white, utf8_truncate( cur_ter->get_name(), getmaxx( w ) ) );
+    // std::string loc =
+    wprintz( w, c_white, utf8_truncate( cur_ter->get_name(), getmaxx( w ) - 13 ) );
 
     // display weather
     if( g->get_levz() < 0 ) {
@@ -234,9 +235,33 @@ std::string get_moon()
 {
     std::string moon = "";
     const int iPhase = static_cast<int>( get_moon_phase( calendar::turn ) );
-    moon = std::to_string( iPhase );
-    // std::cout << "iphase=" << iPhase << "\n";
-    // fflush( stdio );
+    if( iPhase == 0 ) {
+        moon = "New moon";
+    }
+    if( iPhase == 1 ) {
+        moon  = "Waxing crescent";
+    }
+    if( iPhase == 2 ) {
+        moon  = "Half moon";
+    }
+    if( iPhase == 3 ) {
+        moon  = "Waxing gibbous";
+    }
+    if( iPhase == 4 ) {
+        moon  = "Full moon";
+    }
+    if( iPhase == 5 ) {
+        moon  = "Waning gibbous";
+    }
+    if( iPhase == 6 ) {
+        moon  = "Half moon";
+    }
+    if( iPhase == 7 ) {
+        moon  = "Waning crescent";
+    }
+    if( iPhase == 8 ) {
+        moon  = "Dark moon";
+    }
     return moon;
 }
 

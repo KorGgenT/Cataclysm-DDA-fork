@@ -772,8 +772,8 @@ void Pickup::pick_up( const tripoint &pos, int min )
         }
     } else {
         int pickupH = maxitems + pickupBorderRows;
-        int pickupW = getmaxx( g->w_messages );
-        int pickupY = VIEW_OFFSET_Y;
+        int pickupW = 60; // getmaxx( g->w_messages );
+        int pickupY = 5; // VIEW_OFFSET_Y;
         int pickupX = getbegx( g->w_messages );
 
         int itemsW = pickupW;
