@@ -986,6 +986,7 @@ class game
         void set_npcs_dirty();
         /** If invoked, dead will be cleaned this turn. */
         void set_critter_died();
+        int  mon_info( const catacurses::window & ); // Prints a list of nearby monsters
     private:
         void wield();
         void wield( int pos ); // Wield a weapon  'w'
@@ -1044,7 +1045,7 @@ class game
         void monmove();          // Monster movement
         void process_activity(); // Processes and enacts the player's activity
         void update_weather();   // Updates the temperature and weather patten
-        int  mon_info( const catacurses::window & ); // Prints a list of nearby monsters
+        // int  mon_info( const catacurses::window & ); // Prints a list of nearby monsters
         void handle_key_blocking_activity(); // Abort reading etc.
         bool handle_action();
         bool try_get_right_click_action( action_id &act, const tripoint &mouse_target );

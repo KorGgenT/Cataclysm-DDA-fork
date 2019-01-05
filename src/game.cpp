@@ -3556,12 +3556,14 @@ void game::draw_panels()
     //    refresh_all();
 
     draw_character( u, w_panel1 );
-    draw_environment( u, w_panel2 );
-    draw_messages( w_panel3 );
-    //draw_compass( w_panel4 );
+
     if( pixel_minimap_option ) {
-        draw_modifiers( u, w_panel4 );
+        draw_compass( w_panel2 );
+    } else {
+        draw_environment( u, w_panel2 );
     }
+    draw_messages( w_panel3 );
+    draw_modifiers( u, w_panel4 );
     // draw_mminimap( w_panel5 );
     // draw_lookaround();
 }
@@ -4107,10 +4109,10 @@ std::vector<monster *> game::get_fishable( int distance, const tripoint &fish_po
 // make optimal use of space.
 int game::mon_info( const catacurses::window &w )
 {
-    const int width = getmaxx( w );
-    const int maxheight = 12;
+    const int width = getmaxx( w ) - 2;
+    const int maxheight = getmaxy( w ) - 2;
 
-    const int startrow = 0;
+    const int startrow = 2;
 
     int newseen = 0;
     const int iProxyDist = ( get_option<int>( "SAFEMODEPROXIMITY" ) <= 0 ) ? MAX_VIEW_DISTANCE :
@@ -4316,7 +4318,7 @@ int game::mon_info( const catacurses::window &w )
     for( int i = 0; i < 8; i++ ) {
         nc_color c = unique_types[i].empty() && unique_mons[i].empty() ? c_dark_gray
                      : ( dangerous[i] ? c_light_red : c_light_gray );
-        mvwprintz( w, ycoords[i] + startrow, xcoords[i], c, dir_labels[i].c_str() );
+        mvwprintz( w, ycoords[i] + startrow, xcoords[i] + 1, c, dir_labels[i].c_str() );
     }
 
     // Print the symbols of all monsters in all directions.
@@ -4365,7 +4367,7 @@ int game::mon_info( const catacurses::window &w )
 
     // Start printing monster names on row 4. Rows 0-2 are for labels, and row 3
     // is blank.
-    point pr( 0, 4 + startrow );
+    point pr( 1, 4 + startrow );
 
     int lastrowprinted = 2 + startrow;
 
@@ -4390,7 +4392,7 @@ int game::mon_info( const catacurses::window &w )
             // Move to the next row if necessary. (The +2 is for the "Z ").
             if( pr.x + 2 + utf8_width( name ) >= width ) {
                 pr.y++;
-                pr.x = 0;
+                pr.x = 1;
             }
 
             if( pr.y < maxheight ) { // Don't print if we've overflowed

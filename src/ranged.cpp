@@ -1248,6 +1248,7 @@ std::vector<tripoint> target_handler::target_ui( player &pc, target_mode mode,
 
         wrefresh( w_target );
         wrefresh( g->w_terrain );
+        g->draw_panels();
         catacurses::refresh();
 
         std::string action;

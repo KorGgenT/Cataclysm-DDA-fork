@@ -160,8 +160,7 @@ void draw_messages( const catacurses::window &w )
     decorate_panel( title, w );
     int line = getmaxy( w ) - 2;
     int maxlength = getmaxx( w );
-    Messages::display_messages( w, 1, 1 /*topline*/, maxlength -
-                                1, line );
+    Messages::display_messages( w, 1, 1 /*topline*/, maxlength - 1, line );
     wrefresh( w );
 }
 
@@ -186,16 +185,18 @@ void draw_compass( const catacurses::window &w )
     // compass panel
     const std::string title = _( "Compass" );
     decorate_panel( title, w );
+
+    mvwprintz( w, 10,   2, c_light_gray, std::to_string( g->mon_info( w ) ) );
     // const std::string compass = "";
-    mvwprintz( w, 1,   1, c_light_gray, "Detected : No  |  Total : 0" );
-    mvwprintz( w, 2,  11, c_light_gray, " " );
-    mvwprintz( w, 4,  11, c_light_gray, " _   |   _ " );
-    mvwprintz( w, 5,  11, c_light_gray, "  \\_ N _/ " );
-    mvwprintz( w, 6,  11, c_light_gray, "  /  |  \\ " );
-    mvwprintz( w, 7,  11, c_light_gray, " W --+-- E " );
-    mvwprintz( w, 8,  11, c_light_gray, "  \\_ | _/ " );
-    mvwprintz( w, 9,  11, c_light_gray, " _/  S  \\_" );
-    mvwprintz( w, 10, 11, c_light_gray, "     |     " );
+    //    mvwprintz( w, 1,   1, c_light_gray, "Detected : No  |  Total : 0" );
+    //    mvwprintz( w, 2,  11, c_light_gray, " " );
+    //    mvwprintz( w, 4,  11, c_light_gray, " _   |   _ " );
+    //    mvwprintz( w, 5,  11, c_light_gray, "  \\_ N _/ " );
+    //    mvwprintz( w, 6,  11, c_light_gray, "  /  |  \\ " );
+    //    mvwprintz( w, 7,  11, c_light_gray, " W --+-- E " );
+    //    mvwprintz( w, 8,  11, c_light_gray, "  \\_ | _/ " );
+    //    mvwprintz( w, 9,  11, c_light_gray, " _/  S  \\_" );
+    //    mvwprintz( w, 10, 11, c_light_gray, "     |     " );
 
     wrefresh( w );
 }

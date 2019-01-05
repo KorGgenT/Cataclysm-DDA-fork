@@ -973,7 +973,7 @@ void Pickup::pick_up( const tripoint &pos, int min )
                     start = 0;
                     iScrollPos = 0;
                 }
-                // wrefresh( g->w_terrain );
+                wrefresh( g->w_terrain );
                 g->draw_panels();
             }
             item &selected_item = stacked_here[matches[selected]].begin()->_item;
