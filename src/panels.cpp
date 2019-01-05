@@ -17,6 +17,10 @@
 #include <cmath>
 #include <string>
 
+#ifdef TILES
+#include "cata_tiles.h"
+#endif // TILES
+
 static const trait_id trait_SELFAWARE( "SELFAWARE" );
 
 // ===============================
@@ -177,6 +181,7 @@ void draw_mminimap( const catacurses::window &w )
     // minimap panel
     const std::string title = _( "Minimap" );
     decorate_panel( title, w );
+    // mvwputch( w, 0, 0, c_black, ' ' );
     wrefresh( w );
 }
 
@@ -186,7 +191,9 @@ void draw_compass( const catacurses::window &w )
     const std::string title = _( "Compass" );
     decorate_panel( title, w );
 
-    mvwprintz( w, 10,   2, c_light_gray, std::to_string( g->mon_info( w ) ) );
+    g->mon_info( w );
+    // mvwprintz( w, 10,   2, c_light_gray, std::to_string( g->mon_info( w ) ) );
+    // wprintz( w, c_light_gray, std::to_string( g->mon_info( w ) ) );
     // const std::string compass = "";
     //    mvwprintz( w, 1,   1, c_light_gray, "Detected : No  |  Total : 0" );
     //    mvwprintz( w, 2,  11, c_light_gray, " " );

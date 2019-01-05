@@ -4,6 +4,7 @@
 #include "color.h"
 #include <string>
 
+
 class player;
 namespace catacurses
 {

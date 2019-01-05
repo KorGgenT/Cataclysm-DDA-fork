@@ -17,6 +17,7 @@
 #include "loading_ui.h"
 #include "options.h"
 #include "output.h"
+#include "panels.h"
 #include "path_info.h"
 #include "player.h"
 #include "rng.h"
@@ -967,14 +968,14 @@ void cata_cursesport::curses_drawwindow( const catacurses::window &w )
         int wheight = win->height * font->fontheight;
         FillRectDIB( offsetx, offsety, wwidth, wheight, catacurses::black );
         update = true;
-    } else if (g && w == g->w_pixel_minimap && g->pixel_minimap_option) {
+    } else if (g && w == g->w_panel1 && g->pixel_minimap_option) {
         // Make sure the entire minimap window is black before drawing.
-//        clear_window_area( w );
-//        tilecontext->draw_minimap(
-//            win->x * fontwidth, win->y * fontheight,
-//            tripoint( g->u.pos().x, g->u.pos().y, g->ter_view_z ),
-//            win->width * font->fontwidth, win->height * font->fontheight);
-//        update = true;
+        clear_window_area( w );
+            tilecontext->draw_minimap(
+                win->x * fontwidth, win->y * fontheight,
+                tripoint( g->u.pos().x, g->u.pos().y, g->ter_view_z ),
+                win->width * font->fontwidth, win->height * font->fontheight);
+        update = true;
     } else {
         // Either not using tiles (tilecontext) or not the w_terrain window.
         update = font->draw_window( w );

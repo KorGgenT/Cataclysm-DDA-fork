@@ -3548,18 +3548,11 @@ void game::draw()
 
 void game::draw_panels()
 {
-    //    if( pixel_minimap_option ) {
-    //        clear_window_area( w_pixel_minimap );
-    //    }
-    //    pixel_minimap_option = !pixel_minimap_option;
-    //    init_ui();
-    //    refresh_all();
-
-    draw_character( u, w_panel1 );
-
     if( pixel_minimap_option ) {
+        draw_mminimap( w_panel1 );
         draw_compass( w_panel2 );
     } else {
+        draw_character( u, w_panel1 );
         draw_environment( u, w_panel2 );
     }
     draw_messages( w_panel3 );
@@ -3572,11 +3565,12 @@ void game::draw_pixel_minimap()
 {
     // Force a refresh of the pixel minimap.
     // only do so if it is in use
-    if( pixel_minimap_option && w_pixel_minimap ) {
-        werase( w_pixel_minimap );
+    if( pixel_minimap_option && w_panel1 ) {
+        // werase( w_panel1 );
         //trick window into rendering
-        mvwputch( w_pixel_minimap, 0, 0, c_black, ' ' );
-        wrefresh( w_pixel_minimap );
+        // mvwputch( w_panel1, 0, 0, c_black, ' ' );
+        //wrefresh( w_panel1 );
+
     }
 }
 
@@ -4107,7 +4101,7 @@ std::vector<monster *> game::get_fishable( int distance, const tripoint &fish_po
 // Print monster info to the given window, and return the lowest row (0-indexed)
 // to which we printed. This is used to share a window with the message log and
 // make optimal use of space.
-int game::mon_info( const catacurses::window &w )
+void game::mon_info( const catacurses::window &w )
 {
     const int width = getmaxx( w ) - 2;
     const int maxheight = getmaxy( w ) - 2;
@@ -4369,7 +4363,8 @@ int game::mon_info( const catacurses::window &w )
     // is blank.
     point pr( 1, 4 + startrow );
 
-    int lastrowprinted = 2 + startrow;
+    //    int lastrowprinted = 0;
+    //    lastrowprinted = 2 + startrow;
 
     // Print monster names, starting with those at location 8 (nearby).
     for( int j = 8; j >= 0 && pr.y < maxheight; j-- ) {
@@ -4396,7 +4391,7 @@ int game::mon_info( const catacurses::window &w )
             }
 
             if( pr.y < maxheight ) { // Don't print if we've overflowed
-                lastrowprinted = pr.y;
+                // lastrowprinted = pr.y;
                 mvwprintz( w, pr.y, pr.x, mt.color, mt.sym );
                 pr.x += 2; // symbol and space
                 nc_color danger = c_dark_gray;
@@ -4415,7 +4410,7 @@ int game::mon_info( const catacurses::window &w )
         }
     }
 
-    return lastrowprinted;
+    // return 88; // lastrowprinted;
 }
 
 void game::cleanup_dead()
@@ -7158,8 +7153,8 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
 
     draw_ter( center );
     wrefresh( w_terrain );
+    // draw_pixel_minimap();
     draw_panels();
-    draw_pixel_minimap();
 
     int soffset = get_option<int>( "MOVE_VIEW_OFFSET" );
     bool fast_scroll = false;

@@ -986,7 +986,7 @@ class game
         void set_npcs_dirty();
         /** If invoked, dead will be cleaned this turn. */
         void set_critter_died();
-        int  mon_info( const catacurses::window & ); // Prints a list of nearby monsters
+        void mon_info( const catacurses::window & ); // Prints a list of nearby monsters
     private:
         void wield();
         void wield( int pos ); // Wield a weapon  'w'

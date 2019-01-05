@@ -286,7 +286,7 @@ input_context game::get_player_input( std::string &action )
             }
 
             //updating the pixel minimap here allows red flashing indicators for enemies to actually flicker
-            draw_pixel_minimap();
+            // draw_pixel_minimap();
         }
         ctxt.reset_timeout();
     } else {
