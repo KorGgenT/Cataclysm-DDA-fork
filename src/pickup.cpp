@@ -893,6 +893,7 @@ void Pickup::pick_up( const tripoint &pos, int min )
                     filter_changed = true;
                 } else {
                     wrefresh( g->w_terrain );
+                    g->draw_panels();
                 }
             } else if( action == "ANY_INPUT" && raw_input_char == '`' ) {
                 std::string ext = string_input_popup()
@@ -950,6 +951,7 @@ void Pickup::pick_up( const tripoint &pos, int min )
                     if( matches.empty() ) {
                         popup( _( "Your filter returned no results" ) );
                         wrefresh( g->w_terrain );
+                        g->draw_panels();
                         // The filter must have results, or simply be emptied or canceled,
                         // as this screen can't be reached without there being
                         // items available

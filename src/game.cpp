@@ -3158,6 +3158,7 @@ void game::debug()
                 mvwputch( w_terrain, offset.y + sound.y, offset.x + sound.x, c_red, '?' );
             }
             wrefresh( w_terrain );
+            draw_panels();
             inp_mngr.wait_for_any_key();
 #else
             popup( _( "This binary was not compiled with tiles support." ) );
@@ -3553,6 +3554,7 @@ void game::draw_panels()
     //    pixel_minimap_option = !pixel_minimap_option;
     //    init_ui();
     //    refresh_all();
+
     draw_character( u, w_panel1 );
     draw_environment( u, w_panel2 );
     draw_messages( w_panel3 );
@@ -6074,7 +6076,7 @@ void game::examine()
     // redraw terrain to erase 'examine' window
     draw_ter();
     wrefresh( w_terrain );
-
+    draw_panels();
     examine( *examp_ );
 }
 
@@ -6193,6 +6195,7 @@ void game::examine( const tripoint &examp )
         iexamine::trap( u, examp );
         draw_ter();
         wrefresh( w_terrain );
+        draw_panels();
     }
 
     // In case of teleport trap or somesuch
@@ -6246,6 +6249,7 @@ void game::peek()
             draw_ter();
         }
         wrefresh( w_terrain );
+        draw_panels();
         return;
     }
 
@@ -6272,6 +6276,7 @@ void game::peek( const tripoint &p )
 
     draw_ter();
     wrefresh( w_terrain );
+    draw_panels();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 cata::optional<tripoint> game::look_debug()
@@ -6870,6 +6875,7 @@ void game::zones_manager()
 
                     draw_ter();
                     wrefresh( w_terrain );
+                    draw_panels();
                 }
                 blink = false;
                 redraw_info = true;
@@ -7085,6 +7091,7 @@ void game::zones_manager()
         wrefresh( w_terrain );
         wrefresh( w_zones );
         wrefresh( w_zones_border );
+        draw_panels();
 
         //Wait for input
         action = ctxt.handle_input();
@@ -7149,7 +7156,7 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
 
     draw_ter( center );
     wrefresh( w_terrain );
-
+    draw_panels();
     draw_pixel_minimap();
 
     int soffset = get_option<int>( "MOVE_VIEW_OFFSET" );
@@ -7252,7 +7259,7 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
             //Draw select cursor
             g->draw_cursor( lp );
 
-            // redraw terrain then look_around and panels
+            // redraw order: terrain, panels, look_around panel
             wrefresh( w_terrain );
             draw_panels();
             wrefresh( w_info );
@@ -7457,6 +7464,7 @@ void game::draw_trail_to_square( const tripoint &t, bool bDrawX )
     }
 
     wrefresh( w_terrain );
+    draw_panels();
 }
 
 //helper method so we can keep list_items shorter
@@ -7888,6 +7896,7 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
         if( action == "HELP_KEYBINDINGS" ) {
             game::draw_ter();
             wrefresh( w_terrain );
+            draw_panels();
         } else if( action == "UP" ) {
             do {
                 iActive--;
@@ -8115,6 +8124,7 @@ game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list
         if( action == "HELP_KEYBINDINGS" ) {
             game::draw_ter();
             wrefresh( w_terrain );
+            draw_panels();
         } else if( action == "UP" ) {
             iActive--;
             if( iActive < 0 ) {
@@ -8930,6 +8940,7 @@ bool game::plfire()
     }
     draw_ter(); // Recenter our view
     wrefresh( w_terrain );
+    draw_panels();
 
     int shots = 0;
 
@@ -9379,6 +9390,7 @@ void game::butcher()
             butcher_submenu( items, corpses, indexer_index );
             draw_ter();
             wrefresh( w_terrain );
+            draw_panels();
             u.activity.values.push_back( corpses[indexer_index] );
         }
         break;
@@ -12363,6 +12375,7 @@ void game::display_scent()
     draw_ter();
     scent.draw( w_terrain, div * 2, u.pos() + u.view_offset );
     wrefresh( w_terrain );
+    draw_panels();
     inp_mngr.wait_for_any_key();
 }
 

@@ -569,6 +569,7 @@ void editmap::update_view( bool update_info )
     }
 
     wrefresh( g->w_terrain );
+    g->draw_panels();
 
     if( update_info ) {  // only if requested; this messes up windows layered on top
         int off = 1;
@@ -1356,6 +1357,7 @@ int editmap::edit_itm()
                 }
                 g->draw_ter( target );
                 wrefresh( g->w_terrain );
+                g->draw_panels();
             } while( imenu.ret != UILIST_CANCEL );
             update_view( true );
         } else if( ilmenu.ret == static_cast<int>( items.size() ) ) {
@@ -1674,6 +1676,7 @@ int editmap::mapgen_preview( real_coords &tc, uilist &gmenu )
         if( showpreview ) {
             hilights["mapgentgt"].draw( *this, true );
             wrefresh( g->w_terrain );
+            g->draw_panels();
             tmpmap.reset_vehicle_cache( target.z );
             for( int x = 0; x < 24; x++ ) {
                 for( int y = 0; y < 24; y++ ) {

@@ -953,6 +953,7 @@ static void reach_attach( int range, player &u )
     }
     g->draw_ter();
     wrefresh( g->w_terrain );
+    g->draw_panels();
     g->reenter_fullscreen();
 }
 
