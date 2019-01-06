@@ -974,7 +974,7 @@ void cata_cursesport::curses_drawwindow( const catacurses::window &w )
         tilecontext->draw_minimap(
             win->x * fontwidth, win->y * fontheight,
             tripoint( g->u.pos().x, g->u.pos().y, g->ter_view_z ),
-            win->width * font->fontwidth, win->height * font->fontheight);
+            win->width * font->fontwidth, win->height * font->fontheight );
 
         update = true;
 

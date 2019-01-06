@@ -773,15 +773,19 @@ void Pickup::pick_up( const tripoint &pos, int min )
     } else {
         int pickupH = maxitems + pickupBorderRows;
         int pickupW = 60; // getmaxx( g->w_messages );
-        int pickupY = 10; // VIEW_OFFSET_Y;
-        int pickupX = getbegx( g->w_messages );
+        // int pickupY = 10; // VIEW_OFFSET_Y;
+        // int pickupX = getbegx( g->w_messages );
 
         int itemsW = pickupW;
-        int itemsY = pickupY + pickupH;
-        int itemsX = pickupX;
+        // int itemsY = pickupY + pickupH;
+        // int itemsX = pickupX;
 
-        catacurses::window w_pickup = catacurses::newwin( pickupH, pickupW, pickupY, pickupX );
-        catacurses::window w_item_info = catacurses::newwin( itemsH,  itemsW,  itemsY,  itemsX );
+        // catacurses::window w_pickup = catacurses::newwin( pickupH, pickupW, pickupY, pickupX );
+        // catacurses::window w_item_info = catacurses::newwin( itemsH,  itemsW,  itemsY,  itemsX );
+
+        catacurses::window w_pickup = catacurses::newwin( pickupH, 32, 0, 88 );
+        catacurses::window w_item_info = catacurses::newwin( TERMY - pickupH,
+                                         32,  pickupH,  88 );
 
         std::string action;
         long raw_input_char = ' ';
@@ -807,7 +811,7 @@ void Pickup::pick_up( const tripoint &pos, int min )
         int start = 0;
         int cur_it = 0;
         bool update = true;
-        mvwprintw( w_pickup, 0, 0, _( "PICK UP" ) );
+        mvwprintw( w_pickup, 0, 0, _( "PICK" ) );
         int selected = 0;
         int iScrollPos = 0;
 
@@ -1120,13 +1124,13 @@ void Pickup::pick_up( const tripoint &pos, int min )
                 auto weight_predict = g->u.weight_carried() + weight_picked_up;
                 auto volume_predict = g->u.volume_carried() + volume_picked_up;
 
-                mvwprintz( w_pickup, 0, 9, weight_predict > g->u.weight_capacity() ? c_red : c_white,
+                mvwprintz( w_pickup, 0, 5, weight_predict > g->u.weight_capacity() ? c_red : c_white,
                            _( "Wgt %.1f" ), round_up( convert_weight( weight_predict ), 1 ) );
 
                 wprintz( w_pickup, c_white, "/%.1f", round_up( convert_weight( g->u.weight_capacity() ), 1 ) );
 
                 std::string fmted_volume_predict = format_volume( volume_predict );
-                mvwprintz( w_pickup, 0, 24, volume_predict > g->u.volume_capacity() ? c_red : c_white,
+                mvwprintz( w_pickup, 0, 18, volume_predict > g->u.volume_capacity() ? c_red : c_white,
                            _( "Vol %s" ), fmted_volume_predict.c_str() );
 
                 std::string fmted_volume_capacity = format_volume( g->u.volume_capacity() );

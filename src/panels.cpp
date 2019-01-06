@@ -153,8 +153,22 @@ void draw_modifiers( const player &u, const catacurses::window &w )
     mvwprintz( w, 4,  11, rest_pair.first, rest_pair.second );
     mvwprintz( w, 5,  11, pain_pair.first, pain_pair.second );
     mvwprintz( w, 6,  11, temp_pair.first, temp_pair.second );
-
+    mvwprintz( w, 8,  11, c_light_gray, get_armor( u, bp_head ) );
+    mvwprintz( w, 9,  11, c_light_gray, get_armor( u, bp_torso ) );
+    mvwprintz( w, 10, 11, c_light_gray, get_armor( u, bp_leg_r ) );
+    mvwprintz( w, 11, 11, c_light_gray, get_armor( u, bp_foot_r ) );
     wrefresh( w );
+}
+
+std::string get_armor( const player &u, body_part bp )
+{
+    for( std::list<item>::const_iterator it = u.worn.end(); it != u.worn.begin(); ) {
+        --it;
+        if( it->covers( bp ) ) {
+            return it->display_name();
+        }
+    }
+    return "-";
 }
 
 void draw_messages( const catacurses::window &w )

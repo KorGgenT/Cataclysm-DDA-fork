@@ -604,9 +604,15 @@ void game::init_ui( const bool resized )
                                             _x + messX );
     werase( w_messages_long );
 
+#ifdef TILES
+    // pmc= pixel minimap custom height
+    //    int pmc_height = 0;
+    //    pmc_height = get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) > 0;
+#endif // TILES
+
     //    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( pixelminimapH, pixelminimapW,
     //                                            _y + pixelminimapY, _x + pixelminimapX );
-    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( 11, 30, 1, 89 );
+    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( 12, 32, 1, 88 );
     werase( w_pixel_minimap );
 
     w_messages = w_messages_short;
@@ -7674,8 +7680,8 @@ void game::list_items_monsters()
 game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
 {
     int iInfoHeight = std::min( 25, TERMY / 2 );
-    const int width = 55;
-    const int offsetX = VIEW_OFFSET_X;
+    const int width = 32; //55;
+    const int offsetX = 88; //VIEW_OFFSET_X;
 
     catacurses::window w_items = catacurses::newwin( TERMY - 2 - iInfoHeight - VIEW_OFFSET_Y * 2,
                                  width - 2, VIEW_OFFSET_Y + 1, offsetX + 1 );
@@ -7684,6 +7690,8 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
     catacurses::window w_item_info = catacurses::newwin( iInfoHeight, width,
                                      TERMY - iInfoHeight - VIEW_OFFSET_Y, offsetX );
 
+    //    std::cout << "maxy=" << getmaxy( g->w_terrain ) << "pkH=" << pickupH << "\n";
+    //    fflush( stdout );
     // use previously selected sorting method
     bool sort_radius = uistate.list_item_sort != 2;
     bool addcategory = !sort_radius;
@@ -8047,8 +8055,8 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
 game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list )
 {
     int iInfoHeight = 12;
-    const int width = 55;
-    const int offsetX = VIEW_OFFSET_X;
+    const int width = 32; //55;
+    const int offsetX = 88; //VIEW_OFFSET_X;
     catacurses::window w_monsters = catacurses::newwin( TERMY - 2 - iInfoHeight - VIEW_OFFSET_Y * 2,
                                     width - 2, VIEW_OFFSET_Y + 1, offsetX + 1 );
     catacurses::window w_monsters_border = catacurses::newwin( TERMY - iInfoHeight - VIEW_OFFSET_Y * 2,
