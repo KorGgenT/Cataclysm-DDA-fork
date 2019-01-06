@@ -183,7 +183,6 @@ void draw_mminimap( const catacurses::window &w )
     decorate_panel( title, w );
     wrefresh( w );
     g->draw_pixel_minimap();
-
 }
 
 void draw_compass( const catacurses::window &w )
@@ -191,10 +190,8 @@ void draw_compass( const catacurses::window &w )
     // compass panel
     const std::string title = _( "Compass" );
     decorate_panel( title, w );
-
     g->mon_info( w );
-    // mvwprintz( w, 10,   2, c_light_gray, std::to_string( g->mon_info( w ) ) );
-    // wprintz( w, c_light_gray, std::to_string( g->mon_info( w ) ) );
+
     // const std::string compass = "";
     //    mvwprintz( w, 1,   1, c_light_gray, "Detected : No  |  Total : 0" );
     //    mvwprintz( w, 2,  11, c_light_gray, " " );

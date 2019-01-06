@@ -214,10 +214,10 @@ extern bool add_key_to_quick_shortcuts( long key, const std::string &category, b
 
 //The one and only game instance
 std::unique_ptr<game> g;
-//#ifdef TILES
+#ifdef TILES
 extern std::unique_ptr<cata_tiles> tilecontext;
 extern void toggle_fullscreen_window();
-//#endif // TILES
+#endif // TILES
 
 uistatedata uistate;
 
