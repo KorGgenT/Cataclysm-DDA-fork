@@ -1831,7 +1831,7 @@ bool game::handle_action()
                 break;
 
             case ACTION_TOGGLE_SIDEBAR_STYLE:
-                // toggle_sidebar_style();
+                toggle_sidebar_style();
                 break;
 
             case ACTION_TOGGLE_FULLSCREEN:

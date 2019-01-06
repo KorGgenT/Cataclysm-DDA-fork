@@ -858,6 +858,7 @@ class game
         void set_safe_mode( safe_mode_type mode );
 
         bool narrow_sidebar;
+        bool bleh;
         bool right_sidebar;
         bool fullscreen;
         bool was_fullscreen;

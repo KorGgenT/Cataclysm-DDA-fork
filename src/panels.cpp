@@ -153,10 +153,10 @@ void draw_modifiers( const player &u, const catacurses::window &w )
     mvwprintz( w, 4,  11, rest_pair.first, rest_pair.second );
     mvwprintz( w, 5,  11, pain_pair.first, pain_pair.second );
     mvwprintz( w, 6,  11, temp_pair.first, temp_pair.second );
-    mvwprintz( w, 8,  11, c_light_gray, get_armor( u, bp_head ) );
-    mvwprintz( w, 9,  11, c_light_gray, get_armor( u, bp_torso ) );
-    mvwprintz( w, 10, 11, c_light_gray, get_armor( u, bp_leg_r ) );
-    mvwprintz( w, 11, 11, c_light_gray, get_armor( u, bp_foot_r ) );
+    mvwprintz( w, 8,  11, c_light_gray, utf8_truncate( get_armor( u, bp_head ), getmaxx( w ) - 2 ) );
+    mvwprintz( w, 9,  11, c_light_gray, utf8_truncate( get_armor( u, bp_torso ), getmaxx( w ) - 2 ) );
+    mvwprintz( w, 10, 11, c_light_gray, utf8_truncate( get_armor( u, bp_leg_r ), getmaxx( w ) - 13 ) );
+    mvwprintz( w, 11, 11, c_light_gray, utf8_truncate( get_armor( u, bp_foot_r ), getmaxx( w ) - 2 ) );
     wrefresh( w );
 }
 

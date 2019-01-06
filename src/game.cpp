@@ -266,10 +266,11 @@ void game::load_static_data()
     inp_mngr.init();            // Load input config JSON
     // Init mappings for loading the json stuff
     DynamicDataLoader::get_instance();
-    //    narrow_sidebar = get_option<std::string>( "SIDEBAR_STYLE" ) == "narrow";
+    narrow_sidebar = get_option<std::string>( "SIDEBAR_STYLE" ) == "narrow";
     //    right_sidebar = get_option<std::string>( "SIDEBAR_POSITION" ) == "right";
     fullscreen = false;
     was_fullscreen = false;
+    bleh = false;
 
     // These functions do not load stuff from json.
     // The content they load/initialize is hardcoded into the program.
@@ -653,6 +654,18 @@ void game::init_ui( const bool resized )
     }
 }
 
+void game::toggle_sidebar_style()
+{
+    //    bleh = !bleh;
+    //    std::cout << "blehzzz=" << bleh << "\n";
+    //    fflush( stdout );
+    narrow_sidebar = !narrow_sidebar;
+    //#ifdef TILES
+    //    tilecontext->reinit_minimap();
+    //#endif // TILES
+    //    init_ui();
+    //    refresh_all();
+}
 
 void game::toggle_fullscreen()
 {
@@ -2332,6 +2345,7 @@ input_context get_default_mode_input_context()
     ctxt.register_action( "debug_mode" );
     ctxt.register_action( "zoom_out" );
     ctxt.register_action( "zoom_in" );
+    ctxt.register_action( "toggle_sidebar_style" );
 #ifndef __ANDROID__
     ctxt.register_action( "toggle_fullscreen" );
 #endif
@@ -3552,22 +3566,25 @@ void game::draw()
     draw_ter();
     wrefresh( w_terrain );
     draw_panels();
-    draw_pixel_minimap();
+    //draw_pixel_minimap();
 }
+
 
 void game::draw_panels()
 {
-    if( pixel_minimap_option ) {
-        draw_mminimap( w_panel1 );
-        draw_compass( w_panel2 );
-    } else {
-        draw_character( u, w_panel1 );
-        draw_environment( u, w_panel2 );
+    if( narrow_sidebar ) {
+        if( pixel_minimap_option ) {
+            draw_mminimap( w_panel1 );
+            draw_compass( w_panel2 );
+        } else {
+            draw_character( u, w_panel1 );
+            draw_environment( u, w_panel2 );
+        }
+        draw_messages( w_panel3 );
+        draw_modifiers( u, w_panel4 );
+        // draw_mminimap( w_panel5 );
+        // draw_lookaround();
     }
-    draw_messages( w_panel3 );
-    draw_modifiers( u, w_panel4 );
-    // draw_mminimap( w_panel5 );
-    // draw_lookaround();
 }
 
 void game::draw_pixel_minimap()
