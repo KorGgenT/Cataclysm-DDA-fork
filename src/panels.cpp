@@ -181,8 +181,9 @@ void draw_mminimap( const catacurses::window &w )
     // minimap panel
     const std::string title = _( "Minimap" );
     decorate_panel( title, w );
-    // mvwputch( w, 0, 0, c_black, ' ' );
     wrefresh( w );
+    g->draw_pixel_minimap();
+
 }
 
 void draw_compass( const catacurses::window &w )

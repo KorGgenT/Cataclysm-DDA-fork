@@ -15,6 +15,7 @@
 #include "coordinate_conversions.h"
 #include "coordinates.h"
 #include "creature_tracker.h"
+#include "cursesport.h"
 #include "debug.h"
 #include "debug_menu.h"
 #include "dependency_tree.h"
@@ -213,10 +214,10 @@ extern bool add_key_to_quick_shortcuts( long key, const std::string &category, b
 
 //The one and only game instance
 std::unique_ptr<game> g;
-#ifdef TILES
+//#ifdef TILES
 extern std::unique_ptr<cata_tiles> tilecontext;
 extern void toggle_fullscreen_window();
-#endif // TILES
+//#endif // TILES
 
 uistatedata uistate;
 
@@ -534,8 +535,8 @@ void game::init_ui( const bool resized )
     int stat2H = 0;
     int pixelminimapW = 0;
     int pixelminimapH = 0;
-    int pixelminimapX = 0;
-    int pixelminimapY = 0;
+    // int pixelminimapX = 0;
+    // int pixelminimapY = 0;
 
     bool pixel_minimap_custom_height = false;
 
@@ -563,8 +564,8 @@ void game::init_ui( const bool resized )
         messHshort = 9;
     }
     messHlong = TERRAIN_WINDOW_TERM_HEIGHT - ( locH + statH );
-    pixelminimapX = MINIMAP_WIDTH;
-    pixelminimapY = messHshort;
+    //pixelminimapX = MINIMAP_WIDTH;
+    //pixelminimapY = messHshort;
     hpX = 0;
     hpY = MINIMAP_HEIGHT;
     // under the minimap, but down to the same line as w_location (which is under w_messages)
@@ -603,8 +604,9 @@ void game::init_ui( const bool resized )
                                             _x + messX );
     werase( w_messages_long );
 
-    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( pixelminimapH, pixelminimapW,
-                                            _y + pixelminimapY, _x + pixelminimapX );
+    //    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( pixelminimapH, pixelminimapW,
+    //                                            _y + pixelminimapY, _x + pixelminimapX );
+    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( 11, 30, 1, 89 );
     werase( w_pixel_minimap );
 
     w_messages = w_messages_short;
@@ -3544,6 +3546,7 @@ void game::draw()
     draw_ter();
     wrefresh( w_terrain );
     draw_panels();
+    draw_pixel_minimap();
 }
 
 void game::draw_panels()
@@ -3565,12 +3568,11 @@ void game::draw_pixel_minimap()
 {
     // Force a refresh of the pixel minimap.
     // only do so if it is in use
-    if( pixel_minimap_option && w_panel1 ) {
-        // werase( w_panel1 );
+    if( pixel_minimap_option && w_pixel_minimap ) {
+        werase( w_pixel_minimap );
         //trick window into rendering
-        // mvwputch( w_panel1, 0, 0, c_black, ' ' );
-        //wrefresh( w_panel1 );
-
+        mvwputch( w_pixel_minimap, 0, 0, c_black, ' ' );
+        wrefresh( w_pixel_minimap );
     }
 }
 
@@ -4106,7 +4108,7 @@ void game::mon_info( const catacurses::window &w )
     const int width = getmaxx( w ) - 2;
     const int maxheight = getmaxy( w ) - 2;
 
-    const int startrow = 2;
+    const int startrow = 1;
 
     int newseen = 0;
     const int iProxyDist = ( get_option<int>( "SAFEMODEPROXIMITY" ) <= 0 ) ? MAX_VIEW_DISTANCE :

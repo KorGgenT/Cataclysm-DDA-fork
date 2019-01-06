@@ -2011,7 +2011,7 @@ static void refresh_tiles( bool used_tiles_changed, bool pixel_minimap_height_ch
             g->reset_zoom();
             if( ingame ) {
                 if( g->pixel_minimap_option ) {
-                    wrefresh( g->w_pixel_minimap );
+                    //  wrefresh( g->w_pixel_minimap );
                 }
                 g->refresh_all();
             }
@@ -2023,7 +2023,7 @@ static void refresh_tiles( bool used_tiles_changed, bool pixel_minimap_height_ch
     } else if( ingame && g->pixel_minimap_option && pixel_minimap_height_changed ) {
         tilecontext->reinit_minimap();
         g->init_ui();
-        wrefresh( g->w_pixel_minimap );
+        // wrefresh( g->w_pixel_minimap );
         g->refresh_all();
     }
 }
