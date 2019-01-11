@@ -442,7 +442,7 @@
     "autolearn": true,
     "qualities": [ { "id": "CUT", "level": 1 }, { "id": "COOK", "level": 2 } ],
     "tools": [ [ [ "frying_oil", 1, "LIST" ] ], [ [ "surface_heat", 8, "LIST" ] ] ],
-    "components": [ [ [ "onion", 1 ], [ "irradiated_onion", 1 ], [ [ "batter", 1, "LIST" ] ] ]
+    "components": [ [ [ "onion", 1 ], [ "irradiated_onion", 1 ] ], [ [ "batter", 1, "LIST" ] ] ]
   },
   {
     "type": "recipe",
