@@ -218,6 +218,7 @@ struct islot_pocket {
      * given no other items in container, and container is not inside another container
      */
     int moves = INVENTORY_HANDLING_PENALTY;
+    int obtain_cost();
 };
 
 struct islot_container {
