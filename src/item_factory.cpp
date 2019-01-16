@@ -1656,6 +1656,15 @@ void Item_factory::load_container( JsonObject &jo, const std::string &src )
     }
 }
 
+void Item_factory::load_pockets(JsonObject &jo, const std::string &src)
+{
+    itype def;
+    if (load_definition(jo, src, def)) {
+        load_slot(def.container_with_pockets, jo, src);
+        load_basic_info(jo, def, src);
+    }
+}
+
 void Item_factory::load( islot_seed &slot, JsonObject &jo, const std::string & )
 {
     assign( jo, "grow", slot.grow, false, 1_days );
