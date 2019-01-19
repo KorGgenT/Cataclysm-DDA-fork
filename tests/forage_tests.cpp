@@ -17,14 +17,16 @@ std::pair<int, int> forage_calories_and_items( player &p, items_location loc )
         calories_items = std::make_pair( calories_items.first + calories,
                                          calories_items.second + item->charges );
     }
+    return calories_items;
 }
 
 TEST_CASE( "forage_spring" )
 {
     player &dummy = g->u;
+    player *dummy_ptr = &dummy;
     std::pair<int, int> calories_items = std::make_pair( 0, 0 );
     for( int i = 0; i < 100; i++ ) {
-        const auto new_pair = forage_calories_and_items( &dummy, "forage_spring" );
+        const auto new_pair = forage_calories_and_items( *dummy_ptr, "forage_spring" );
         calories_items = std::make_pair( new_pair.first + calories_items.first,
                                          new_pair.second + calories_items.second );
     }
