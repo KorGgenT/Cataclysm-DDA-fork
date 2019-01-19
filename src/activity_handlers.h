@@ -6,6 +6,7 @@
 #include <map>
 #include <unordered_set>
 #include <vector>
+#include "map.h"
 
 #include "player_activity.h"
 
