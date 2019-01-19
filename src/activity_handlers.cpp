@@ -1373,7 +1373,7 @@ void activity_handlers::fish_finish( player_activity *act, player *p )
     act->set_to_null();
 }
 
-std::vector<item *> activity_handlers::find_forage_items( player *p, items_location loc )
+std::vector<item *> find_forage_items( player *p, items_location loc )
 {
     int veggy_chance = rng( 1, 100 );
     std::vector<item *> dropped;
@@ -1436,7 +1436,7 @@ void activity_handlers::forage_finish( player_activity *act, player *p )
 
     g->m.ter_set( act->placement, next_ter );
 
-    const auto dropped = activity_handlers::find_forage_items( p, loc );
+    const auto dropped = find_forage_items( p, loc );
 
     if( dropped.empty() ) {
         add_msg( _( "You didn't find anything." ) );

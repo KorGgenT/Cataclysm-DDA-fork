@@ -31,6 +31,8 @@ void activity_on_turn_move_loot( player_activity &act, player &p );
 void activity_on_turn_pickup();
 void activity_on_turn_stash();
 void try_refuel_fire( player &p );
+// finds and spawns a vector of items from an items_location
+std::vector<item *> find_forage_items(player *p, items_location loc);
 
 enum class item_drop_reason {
     deliberate,
@@ -45,8 +47,6 @@ void put_into_vehicle_or_drop( Character &c, item_drop_reason, const std::list<i
 
 namespace activity_handlers
 {
-// finds and spawns a vector of items from an items_location
-std::vector<item *> find_forage_items(player *p, items_location loc);
 
 /** activity_do_turn functions: */
 void burrow_do_turn( player_activity *act, player *p );
