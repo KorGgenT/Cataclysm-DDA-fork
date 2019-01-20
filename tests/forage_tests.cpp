@@ -70,6 +70,22 @@ std::pair<int, int> how_many_bushes( items_location loc, int survival = 0, int p
     return std::make_pair( number_of_bushes, number_of_successes );
 }
 
+// gets all harvest information from an overmap tile
+std::map<harvest_id, int> get_map_terrain_harvest( const tripoint &p )
+{
+    std::map<harvest_id, int> harvests;
+    const int mapsize = g->m.getmapsize() * SEEX;
+    tripoint t = p;
+    for( int x = 0; x < mapsize; ++x ) {
+        for( int y = 0; y < mapsize; ++y ) {
+            t.x = p.x + x;
+            t.y = p.y + y;
+            harvests.operator[]( g->m.get_harvest( t ) ) = harvests.operator[]( g->m.get_harvest( t ) ) + 1;
+        }
+    }
+    return harvests;
+}
+
 TEST_CASE( "forage_spring" )
 {
     std::pair<int, int> res;
@@ -118,9 +134,14 @@ TEST_CASE( "forage_survival_level" )
     }
 }
 
-TEST_CASE("generate_forest_spring") {
+TEST_CASE( "generate_forest_spring" )
+{
     player &dummy = g->u;
-    printf("\n\n%s\n\n", overmap_buffer.ter(dummy.global_omt_location()).id().str());
-    generate_forest_OMT(dummy.pos());
-    printf("\n\n%s\n\n", overmap_buffer.ter(dummy.global_omt_location()).id().str());
+    generate_forest_OMT( dummy.pos() );
+    std::map<harvest_id, int> map_terrain_harvest_ids = get_map_terrain_harvest( dummy.pos() );
+    printf( "\n\n" );
+    for( const auto &pair : map_terrain_harvest_ids ) {
+        printf( "%s: %i\n", pair.first.c_str(), pair.second );
+    }
+    printf( "\n" );
 }

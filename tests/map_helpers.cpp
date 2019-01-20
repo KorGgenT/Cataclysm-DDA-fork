@@ -7,6 +7,7 @@
 #include "field.h"
 #include "overmapbuffer.h"
 #include "mapgen_functions.h"
+#include "omdata.h"
 
 void wipe_map_terrain()
 {
@@ -26,19 +27,19 @@ void wipe_map_terrain()
 // generates a thick forest overmap tile. sets the adjacent tiles to thick forests as well.
 void generate_forest_OMT( const tripoint &p )
 {
-    oter_id f("forest_thick");
+    oter_id f( "forest_thick" );
     wipe_map_terrain();
-    /*
+
     // first, set current and adjacent map tils to forest_thick
     for( int x = -1; x <= 1; x++ ) {
-        for( int y = -1; y <= 2; y++ ) {
+        for( int y = -1; y <= 1; y++ ) {
             const tripoint temp_trip( p.x + x, p.y + y, p.z );
-            overmap_buffer.ter( temp_trip ).id() = f;
+            overmap_buffer.ter( temp_trip ) = f;
         }
-    }*/
-    const regional_settings &rsettings = overmap_buffer.get_settings(p.x,p.y,p.z);
-    mapgendata mgd(f, f, f, f, f, f, f, f, f, f, 0, rsettings, g->m);
-    mapgen_forest(&g->m, f, mgd, calendar::turn, 0);
+    }
+    const regional_settings &rsettings = overmap_buffer.get_settings( p.x, p.y, p.z );
+    mapgendata mgd( f, f, f, f, f, f, f, f, f, f, 0, rsettings, g->m );
+    mapgen_forest( &g->m, f, mgd, calendar::turn, 0 );
 }
 
 void clear_creatures()
