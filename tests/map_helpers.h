@@ -8,6 +8,7 @@
 
 class monster;
 
+void generate_forest_OMT(const tripoint &p);
 void wipe_map_terrain();
 void clear_creatures();
 void clear_fields( int zlevel );
