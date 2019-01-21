@@ -1622,7 +1622,7 @@ static bool harvest_common( player &p, const tripoint &examp, bool furn, bool ne
 
     std::vector<item> harvest_list = harvest_terrain( p, examp );
 
-    if( !harvest_list.empty )
+    if( !harvest_list.empty() )
     {
         p.add_msg_if_player( m_bad, _( "You couldn't harvest anything." ) );
     } else
