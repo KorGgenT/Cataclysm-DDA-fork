@@ -6,7 +6,9 @@
 #include "map.h"
 #include "map_helpers.h"
 #include "overmapbuffer.h"
+#include "iexamine.h"
 
+// gives the calories and items a player would harvest from an underbrush, given the items_location
 std::pair<int, int> forage_calories_and_items( player &p, items_location loc )
 {
     std::pair<int, int> calories_items = std::make_pair( 0, 0 );
@@ -57,12 +59,11 @@ std::pair<int, int> how_many_bushes( items_location loc, int survival = 0, int p
     const int daily_calories = 2500;
 
     player &dummy = g->u;
-    player *dummy_ptr = &dummy;
-    dummy_ptr->set_skill_level( skill_id( "survival" ), survival );
+    dummy.set_skill_level( skill_id( "survival" ), survival );
     dummy.per_cur = perception;
 
     while( number_of_calories < daily_calories ) {
-        const auto new_pair = forage_calories_and_items( *dummy_ptr, loc );
+        const auto new_pair = forage_calories_and_items( dummy, loc );
         number_of_calories += new_pair.first;
         number_of_successes += new_pair.second;
         number_of_bushes++;
@@ -100,8 +101,126 @@ std::map<std::string, int> get_map_terrain( const tripoint &p )
     return terrains;
 }
 
-std::vector<tripoint> get_harvest_pos(const tripoint &p) {
+// gives a vector of tripoints with harvestable terrain or furniture
+std::vector<tripoint> get_harvest_pos( const tripoint &p )
+{
+    std::vector<tripoint> harvests;
+    tripoint t = p;
+    for( int x = 0; x < SEEX * 2; ++x ) {
+        for( int y = 0; y < SEEY * 2; ++y ) {
+            t.x = p.x + x;
+            t.y = p.y + y;
+            if( g->m.get_harvest( t ) != harvest_id( "null" ) ) {
+                harvests.push_back( t );
+            }
+        }
+    }
+    return harvests;
+}
 
+// gets calories from a single harvest action
+int harvest_calories( const player &p, const tripoint &hv_p )
+{
+    std::vector<item> harvested = harvest_terrain( p, hv_p );
+    int calories = 0;
+    for( const item &it : harvested ) {
+        if( it.is_comestible() ) {
+            calories += it.type->comestible->get_calories();
+        } else {
+            std::string hv_it = it.typeId().c_str();
+            if( hv_it == "pinecone" ) {
+                calories += 51 * it.charges; // 4 pinecones for 1 pine nuts
+            }
+        }
+    }
+    harvested.~vector();
+    return calories;
+}
+
+// gets calories for harvest actions from a vector of points
+int harvest_calories( const player &p, const std::vector<tripoint> &hv_p )
+{
+    int calories = 0;
+    for( const tripoint tp : hv_p ) {
+        calories += harvest_calories( p, tp );
+    }
+    return calories;
+}
+
+/**
+ * gives a vector of tripoints for underbrush.
+ * since underbrush is not a "harvestable terrain or furniture" it needs a seperate function
+ * @TODO: Calculate time spent using these tripoints
+ */
+std::vector<tripoint> get_underbrush_pos( const tripoint &p )
+{
+    std::vector<tripoint> underbrush;
+    tripoint t = p;
+    for( int x = 0; x < SEEX * 2; ++x ) {
+        for( int y = 0; y < SEEY * 2; ++y ) {
+            t.x = p.x + x;
+            t.y = p.y + y;
+            if( g->m.tername( t ) == "underbrush" ) {
+                underbrush.push_back( t );
+            }
+        }
+    }
+    return underbrush;
+}
+
+
+// returns total calories you can find in one overmap tile forest_thick
+int calories_in_forest( player &p, items_location loc, bool print = false )
+{
+    generate_forest_OMT( p.pos() );
+    std::map<std::string, int> map_terrains = get_map_terrain( p.pos() );
+    if( print ) {
+        printf( "\n\n" );
+        for( const auto &pair : map_terrains ) {
+            printf( "%s: %i\n", pair.first, pair.second );
+        }
+        printf( "\n" );
+    }
+    const int underbrush = get_underbrush_pos( p.pos() ).size();
+    int calories = 0;
+    int successes = 0;
+    for( int i = 0; i < underbrush; i++ ) {
+        calories += forage_calories_and_items( p, "forage_spring" ).first;
+        // trash is excluded from successes for these purposes
+        if( calories > 0 ) {
+            successes++;
+        }
+    }
+    calories += harvest_calories( p, get_harvest_pos( p.pos() ) );
+    if( print ) {
+        printf( "Total Calories found: %i\n", calories );
+        printf( "\n" );
+    }
+    return calories;
+}
+
+float std_dev( const std::vector<int> ints )
+{
+    long sum = 0;
+    float mean = 0;
+    float std_dev = 0.0;
+    for( const int elem : ints ) {
+        sum += elem;
+    }
+    mean = sum / ints.size();
+    for( const int elem : ints ) {
+        std_dev += pow( elem - mean, 2 );
+    }
+    return sqrt( std_dev / ints.size() );
+}
+
+int avg( const std::vector<int> ints )
+{
+    long sum = 0;
+    for( const int elem : ints ) {
+        sum += elem;
+    }
+    return sum / ints.size();
 }
 
 TEST_CASE( "forage_spring" )
@@ -155,16 +274,21 @@ TEST_CASE( "forage_survival_level" )
 TEST_CASE( "generate_forest_spring" )
 {
     player &dummy = g->u;
-    generate_forest_OMT( dummy.pos() );
-    std::map<harvest_id, int> map_terrain_harvest_ids = get_map_terrain_harvest( dummy.pos() );
-    printf( "\n\n" );
-    for( const auto &pair : map_terrain_harvest_ids ) {
-        printf( "%s: %i\n", pair.first.c_str(), pair.second );
+    std::vector<int> calories;
+    const int count = 1500;
+    int min_calories = 2147483647;
+    int max_calories = 0;
+    for( int i = 0; i < count; i++ ) {
+        const int result = calories_in_forest( dummy, "forage_spring", false );
+        calories.push_back( result );
+        min_calories = std::min( min_calories, result );
+        max_calories = std::max( max_calories, result );
     }
     printf( "\n" );
-    std::map<std::string, int> map_terrains = get_map_terrain( dummy.pos() );
-    for( const auto &pair : map_terrains ) {
-        printf( "%s: %i\n", pair.first, pair.second );
-    }
-    printf( "\n\n" );
+    printf( "Survival: %i, Perception: %i\n", dummy.get_skill_level( skill_id( "skill_survival" ) ),
+            dummy.per_cur );
+    printf( "Average Calories in %i Forests: %i\n", count, avg( calories ) );
+    printf( "Min Calories: %i, Max Calories: %i, Std Deviation: %f\n", min_calories, max_calories,
+            std_dev( calories ) );
+    printf( "\n" );
 }
