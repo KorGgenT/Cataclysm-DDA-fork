@@ -30,7 +30,7 @@ void generate_forest_OMT( const tripoint &p )
     oter_id f( "forest_thick" );
     wipe_map_terrain();
 
-    // first, set current and adjacent map tils to forest_thick
+    // first, set current and adjacent map tiles to forest_thick
     for( int x = -1; x <= 1; x++ ) {
         for( int y = -1; y <= 1; y++ ) {
             const tripoint temp_trip( p.x + x, p.y + y, p.z );

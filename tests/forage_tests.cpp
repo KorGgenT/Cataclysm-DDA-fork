@@ -74,16 +74,34 @@ std::pair<int, int> how_many_bushes( items_location loc, int survival = 0, int p
 std::map<harvest_id, int> get_map_terrain_harvest( const tripoint &p )
 {
     std::map<harvest_id, int> harvests;
-    const int mapsize = g->m.getmapsize() * SEEX;
     tripoint t = p;
-    for( int x = 0; x < mapsize; ++x ) {
-        for( int y = 0; y < mapsize; ++y ) {
+    for( int x = 0; x < SEEX * 2; ++x ) {
+        for( int y = 0; y < SEEY * 2; ++y ) {
             t.x = p.x + x;
             t.y = p.y + y;
             harvests.operator[]( g->m.get_harvest( t ) ) = harvests.operator[]( g->m.get_harvest( t ) ) + 1;
         }
     }
     return harvests;
+}
+
+// returns a map with names and counts of terrains
+std::map<std::string, int> get_map_terrain( const tripoint &p )
+{
+    std::map<std::string, int> terrains;
+    tripoint t = p;
+    for( int x = 0; x < SEEX * 2; ++x ) {
+        for( int y = 0; y < SEEY * 2; ++y ) {
+            t.x = p.x + x;
+            t.y = p.y + y;
+            terrains.operator[]( g->m.tername( t ) ) = terrains.operator[]( g->m.tername( t ) ) + 1;
+        }
+    }
+    return terrains;
+}
+
+std::vector<tripoint> get_harvest_pos(const tripoint &p) {
+
 }
 
 TEST_CASE( "forage_spring" )
@@ -144,4 +162,9 @@ TEST_CASE( "generate_forest_spring" )
         printf( "%s: %i\n", pair.first.c_str(), pair.second );
     }
     printf( "\n" );
+    std::map<std::string, int> map_terrains = get_map_terrain( dummy.pos() );
+    for( const auto &pair : map_terrains ) {
+        printf( "%s: %i\n", pair.first, pair.second );
+    }
+    printf( "\n\n" );
 }
