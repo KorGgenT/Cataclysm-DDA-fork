@@ -11,12 +11,13 @@
 
 std::pair<std::string, int> global_winner = std::make_pair( "", 0 );
 std::pair<std::string, int> global_loser = std::make_pair( "", 2147483647 );
+std::map<std::string, bool> global_no_kcal;
 std::string global_winner_contents = "";
 std::map<itype_id, int> global_contents;
 
 void i_clear_adjacent( const tripoint &p )
 {
-    auto close_trip = g->m.points_in_radius(p, 1);
+    auto close_trip = g->m.points_in_radius( p, 1 );
     for( const auto &trip : close_trip ) {
         g->m.i_clear( trip );
     }
@@ -144,12 +145,23 @@ int harvest_calories( const player &p, const tripoint &hv_p )
         } else {
             std::string hv_it = it.typeId().c_str();
             if( hv_it == "pinecone" ) {
-                global_contents[hv_it] += it.charges;
-                calories += 51 * it.charges; // 4 pinecones for 1 pine nuts
-            }/*
-            else {
-                printf("%s has no calories\n", hv_it);
-            }*/
+                global_contents[hv_it]++;
+                calories += 202; // 4 pinecones for 4 pine nuts
+            } else if( hv_it == "chestnut" ) {
+                global_contents[hv_it]++;
+                calories += 288;
+            } else if( hv_it == "hazelnut" ) {
+                global_contents[hv_it]++;
+                calories += 772;
+            } else if( hv_it == "hickory_nut" ) {
+                global_contents[hv_it]++;
+                calories += 772;
+            } else if( hv_it == "walnut" ) {
+                global_contents[hv_it]++;
+                calories += 772;
+            } else {
+                global_no_kcal.emplace( std::make_pair( hv_it, true ) );
+            }
         }
     }
     return calories;
@@ -261,6 +273,56 @@ int avg( const std::vector<int> ints )
     return sum / ints.size();
 }
 
+void run_forage_test( int season = 0, int survival = 0, int perception = 8, bool print = false )
+{
+    calendar::turn += to_turns<int>( calendar::season_length() ) * season;
+    player &dummy = g->u;
+    std::vector<int> calories;
+    const int count = 1500;
+    int min_calories = 2147483647;
+    int max_calories = 0;
+    items_location loc;
+    switch( season ) {
+        case 0:
+            loc = "forage_spring";
+            break;
+        case 1:
+            loc = "forage_summer";
+            break;
+        case 2:
+            loc = "forage_autumn";
+            break;
+        case 3:
+            loc = "forage_winter";
+            break;
+    }
+    dummy.set_skill_level( skill_id( "skill_survival" ), survival );
+    dummy.per_cur = perception;
+    for( int i = 0; i < count; i++ ) {
+        const int result = calories_in_forest( dummy, loc );
+        calories.push_back( result );
+        min_calories = std::min( min_calories, result );
+        max_calories = std::max( max_calories, result );
+    }
+    if( print ) {
+        printf( "\n" );
+        printf( "%s\n", calendar::name_season( season_of_year( calendar::turn ) ) );
+        printf( "Survival: %i, Perception: %i\n", dummy.get_skill_level( skill_id( "skill_survival" ) ),
+                dummy.per_cur );
+        printf( "Average Calories in %i Forests: %i\n", count, avg( calories ) );
+        printf( "Min Calories: %i, Max Calories: %i, Std Deviation: %f\n", min_calories, max_calories,
+                std_dev( calories ) );
+        printf( "\n" );
+        printf( "Items without Calories:\n" );
+        for( const auto &pair : global_no_kcal ) {
+            printf( "%s\n", pair.first.c_str() );
+        }
+        printf( "\n" );
+        printf( "Global Winner at %i Calories:%s", global_winner.second, global_winner.first.c_str() );
+        printf( "%s", global_winner_contents.c_str() );
+    }
+}
+
 TEST_CASE( "forage_spring" )
 {
     std::pair<int, int> res;
@@ -324,52 +386,20 @@ TEST_CASE( "generate_forest_spring1" )
 
 TEST_CASE( "generate_forest_spring" )
 {
-    player &dummy = g->u;
-    std::vector<int> calories;
-    const int count = 1500;
-    int min_calories = 2147483647;
-    int max_calories = 0;
-    dummy.set_skill_level(skill_id("skill_survival"), 8);
-    for( int i = 0; i < count; i++ ) {
-        const int result = calories_in_forest( dummy, "forage_spring" );
-        calories.push_back( result );
-        min_calories = std::min( min_calories, result );
-        max_calories = std::max( max_calories, result );
-    }
-    printf( "\n" );
-    printf( "Spring\n" );
-    printf( "Survival: %i, Perception: %i\n", dummy.get_skill_level( skill_id( "skill_survival" ) ),
-            dummy.per_cur );
-    printf( "Average Calories in %i Forests: %i\n", count, avg( calories ) );
-    printf( "Min Calories: %i, Max Calories: %i, Std Deviation: %f\n", min_calories, max_calories,
-            std_dev( calories ) );
-    printf( "\n" );
-    printf( "Global Winner at %i Calories:%s", global_winner.second, global_winner.first.c_str() );
-    printf( "%s", global_winner_contents.c_str() );
+    run_forage_test( 0, 0, 8, true );
 }
 
 TEST_CASE( "generate_forest_summer" )
 {
-    calendar::turn += to_turns<int>( calendar::season_length() );
-    player &dummy = g->u;
-    std::vector<int> calories;
-    const int count = 1500;
-    int min_calories = 2147483647;
-    int max_calories = 0;
-    for (int i = 0; i < count; i++) {
-        const int result = calories_in_forest(dummy, "forage_summer");
-        calories.push_back(result);
-        min_calories = std::min(min_calories, result);
-        max_calories = std::max(max_calories, result);
-    }
-    printf("\n");
-    printf("Spring\n");
-    printf("Survival: %i, Perception: %i\n", dummy.get_skill_level(skill_id("skill_survival")),
-        dummy.per_cur);
-    printf("Average Calories in %i Forests: %i\n", count, avg(calories));
-    printf("Min Calories: %i, Max Calories: %i, Std Deviation: %f\n", min_calories, max_calories,
-        std_dev(calories));
-    printf("\n");
-    printf("Global Winner at %i Calories:%s", global_winner.second, global_winner.first.c_str());
-    printf("%s", global_winner_contents.c_str());
+    run_forage_test( 1, 0, 8, true );
+}
+
+TEST_CASE( "generate_forest_autumn" )
+{
+    run_forage_test( 2, 0, 8, true );
+}
+
+TEST_CASE( "generate_forest_winter" )
+{
+    run_forage_test( 3, 0, 8, true );
 }
