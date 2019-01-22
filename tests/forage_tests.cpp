@@ -8,12 +8,17 @@
 #include "overmapbuffer.h"
 #include "iexamine.h"
 #include "map_iterator.h"
+#include "test_statistics.h"
 
 std::pair<std::string, int> global_winner = std::make_pair( "", 0 );
 std::pair<std::string, int> global_loser = std::make_pair( "", 2147483647 );
 std::map<std::string, bool> global_no_kcal;
 std::string global_winner_contents = "";
 std::map<itype_id, int> global_contents;
+
+struct forage_test_data {
+    statistics<int> calories;
+};
 
 void i_clear_adjacent( const tripoint &p )
 {
@@ -249,21 +254,6 @@ int calories_in_forest( player &p, items_location loc, bool print = false )
     return calories;
 }
 
-float std_dev( const std::vector<int> ints )
-{
-    long sum = 0;
-    float mean = 0;
-    float std_dev = 0.0;
-    for( const int elem : ints ) {
-        sum += elem;
-    }
-    mean = sum / ints.size();
-    for( const int elem : ints ) {
-        std_dev += pow( elem - mean, 2 );
-    }
-    return sqrt( std_dev / ints.size() );
-}
-
 int avg( const std::vector<int> ints )
 {
     long sum = 0;
@@ -276,11 +266,9 @@ int avg( const std::vector<int> ints )
 void run_forage_test( const int season = 0, const int count = 1, const int survival = 0,
                       const int perception = 8, bool print = false )
 {
+    forage_test_data data;
     calendar::turn += to_turns<int>( calendar::season_length() ) * season;
     player &dummy = g->u;
-    std::vector<int> calories;
-    int min_calories = 2147483647;
-    int max_calories = 0;
     items_location loc;
     switch( season ) {
         case 0:
@@ -299,19 +287,17 @@ void run_forage_test( const int season = 0, const int count = 1, const int survi
     dummy.set_skill_level( skill_id( "skill_survival" ), survival );
     dummy.per_cur = perception;
     for( int i = 0; i < count; i++ ) {
-        const int result = calories_in_forest( dummy, loc );
-        calories.push_back( result );
-        min_calories = std::min( min_calories, result );
-        max_calories = std::max( max_calories, result );
+        data.calories.add( calories_in_forest( dummy, loc ) );
     }
     if( print ) {
         printf( "\n" );
         printf( "%s\n", calendar::name_season( season_of_year( calendar::turn ) ) );
         printf( "Survival: %i, Perception: %i\n", dummy.get_skill_level( skill_id( "skill_survival" ) ),
                 dummy.per_cur );
-        printf( "Average Calories in %i Forests: %i\n", count, avg( calories ) );
-        printf( "Min Calories: %i, Max Calories: %i, Std Deviation: %f\n", min_calories, max_calories,
-                std_dev( calories ) );
+        printf( "Average Calories in %i Forests: %f\n", data.calories.n(), data.calories.avg() );
+        printf( "Min Calories: %i, Max Calories: %i, Std Deviation: %f\n", data.calories.min(),
+                data.calories.max(),
+                data.calories.stddev() );
         printf( "\n" );
         printf( "Items without Calories:\n" );
         for( const auto &pair : global_no_kcal ) {
@@ -386,7 +372,7 @@ TEST_CASE( "generate_forest_spring1" )
 
 TEST_CASE( "generate_forest_spring" )
 {
-    run_forage_test( 0, 1500, 0, 8, true );
+    run_forage_test( 0, 1500, 3, 6, true );
 }
 
 TEST_CASE( "generate_forest_summer" )
@@ -401,5 +387,5 @@ TEST_CASE( "generate_forest_autumn" )
 
 TEST_CASE( "generate_forest_winter" )
 {
-    run_forage_test( 3, 1500, 0, 8, true );
+    run_forage_test( 3, 1500, 2, 200, true );
 }
