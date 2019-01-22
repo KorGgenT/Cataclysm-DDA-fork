@@ -96,3 +96,12 @@ std::string gun_type_type::name() const
 {
     return pgettext( "gun_type_type", name_.c_str() );
 }
+
+/**
+ * calculates calculate the move cost of getting an item from a pocket
+ * @TODO: Use a real formula
+ */
+int islot_pocket::obtain_cost()
+{
+    return this->move;
+}

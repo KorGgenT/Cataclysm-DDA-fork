@@ -601,6 +601,12 @@ class item : public visitable<item>
          */
         void put_in( const item &payload );
 
+        /**
+         * Puts the given item into a pocket in this item.
+         * Item must have pockets in order to put it in
+         */
+        void put_in_pocket( const item &payload, int pocket_index );
+
         /** Stores a newly constructed item at the end of this item's contents */
         template<typename ... Args>
         item &emplace_back( Args &&... args ) {

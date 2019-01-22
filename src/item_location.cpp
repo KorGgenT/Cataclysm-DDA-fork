@@ -57,6 +57,7 @@ class item_location::impl
         class item_on_map;
         class item_on_person;
         class item_on_vehicle;
+        class item_in_container;
 
         impl() = default;
         impl( std::list<item> *what ) :  what( &what->front() ), whatstart( what ) {}
@@ -467,6 +468,39 @@ class item_location::impl::item_on_vehicle : public item_location::impl
         }
 };
 
+class item_location::impl::item_in_container : public item_location::impl
+{
+    private:
+        item_location parent;
+    public:
+        item_in_container( const item_location parent, item *which ) : impl( which ) {}
+
+        bool valid() const override {
+            if( !target() ) {
+                return false;
+            }
+        }
+
+        type where() const override {
+            return type::contents;
+        }
+
+        int obtain_cost( const Character &ch, long qty ) const override {
+            if( !target() ) {
+                return 0;
+            }
+
+            item obj = *target();
+            obj = obj.split( qty );
+            if( obj.is_null() ) {
+                obj = *target();
+            }
+
+            int moves = parent.obtain_cost( ch, qty );
+
+        }
+};
+
 // use of std::unique_ptr<impl> forces these definitions within the implementation
 item_location::item_location( item_location && ) = default;
 item_location &item_location::operator=( item_location && ) = default;
@@ -494,6 +528,9 @@ item_location::item_location( const vehicle_cursor &vc, std::list<item> *which )
 
 item_location::item_location( const vehicle_cursor &vc, item *which )
     : ptr( new impl::item_on_vehicle( vc, which ) ) {}
+
+item_location::item_location( const item_location loc, item *which )
+    : ptr( new impl::item_in_container( loc, which ) ) {}
 
 bool item_location::operator==( const item_location &rhs ) const
 {
