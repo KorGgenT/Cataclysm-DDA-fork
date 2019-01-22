@@ -8,6 +8,11 @@
 #include "overmapbuffer.h"
 #include "iexamine.h"
 
+std::pair<std::string, int> global_winner = std::make_pair( "", 0 );
+std::pair<std::string, int> global_loser = std::make_pair( "", 2147483647 );
+std::string global_winner_contents = "";
+std::map<itype_id, int> global_contents;
+
 // gives the calories and items a player would harvest from an underbrush, given the items_location
 std::pair<int, int> forage_calories_and_items( player &p, items_location loc )
 {
@@ -17,12 +22,13 @@ std::pair<int, int> forage_calories_and_items( player &p, items_location loc )
         int calories = 0;
         if( item->is_comestible() ) {
             calories = item->type->comestible->get_calories() * item->charges;
+            global_contents[item->typeId()] += item->charges;
+                printf("%s: %i\n", item->typeId().c_str(), item->charges);
         }
         calories_items = std::make_pair( calories_items.first + calories,
                                          calories_items.second + 1 );
     }
     g->m.i_clear( p.pos() );
-    drops.~vector();
     return calories_items;
 }
 
@@ -80,7 +86,7 @@ std::map<harvest_id, int> get_map_terrain_harvest( const tripoint &p )
         for( int y = 0; y < SEEY * 2; ++y ) {
             t.x = p.x + x;
             t.y = p.y + y;
-            harvests.operator[]( g->m.get_harvest( t ) ) = harvests.operator[]( g->m.get_harvest( t ) ) + 1;
+            harvests[ g->m.get_harvest( t ) ]++;
         }
     }
     return harvests;
@@ -95,7 +101,7 @@ std::map<std::string, int> get_map_terrain( const tripoint &p )
         for( int y = 0; y < SEEY * 2; ++y ) {
             t.x = p.x + x;
             t.y = p.y + y;
-            terrains.operator[]( g->m.tername( t ) ) = terrains.operator[]( g->m.tername( t ) ) + 1;
+            terrains[g->m.tername( t )]++;
         }
     }
     return terrains;
@@ -126,14 +132,18 @@ int harvest_calories( const player &p, const tripoint &hv_p )
     for( const item &it : harvested ) {
         if( it.is_comestible() ) {
             calories += it.type->comestible->get_calories();
+            global_contents[it.typeId()] += it.charges;
         } else {
             std::string hv_it = it.typeId().c_str();
             if( hv_it == "pinecone" ) {
+                global_contents[hv_it] += it.charges;
                 calories += 51 * it.charges; // 4 pinecones for 1 pine nuts
-            }
+            }/*
+            else {
+                printf("%s has no calories\n", hv_it);
+            }*/
         }
     }
-    harvested.~vector();
     return calories;
 }
 
@@ -168,34 +178,54 @@ std::vector<tripoint> get_underbrush_pos( const tripoint &p )
     return underbrush;
 }
 
-
 // returns total calories you can find in one overmap tile forest_thick
 int calories_in_forest( player &p, items_location loc, bool print = false )
 {
     generate_forest_OMT( p.pos() );
     std::map<std::string, int> map_terrains = get_map_terrain( p.pos() );
-    if( print ) {
-        printf( "\n\n" );
-        for( const auto &pair : map_terrains ) {
-            printf( "%s: %i\n", pair.first, pair.second );
-        }
-        printf( "\n" );
+    std::string print_string = "";
+    print_string += "\n\n";
+    for( const auto &pair : map_terrains ) {
+        print_string += pair.first;
+        print_string += ": ";
+        print_string += std::to_string( pair.second );
+        print_string += "\n";
     }
+    print_string += "\n";
+
     const int underbrush = get_underbrush_pos( p.pos() ).size();
     int calories = 0;
     int successes = 0;
     for( int i = 0; i < underbrush; i++ ) {
-        calories += forage_calories_and_items( p, "forage_spring" ).first;
+        calories += forage_calories_and_items( p, loc ).first;
         // trash is excluded from successes for these purposes
         if( calories > 0 ) {
             successes++;
         }
     }
     calories += harvest_calories( p, get_harvest_pos( p.pos() ) );
+    print_string += "Total Calories found: ";
+    print_string += std::to_string( calories );
+    print_string += "\n";
     if( print ) {
-        printf( "Total Calories found: %i\n", calories );
-        printf( "\n" );
+        printf( "%s", print_string.c_str() );
     }
+    if( calories > global_winner.second ) {
+        global_winner.first = print_string;
+        global_winner.second = calories;
+        global_winner_contents = "";
+        for( const auto &pair : global_contents ) {
+            global_winner_contents += pair.first;
+            global_winner_contents += ": ";
+            global_winner_contents += std::to_string( pair.second );
+            global_winner_contents += "\n";
+        }
+    }
+    if( calories < global_loser.second ) {
+        global_loser.first = print_string;
+        global_loser.second = calories;
+    }
+    global_contents.clear();
     return calories;
 }
 
@@ -271,6 +301,17 @@ TEST_CASE( "forage_survival_level" )
     }
 }
 
+TEST_CASE( "generate_forest_spring1" )
+{
+    player &dummy = g->u;
+    printf( "\n" );
+    printf( "%s\n", calendar::name_season( season_of_year( calendar::turn ) ) );
+    printf( "Survival: %i, Perception: %i\n", dummy.get_skill_level( skill_id( "skill_survival" ) ),
+            dummy.per_cur );
+    printf( "\n" );
+    const int calories = calories_in_forest( dummy, "forage_spring", true );
+}
+
 TEST_CASE( "generate_forest_spring" )
 {
     player &dummy = g->u;
@@ -279,12 +320,39 @@ TEST_CASE( "generate_forest_spring" )
     int min_calories = 2147483647;
     int max_calories = 0;
     for( int i = 0; i < count; i++ ) {
-        const int result = calories_in_forest( dummy, "forage_spring", false );
+        const int result = calories_in_forest( dummy, "forage_spring" );
         calories.push_back( result );
         min_calories = std::min( min_calories, result );
         max_calories = std::max( max_calories, result );
     }
     printf( "\n" );
+    printf( "Spring\n" );
+    printf( "Survival: %i, Perception: %i\n", dummy.get_skill_level( skill_id( "skill_survival" ) ),
+            dummy.per_cur );
+    printf( "Average Calories in %i Forests: %i\n", count, avg( calories ) );
+    printf( "Min Calories: %i, Max Calories: %i, Std Deviation: %f\n", min_calories, max_calories,
+            std_dev( calories ) );
+    printf( "\n" );
+    printf( "Global Winner at %i Calories:%s", global_winner.second, global_winner.first.c_str() );
+    printf( "%s", global_winner_contents.c_str() );
+}
+
+TEST_CASE( "generate_forest_summer" )
+{
+    calendar::turn += to_turns<int>( calendar::season_length() );
+    player &dummy = g->u;
+    std::vector<int> calories;
+    const int count = 1500;
+    int min_calories = 2147483647;
+    int max_calories = 0;
+    for( int i = 0; i < count; i++ ) {
+        const int result = calories_in_forest( dummy, "forage_summer" );
+        calories.push_back( result );
+        min_calories = std::min( min_calories, result );
+        max_calories = std::max( max_calories, result );
+    }
+    printf( "\n" );
+    printf( "Summer\n" );
     printf( "Survival: %i, Perception: %i\n", dummy.get_skill_level( skill_id( "skill_survival" ) ),
             dummy.per_cur );
     printf( "Average Calories in %i Forests: %i\n", count, avg( calories ) );
