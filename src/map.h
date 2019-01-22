@@ -19,6 +19,7 @@
 #include "lightmap.h"
 #include "shadowcasting.h"
 #include "string_id.h"
+#include "units.h"
 
 //TODO: include comments about how these variables work. Where are they used. Are they constant etc.
 #define CAMPSIZE 1
@@ -33,13 +34,6 @@ namespace cata
 template<typename T>
 class optional;
 } // namespace cata
-namespace units
-{
-template<typename V, typename U>
-class quantity;
-class mass_in_gram_tag;
-using mass = quantity<int, mass_in_gram_tag>;
-} // namespace units
 class emit;
 using emit_id = string_id<emit>;
 class vpart_position;
@@ -260,12 +254,15 @@ class map
         void set_pathfinding_cache_dirty( const int zlev );
         /*@}*/
 
-        void set_memory_seen_cache_dirty( const tripoint p ) {
-            get_cache( p.z ).map_memory_seen_cache[ p.x + p.y * MAPSIZE_Y ] = false;
+        void set_memory_seen_cache_dirty( const tripoint &p ) {
+            const int offset = p.x + ( p.y * MAPSIZE_Y );
+            if( offset >= 0 && offset < MAPSIZE_X * MAPSIZE_Y ) {
+                get_cache( p.z ).map_memory_seen_cache.reset( offset );
+            }
         }
 
         bool check_and_set_seen_cache( const tripoint &p ) const {
-            std::bitset<SEEX *MAPSIZE *SEEY *MAPSIZE> &memory_seen_cache =
+            std::bitset<MAPSIZE_X *MAPSIZE_Y> &memory_seen_cache =
                 get_cache( p.z ).map_memory_seen_cache;
             if( !memory_seen_cache[ static_cast<size_t>( p.x + ( p.y * MAPSIZE_Y ) ) ] ) {
                 memory_seen_cache.set( static_cast<size_t>( p.x + ( p.y * MAPSIZE_Y ) ) );
@@ -1266,10 +1263,10 @@ class map
             return getlocal( p.x, p.y );
         }
         tripoint getlocal( const tripoint &p ) const;
-        bool inbounds( const int x, const int y ) const;
-        bool inbounds( const point &p ) const;
-        bool inbounds( const int x, const int y, const int z ) const;
         bool inbounds( const tripoint &p ) const;
+        bool inbounds( const point &p ) const {
+            return inbounds( tripoint( p, 0 ) );
+        }
 
         bool inbounds_z( const int z ) const {
             return z >= -OVERMAP_DEPTH && z <= OVERMAP_HEIGHT;
