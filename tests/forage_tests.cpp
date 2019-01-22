@@ -273,12 +273,12 @@ int avg( const std::vector<int> ints )
     return sum / ints.size();
 }
 
-void run_forage_test( int season = 0, int survival = 0, int perception = 8, bool print = false )
+void run_forage_test( const int season = 0, const int count = 1, const int survival = 0,
+                      const int perception = 8, bool print = false )
 {
     calendar::turn += to_turns<int>( calendar::season_length() ) * season;
     player &dummy = g->u;
     std::vector<int> calories;
-    const int count = 1500;
     int min_calories = 2147483647;
     int max_calories = 0;
     items_location loc;
@@ -386,20 +386,20 @@ TEST_CASE( "generate_forest_spring1" )
 
 TEST_CASE( "generate_forest_spring" )
 {
-    run_forage_test( 0, 0, 8, true );
+    run_forage_test( 0, 1500, 0, 8, true );
 }
 
 TEST_CASE( "generate_forest_summer" )
 {
-    run_forage_test( 1, 0, 8, true );
+    run_forage_test( 1, 1500, 0, 8, true );
 }
 
 TEST_CASE( "generate_forest_autumn" )
 {
-    run_forage_test( 2, 0, 8, true );
+    run_forage_test( 2, 1500, 0, 8, true );
 }
 
 TEST_CASE( "generate_forest_winter" )
 {
-    run_forage_test( 3, 0, 8, true );
+    run_forage_test( 3, 1500, 0, 8, true );
 }
