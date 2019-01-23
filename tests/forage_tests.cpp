@@ -18,6 +18,7 @@ std::map<itype_id, int> global_contents;
 
 struct forage_test_data {
     statistics<int> calories;
+    statistics<bool> forests;
 };
 
 void i_clear_adjacent( const tripoint &p )
@@ -254,17 +255,9 @@ int calories_in_forest( player &p, items_location loc, bool print = false )
     return calories;
 }
 
-int avg( const std::vector<int> ints )
-{
-    long sum = 0;
-    for( const int elem : ints ) {
-        sum += elem;
-    }
-    return sum / ints.size();
-}
-
-void run_forage_test( const int season = 0, const int count = 1, const int survival = 0,
-                      const int perception = 8, bool print = false )
+// returns number of forests required to reach RDAKCAL
+bool run_forage_test( const int min_forests, const int max_forests, const int season = 0,
+                      const int survival = 0, const int perception = 8, bool print = false )
 {
     forage_test_data data;
     calendar::turn += to_turns<int>( calendar::season_length() ) * season;
@@ -286,8 +279,14 @@ void run_forage_test( const int season = 0, const int count = 1, const int survi
     }
     dummy.set_skill_level( skill_id( "skill_survival" ), survival );
     dummy.per_cur = perception;
-    for( int i = 0; i < count; i++ ) {
-        data.calories.add( calories_in_forest( dummy, loc ) );
+    int calories_total = 0;
+    int count = 0;
+    // 2500 kCal per day in CDDA
+    while( calories_total < 2500 && count <= max_forests ) {
+        const int temp = calories_in_forest( dummy, loc );
+        data.calories.add( temp );
+        calories_total += temp;
+        count++;
     }
     if( print ) {
         printf( "\n" );
@@ -299,25 +298,25 @@ void run_forage_test( const int season = 0, const int count = 1, const int survi
                 data.calories.max(),
                 data.calories.stddev() );
         printf( "\n" );
-        printf( "Items without Calories:\n" );
-        for( const auto &pair : global_no_kcal ) {
-            printf( "%s\n", pair.first.c_str() );
-        }
-        printf( "\n" );
-        printf( "Global Winner at %i Calories:%s", global_winner.second, global_winner.first.c_str() );
-        printf( "%s", global_winner_contents.c_str() );
+    }
+    if( count >= min_forests && count <= max_forests ) {
+        return true;
+    } else {
+        return false;
     }
 }
 
 TEST_CASE( "forage_spring" )
 {
-    std::pair<int, int> res;
-    printf( "\n" );
-    for( int surv = 0; surv <= MAX_SKILL; surv++ ) {
-        res = how_many_bushes( "forage_spring", surv );
-        printf( "Calories met at Survival %i!\nSuccess rate: %i / %i\n\n", surv, res.second, res.first );
+    forage_test_data forests;
+    int count = 0;
+    const int runs = 2000;
+    for( int i = 0; i < runs; i++ ) {
+        if (run_forage_test(1, 1, 0, 0, 8, false)) {
+            count++;
+        }
     }
-    printf( "\n\n" );
+    printf("\n\nsuccesses between 1 and 2: %i, runs: %i\n\n\n", count, runs);
 }
 
 TEST_CASE( "forage_survival_level" )
@@ -368,24 +367,4 @@ TEST_CASE( "generate_forest_spring1" )
     printf( "x: %i, y: %i, z: %i\n", player_pos.x, player_pos.y, player_pos.z );
     printf( "\n" );
     const int calories = calories_in_forest( dummy, "forage_spring", true );
-}
-
-TEST_CASE( "generate_forest_spring" )
-{
-    run_forage_test( 0, 1500, 3, 6, true );
-}
-
-TEST_CASE( "generate_forest_summer" )
-{
-    run_forage_test( 1, 1500, 0, 8, true );
-}
-
-TEST_CASE( "generate_forest_autumn" )
-{
-    run_forage_test( 2, 1500, 0, 8, true );
-}
-
-TEST_CASE( "generate_forest_winter" )
-{
-    run_forage_test( 3, 1500, 2, 200, true );
 }
