@@ -103,5 +103,5 @@ std::string gun_type_type::name() const
  */
 int islot_pocket::obtain_cost()
 {
-    return this->move;
+    return this->moves;
 }
