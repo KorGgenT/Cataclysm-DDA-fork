@@ -187,10 +187,6 @@ struct islot_brewable {
     time_duration time = 0_turns;
 };
 
-struct islot_container_with_pockets {
-    std::vector<islot_pocket> pockets;
-};
-
 // intended to be a pocket in the new type of container, unwilling to overwrite the old code for now
 struct islot_pocket {
     // volume of stuff inside the pocket
@@ -223,6 +219,10 @@ struct islot_pocket {
      */
     int moves = INVENTORY_HANDLING_PENALTY;
     int obtain_cost();
+};
+
+struct islot_container_with_pockets {
+    std::vector<islot_pocket> pockets;
 };
 
 struct islot_container {
