@@ -7,6 +7,7 @@
 #include "field.h"
 #include "overmapbuffer.h"
 #include "mapgen_functions.h"
+#include "map_iterator.h"
 #include "omdata.h"
 
 void wipe_map_terrain()
@@ -22,6 +23,15 @@ void wipe_map_terrain()
         g->m.destroy_vehicle( veh.v );
     }
     g->m.build_map_cache( 0, true );
+}
+
+// removes all items in a 1 radius area around a point
+void i_clear_adjacent( const tripoint &p )
+{
+    auto close_trip = g->m.points_in_radius( p, 1 );
+    for( const auto &trip : close_trip ) {
+        g->m.i_clear( trip );
+    }
 }
 
 // generates a thick forest overmap tile. sets the adjacent tiles to thick forests as well.

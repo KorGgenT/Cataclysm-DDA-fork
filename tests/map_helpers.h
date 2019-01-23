@@ -8,6 +8,7 @@
 
 class monster;
 
+void i_clear_adjacent(const tripoint &p);
 void generate_forest_OMT(const tripoint &p);
 void wipe_map_terrain();
 void clear_creatures();
