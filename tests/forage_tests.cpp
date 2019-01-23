@@ -150,21 +150,26 @@ int harvest_calories( const player &p, const tripoint &hv_p )
             global_contents[it.typeId()] += it.charges;
         } else {
             std::string hv_it = it.typeId().c_str();
+            /**
+             * The numbers below are hardcoded because currently
+             * the items they represent are not edible comestibles
+             * directly, rather they need to be cooked over a fire.
+             */
             if( hv_it == "pinecone" ) {
                 global_contents[hv_it]++;
-                calories += 202; // 4 pinecones for 4 pine nuts
+                calories += 202;
             } else if( hv_it == "chestnut" ) {
                 global_contents[hv_it]++;
                 calories += 288;
             } else if( hv_it == "hazelnut" ) {
                 global_contents[hv_it]++;
-                calories += 772;
+                calories += 193;
             } else if( hv_it == "hickory_nut" ) {
                 global_contents[hv_it]++;
-                calories += 772;
+                calories += 193;
             } else if( hv_it == "walnut" ) {
                 global_contents[hv_it]++;
-                calories += 772;
+                calories += 193;
             } else {
                 global_no_kcal.emplace( std::make_pair( hv_it, true ) );
             }
@@ -312,11 +317,11 @@ TEST_CASE( "forage_spring" )
     int count = 0;
     const int runs = 2000;
     for( int i = 0; i < runs; i++ ) {
-        if (run_forage_test(1, 1, 0, 0, 8, false)) {
+        if( run_forage_test( 1, 1, 0, 0, 8, false ) ) {
             count++;
         }
     }
-    printf("\n\nsuccesses between 1 and 2: %i, runs: %i\n\n\n", count, runs);
+    printf( "\n\nsuccesses between 1 and 1: %i, runs: %i\n\n\n", count, runs );
 }
 
 TEST_CASE( "forage_survival_level" )
