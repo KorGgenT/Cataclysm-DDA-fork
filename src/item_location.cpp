@@ -472,8 +472,10 @@ class item_location::impl::item_in_container : public item_location::impl
 {
     private:
         item_location parent;
+        pocket_id p_id;
     public:
-        item_in_container( const item_location parent, item *which ) : impl( which ) {}
+        item_in_container( const item_location parent, const pocket_id p_id,
+                           item *which ) : impl( which ) {}
 
         bool valid() const override {
             if( !target() ) {
@@ -495,9 +497,15 @@ class item_location::impl::item_in_container : public item_location::impl
             if( obj.is_null() ) {
                 obj = *target();
             }
+            // gotta go one more deep
+            if( parent.where() == type::contents ) {
 
-            int moves = parent.obtain_cost( ch, qty );
-
+            } else {
+                islot_pocket temp = target()->type->container_with_pockets->pockets.at(p_id);
+                temp.obtain_cost();
+                    return parent.obtain_cost(ch,
+                        qty) + target()->type->container_with_pockets->pockets.at(p_id).obtain_cost();
+            }
         }
 };
 

@@ -20,6 +20,7 @@
 #include "string_id.h"
 #include "translations.h"
 #include "units.h"
+#include "itype.h"
 
 // see item.h
 class item_category;
@@ -190,20 +191,20 @@ struct islot_brewable {
 // intended to be a pocket in the new type of container, unwilling to overwrite the old code for now
 struct islot_pocket {
     // volume of stuff inside the pocket
-    units::volume contains_volume = 0;
+    units::volume contains_volume = 0_ml;
     // max volume of stuff the pocket can hold
-    units::volume max_contains_volume = 0;
+    units::volume max_contains_volume = 0_ml;
     // weight of stuff inside the pocket
-    units::mass contains_weight = 0;
+    units::mass contains_weight = 0_gram;
     // max weight of stuff the pocket can hold
-    units::mass max_contains_weight = 0;
+    units::mass max_contains_weight = 0_gram;
     // multiplier for spoilage rate of contained items
     float spoil_multiplier = 1;
     // can hold liquids
     bool watertight = false;
     // the item will spill its contents if placed in another container
     bool open_container = false;
-    /** 
+    /**
      * allows only items that can be stored on a hook to be contained in this pocket
      * overwrites rigid
      * makes max_contains_volume redundant
@@ -221,8 +222,11 @@ struct islot_pocket {
     int obtain_cost();
 };
 
+// is an int because it should only be used internally. refers to a specific pocket in a container
+using pocket_id = int_id<islot_pocket>;
+
 struct islot_container_with_pockets {
-    std::vector<islot_pocket> pockets;
+    std::map<pocket_id, islot_pocket> pockets;
 };
 
 struct islot_container {
