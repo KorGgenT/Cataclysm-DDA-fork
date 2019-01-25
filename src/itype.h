@@ -219,7 +219,7 @@ struct islot_pocket {
      * given no other items in container, and container is not inside another container
      */
     int moves = INVENTORY_HANDLING_PENALTY;
-    int obtain_cost();
+    int obtain_cost() const;
 };
 
 // is an int because it should only be used internally. refers to a specific pocket in a container
@@ -227,6 +227,8 @@ using pocket_id = int_id<islot_pocket>;
 
 struct islot_container_with_pockets {
     std::map<pocket_id, islot_pocket> pockets;
+    // calculates the move cost of getting an item from a pocket
+    int obtain_cost( pocket_id p_id ) const;
 };
 
 struct islot_container {

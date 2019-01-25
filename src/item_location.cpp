@@ -474,7 +474,7 @@ class item_location::impl::item_in_container : public item_location::impl
         item_location parent;
         pocket_id p_id;
     public:
-        item_in_container( const item_location parent, const pocket_id p_id,
+        item_in_container( const item_location &parent, const pocket_id p_id,
                            item *which ) : impl( which ) {}
 
         bool valid() const override {
@@ -483,8 +483,23 @@ class item_location::impl::item_in_container : public item_location::impl
             }
         }
 
+        void serialize( JsonOut &js ) const override {
+            js.start_object();
+            js.member( "type", "location" );
+            js.member( "idx", find_index( parent, target() ) );
+            js.end_object();
+        }
+
         type where() const override {
             return type::contents;
+        }
+
+        item *unpack( int idx ) const override {
+            return retrieve_index( parent, idx );
+        }
+
+        tripoint position() {
+            return parent.position();
         }
 
         int obtain_cost( const Character &ch, long qty ) const override {
@@ -497,15 +512,13 @@ class item_location::impl::item_in_container : public item_location::impl
             if( obj.is_null() ) {
                 obj = *target();
             }
+            int obtain_cost = ( *( target()->type->container_with_pockets ) ).obtain_cost( p_id );
             // gotta go one more deep
             if( parent.where() == type::contents ) {
-
-            } else {
-                islot_pocket temp = target()->type->container_with_pockets->pockets.at(p_id);
-                temp.obtain_cost();
-                    return parent.obtain_cost(ch,
-                        qty) + target()->type->container_with_pockets->pockets.at(p_id).obtain_cost();
+                obtain_cost += parent.obtain_cost( ch, qty );
             }
+            return obtain_cost;
+
         }
 };
 
@@ -537,8 +550,8 @@ item_location::item_location( const vehicle_cursor &vc, std::list<item> *which )
 item_location::item_location( const vehicle_cursor &vc, item *which )
     : ptr( new impl::item_on_vehicle( vc, which ) ) {}
 
-item_location::item_location( const item_location loc, item *which )
-    : ptr( new impl::item_in_container( loc, which ) ) {}
+item_location::item_location( const item_location &parent, const pocket_id p_id, item *which )
+    : ptr( new impl::item_in_container( parent, p_id, which ) ) {}
 
 bool item_location::operator==( const item_location &rhs ) const
 {

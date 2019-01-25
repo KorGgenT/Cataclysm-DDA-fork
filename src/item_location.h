@@ -47,7 +47,7 @@ class item_location
         item_location( const map_cursor &mc, std::list<item> *which );
         item_location( const vehicle_cursor &vc, item *which );
         item_location( const vehicle_cursor &vc, std::list<item> *which );
-        item_location( const item_location container, item *which );
+        item_location( const item_location &container, const pocket_id p_id, item *which );
 
         void serialize( JsonOut &js ) const;
         void deserialize( JsonIn &js );
