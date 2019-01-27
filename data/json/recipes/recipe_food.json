@@ -3369,7 +3369,11 @@
     "time": 12000,
     "charges": 5,
     "autolearn": true,
-    "tools": [ [ [ "surface_heat", 8, "LIST" ] ], [ [ "waffleiron", -1 ] ], [ [ "cooking_oil", 1 ], [ "tallow", 1 ], [ "lard", 1 ] ] ],
+    "tools": [
+      [ [ "surface_heat", 8, "LIST" ] ],
+      [ [ "waffleiron", -1 ] ],
+      [ [ "cooking_oil", 1 ], [ "tallow", 1 ], [ "lard", 1 ] ]
+    ],
     "components": [
       [ [ "flour", 1 ] ],
       [ [ "milk", 1 ], [ "milk_powder", 1 ], [ "con_milk", 1 ], [ "can_coconut", 1 ] ],
@@ -4579,7 +4583,7 @@
     "components": [
       [ [ "water", 1 ], [ "water_clean", 1 ] ],
       [ [ "bag_plastic", 1 ] ],
-      [ 
+      [
         [ "broccoli", 1 ],
         [ "irradiated_broccoli", 1 ],
         [ "cabbage", 1 ],
