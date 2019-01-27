@@ -619,6 +619,7 @@ class game
         void toggle_sidebar_style();
         void toggle_fullscreen();
         void toggle_pixel_minimap();
+        void toggle_panel_adm();
         void reload_tileset();
         void temp_exit_fullscreen();
         void reenter_fullscreen();
@@ -671,17 +672,18 @@ class game
         catacurses::window w_terrain_ptr;
         catacurses::window w_minimap_ptr;
         catacurses::window w_pixel_minimap_ptr;
-        catacurses::window w_HP_ptr;
+        // catacurses::window w_HP_ptr;
         catacurses::window w_messages_short_ptr;
         catacurses::window w_messages_long_ptr;
-        catacurses::window w_location_ptr;
+        // catacurses::window w_location_ptr;
         catacurses::window w_panel1_ptr;
         catacurses::window w_panel2_ptr;
         catacurses::window w_panel3_ptr;
         catacurses::window w_panel4_ptr;
         catacurses::window w_panel5_ptr;
-        catacurses::window w_status_ptr;
-        catacurses::window w_status2_ptr;
+        //        catacurses::window w_status_ptr;
+        //        catacurses::window w_status2_ptr;
+        catacurses::window w_panel_adm_ptr;
 
     public:
         catacurses::window w_terrain;
@@ -689,19 +691,20 @@ class game
         catacurses::window w_omlegend;
         catacurses::window w_minimap;
         catacurses::window w_pixel_minimap;
-        catacurses::window w_HP;
+        // catacurses::window w_HP;
         //only a pointer, can refer to w_messages_short or w_messages_long
         catacurses::window w_messages;
         catacurses::window w_messages_short;
         catacurses::window w_messages_long;
-        catacurses::window w_location;
+        // catacurses::window w_location;
         catacurses::window w_panel1;
         catacurses::window w_panel2;
         catacurses::window w_panel3;
         catacurses::window w_panel4;
         catacurses::window w_panel5;
-        catacurses::window w_status;
-        catacurses::window w_status2;
+        catacurses::window w_panel_adm;
+        //        catacurses::window w_status;
+        //        catacurses::window w_status2;
         catacurses::window w_blackspace;
 
         // View offset based on the driving speed (if any)
@@ -858,7 +861,7 @@ class game
         void set_safe_mode( safe_mode_type mode );
 
         bool narrow_sidebar;
-        bool bleh;
+        bool show_panel_adm;
         bool right_sidebar;
         bool fullscreen;
         bool was_fullscreen;

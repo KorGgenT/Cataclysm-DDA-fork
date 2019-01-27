@@ -1842,6 +1842,10 @@ bool game::handle_action()
                 toggle_pixel_minimap();
                 break;
 
+            case ACTION_TOGGLE_PANEL_ADM:
+                toggle_panel_adm();
+                break;
+
             case ACTION_RELOAD_TILESET:
                 reload_tileset();
                 break;

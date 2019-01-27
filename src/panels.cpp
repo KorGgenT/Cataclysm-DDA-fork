@@ -26,6 +26,13 @@ static const trait_id trait_SELFAWARE( "SELFAWARE" );
 // ===============================
 // panels code
 // ===============================
+void draw_panel_adm( const catacurses::window &w )
+{
+    static const std::string title = _( "panel admin" );
+    decorate_panel( title, w );
+    wrefresh( w );
+}
+
 void draw_character( player &u, const catacurses::window &w )
 {
     // character panel

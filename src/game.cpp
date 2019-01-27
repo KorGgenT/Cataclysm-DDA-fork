@@ -270,7 +270,7 @@ void game::load_static_data()
     //    right_sidebar = get_option<std::string>( "SIDEBAR_POSITION" ) == "right";
     fullscreen = false;
     was_fullscreen = false;
-    bleh = false;
+    show_panel_adm = false;
 
     // These functions do not load stuff from json.
     // The content they load/initialize is hardcoded into the program.
@@ -513,27 +513,27 @@ void game::init_ui( const bool resized )
     // minimapX x minimapY is always MINIMAP_WIDTH x MINIMAP_HEIGHT in size
     int minimapX = 0;
     int minimapY = 0;
-    int hpX = 0;
-    int hpY = 0;
-    int hpW = 0;
-    int hpH = 0;
+    //    int hpX = 0;
+    //    int hpY = 0;
+    //    int hpW = 0;
+    //    int hpH = 0;
     int messX = 0;
     int messY = 0;
     int messW = 0;
     int messHshort = 0;
     int messHlong = 0;
-    int locX = 0;
-    int locY = 0;
-    int locW = 0;
-    int locH = 0;
-    int statX = 0;
-    int statY = 0;
-    int statW = 0;
-    int statH = 0;
-    int stat2X = 0;
-    int stat2Y = 0;
-    int stat2W = 0;
-    int stat2H = 0;
+    // int locX = 0;
+    // int locY = 0;
+    // int locW = 0;
+    // int locH = 0;
+    //    int statX = 0;
+    //    int statY = 0;
+    //    int statW = 0;
+    //    int statH = 0;
+    //    int stat2X = 0;
+    //    int stat2Y = 0;
+    //    int stat2W = 0;
+    //    int stat2H = 0;
     int pixelminimapW = 0;
     int pixelminimapH = 0;
     // int pixelminimapX = 0;
@@ -545,9 +545,9 @@ void game::init_ui( const bool resized )
     pixel_minimap_custom_height = get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) > 0;
 #endif // TILES
 
-    locH = 3;
-    statX = 0;
-    statH = 4;
+    // locH = 3;
+    // statX = 0;
+    // statH = 4;
     minimapX = 0;
     minimapY = 0;
     messX = MINIMAP_WIDTH;
@@ -558,34 +558,34 @@ void game::init_ui( const bool resized )
     if( pixel_minimap_custom_height && pixelminimapH > get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) ) {
         pixelminimapH = get_option<int>( "PIXEL_MINIMAP_HEIGHT" );
     }
-    messHshort = TERRAIN_WINDOW_TERM_HEIGHT - ( locH + statH +
-                 pixelminimapH ); // 3 for w_location + 4 for w_stat, w_messages starts at 0
-    if( messHshort < 9 ) {
-        pixelminimapH -= 9 - messHshort;
-        messHshort = 9;
-    }
-    messHlong = TERRAIN_WINDOW_TERM_HEIGHT - ( locH + statH );
+    //    messHshort = TERRAIN_WINDOW_TERM_HEIGHT - ( locH + statH +
+    //                 pixelminimapH ); // 3 for w_location + 4 for w_stat, w_messages starts at 0
+    //    if( messHshort < 9 ) {
+    //        pixelminimapH -= 9 - messHshort;
+    //        messHshort = 9;
+    //    }
+    //    messHlong = TERRAIN_WINDOW_TERM_HEIGHT - ( locH + statH );
     //pixelminimapX = MINIMAP_WIDTH;
     //pixelminimapY = messHshort;
-    hpX = 0;
-    hpY = MINIMAP_HEIGHT;
+    //    hpX = 0;
+    //    hpY = MINIMAP_HEIGHT;
     // under the minimap, but down to the same line as w_location (which is under w_messages)
     // so it erases the space between w_terrain and (w_messages and w_location)
-    hpH = messHshort + pixelminimapH - MINIMAP_HEIGHT + 3;
-    hpW = 7;
-    locX = MINIMAP_WIDTH;
-    locY = messY + messHshort + pixelminimapH;
+    //    hpH = messHshort + pixelminimapH - MINIMAP_HEIGHT + 3;
+    //    hpW = 7;
+    // locX = MINIMAP_WIDTH;
+    // locY = messY + messHshort + pixelminimapH;
 
-    locW = locX;
-    statY = locY + locH;
+    // locW = locX;
+    // statY = locY + locH;
 
-    statW = 0;
+    // statW = 0;
 
     // The default style only uses one status window.
-    stat2X = 0;
-    stat2Y = statY + statH;
-    stat2H = 1;
-    stat2W = 0;
+    //    stat2X = 0;
+    //    stat2Y = statY + statH;
+    //    stat2H = 1;
+    //    stat2W = 0;
 
     int _y = VIEW_OFFSET_Y;
     int _x = VIEW_OFFSET_X;
@@ -594,8 +594,8 @@ void game::init_ui( const bool resized )
                                 _x + minimapX );
     werase( w_minimap );
 
-    w_HP = w_HP_ptr = catacurses::newwin( hpH, hpW, _y + hpY, _x + hpX );
-    werase( w_HP );
+    //    w_HP = w_HP_ptr = catacurses::newwin( hpH, hpW, _y + hpY, _x + hpX );
+    //    werase( w_HP );
 
     w_messages_short = w_messages_short_ptr = catacurses::newwin( messHshort, messW, _y + messY,
                        _x + messX );
@@ -621,8 +621,8 @@ void game::init_ui( const bool resized )
         w_messages = w_messages_long;
     }
 
-    w_location = w_location_ptr = catacurses::newwin( locH, locW, _y + locY, _x + locX );
-    werase( w_location );
+    //    w_location = w_location_ptr = catacurses::newwin( locH, locW, _y + locY, _x + locX );
+    //    werase( w_location );
 
     w_panel1 = w_panel1_ptr = catacurses::newwin( 13, 32, 0, 88 );
     werase( w_panel1 );
@@ -639,11 +639,14 @@ void game::init_ui( const bool resized )
     w_panel5 = w_panel5_ptr = catacurses::newwin( 13, 32, 52, 88 );
     werase( w_panel5 );
 
-    w_status = w_status_ptr = catacurses::newwin( statH, statW, _y + statY, _x + statX );
-    werase( w_status );
+    w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 30, 60, 15, 20 );
+    werase( w_panel_adm );
 
-    w_status2 = w_status2_ptr = catacurses::newwin( stat2H, stat2W, _y + stat2Y, _x + stat2X );
-    werase( w_status2 );
+    //    w_status = w_status_ptr = catacurses::newwin( statH, statW, _y + statY, _x + statX );
+    //    werase( w_status );
+
+    //    w_status2 = w_status2_ptr = catacurses::newwin( stat2H, stat2W, _y + stat2Y, _x + stat2X );
+    //    werase( w_status2 );
 
     liveview.init();
 
@@ -689,6 +692,11 @@ void game::toggle_pixel_minimap()
     init_ui();
     refresh_all();
 #endif // TILES
+}
+
+void game::toggle_panel_adm()
+{
+    show_panel_adm = !show_panel_adm;
 }
 
 void game::reload_tileset()
@@ -2350,6 +2358,7 @@ input_context get_default_mode_input_context()
     ctxt.register_action( "toggle_fullscreen" );
 #endif
     ctxt.register_action( "toggle_pixel_minimap" );
+    ctxt.register_action( "toggle_panel_adm" );
     ctxt.register_action( "reload_tileset" );
     ctxt.register_action( "toggle_auto_features" );
     ctxt.register_action( "toggle_auto_pulp_butcher" );
@@ -3584,6 +3593,9 @@ void game::draw_panels()
         draw_modifiers( u, w_panel4 );
         // draw_mminimap( w_panel5 );
         // draw_lookaround();
+        if( show_panel_adm ) {
+            draw_panel_adm( w_panel_adm );
+        }
     }
 }
 
