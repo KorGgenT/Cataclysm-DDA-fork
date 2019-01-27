@@ -20,6 +20,7 @@
 #include "string_id.h"
 #include "translations.h"
 #include "units.h"
+#include "itype.h"
 
 // see item.h
 class item_category;
@@ -188,6 +189,49 @@ struct islot_brewable {
 
     /** How long for this brew to ferment. */
     time_duration time = 0_turns;
+};
+
+// intended to be a pocket in the new type of container, unwilling to overwrite the old code for now
+struct islot_pocket {
+    // volume of stuff inside the pocket
+    units::volume contains_volume = 0_ml;
+    // max volume of stuff the pocket can hold
+    units::volume max_contains_volume = 0_ml;
+    // weight of stuff inside the pocket
+    units::mass contains_weight = 0_gram;
+    // max weight of stuff the pocket can hold
+    units::mass max_contains_weight = 0_gram;
+    // multiplier for spoilage rate of contained items
+    float spoil_multiplier = 1;
+    // can hold liquids
+    bool watertight = false;
+    // the item will spill its contents if placed in another container
+    bool open_container = false;
+    /**
+     * allows only items that can be stored on a hook to be contained in this pocket
+     * overwrites rigid
+     * makes max_contains_volume redundant
+     */
+    bool hook = false;
+    // container's size and encumbrance does not change based on contents.
+    bool rigid = false;
+    // container can be placed into other containers
+    bool nestable = true;
+    /**
+     * base number of moves it takes to pull an item out of the container
+     * given no other items in container, and container is not inside another container
+     */
+    int moves = INVENTORY_HANDLING_PENALTY;
+    int obtain_cost() const;
+};
+
+// is an int because it should only be used internally. refers to a specific pocket in a container
+using pocket_id = int_id<islot_pocket>;
+
+struct islot_container_with_pockets {
+    std::map<pocket_id, islot_pocket> pockets;
+    // calculates the move cost of getting an item from a pocket
+    int obtain_cost( pocket_id p_id ) const;
 };
 
 struct islot_container {
@@ -701,6 +745,7 @@ struct itype {
         cata::optional<islot_container> container;
         cata::optional<islot_tool> tool;
         cata::optional<islot_comestible> comestible;
+        cata::optional<islot_container_with_pockets> container_with_pockets;
         cata::optional<islot_brewable> brewable;
         cata::optional<islot_armor> armor;
         cata::optional<islot_book> book;

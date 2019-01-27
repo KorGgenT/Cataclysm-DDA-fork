@@ -1657,6 +1657,15 @@ void Item_factory::load_container( JsonObject &jo, const std::string &src )
     }
 }
 
+void Item_factory::load_pockets( JsonObject &jo, const std::string &src )
+{
+    itype def;
+    if( load_definition( jo, src, def ) ) {
+        load_slot( def.container_with_pockets, jo, src );
+        load_basic_info( jo, def, src );
+    }
+}
+
 void Item_factory::load( islot_seed &slot, JsonObject &jo, const std::string & )
 {
     assign( jo, "grow", slot.grow, false, 1_days );
@@ -1674,6 +1683,29 @@ void Item_factory::load( islot_container &slot, JsonObject &jo, const std::strin
     assign( jo, "watertight", slot.watertight );
     assign( jo, "preserves", slot.preserves );
     assign( jo, "unseals_into", slot.unseals_into );
+}
+
+void Item_factory::load( islot_container_with_pockets &slot, JsonObject &jo,
+                         const std::string &src )
+{
+    JsonArray pockets = jo.get_array( "pockets" );
+    int p_id = 0;
+    while( pockets.has_more() ) {
+        JsonObject pocket_object = pockets.next_object();
+        islot_pocket pocket;
+        assign( pocket_object, "max_contains_volume", pocket.max_contains_volume );
+        assign( pocket_object, "max_contains_weight", pocket.max_contains_weight );
+        assign( pocket_object, "spoil_multiplier", pocket.spoil_multiplier );
+        assign( pocket_object, "watertight", pocket.watertight );
+        assign( pocket_object, "open_container", pocket.open_container );
+        assign( pocket_object, "hook", pocket.hook );
+        assign( pocket_object, "rigid", pocket.rigid );
+        assign( pocket_object, "nestable", pocket.nestable );
+        assign( pocket_object, "moves", pocket.moves );
+
+        slot.pockets.emplace( std::make_pair( pocket_id( p_id ), pocket ) );
+        p_id++;
+    }
 }
 
 void Item_factory::load( islot_gunmod &slot, JsonObject &jo, const std::string &src )

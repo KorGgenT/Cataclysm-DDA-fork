@@ -747,6 +747,25 @@ class ammobelt_actor : public iuse_actor
         iuse_actor *clone() const override;
         void info( const item &, std::vector<iteminfo> & ) const override;
 };
+// store item in a container
+class contain_actor : public iuse_actor
+{
+        // total volume allowed in pockets, for each pocket
+        std::map<int, units::volume> pockets;
+        // total weight allowed in container
+        units::mass total_weight = units::mass( -1, units::mass::unit_type{} );
+        // cost in moves of removing item from container
+        int draw_cost = INVENTORY_HANDLING_PENALTY;
+        // can you store the item in this container?
+        bool can_store( player &p, item &container, item &obj ) const;
+        // store the item in this container
+        bool store( player &p, item &container, item &obj ) const;
+
+        ~contain_actor() override = default;
+        void load( JsonObject &jo ) override;
+        iuse_actor *clone() const override;
+        void info(const item &, std::vector<iteminfo> &) const override;
+};
 
 /**
  * Repair an item
