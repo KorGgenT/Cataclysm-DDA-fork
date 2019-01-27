@@ -94,20 +94,20 @@ TEST_CASE( "recipe_permutations" )
         // the resulting item
         const item res_it = i->first.obj().create_result();
         const bool is_food = res_it.type->get_item_type_string() == "FOOD";
-        const bool has_override = res_it.type->item_tags.count( "NUTRIENT_OVERRIDE" ) > 0;
+        const bool has_override = res_it.has_flag( "NUTRIENT_OVERRIDE" );
         int default_calories = res_it.type->comestible->get_calories();
         if( res_it.charges > 0 ) {
             default_calories *= res_it.charges;
         } else if( res_it.charges == 0 && !res_it.contents.empty() ) {
             default_calories *= res_it.contents.front().charges;
         }
-        const int lower_bound = std::min( default_calories - mystats.calories.stddev() * 2,
-                                          default_calories * 0.8 );
-        const int upper_bound = std::max( default_calories + mystats.calories.stddev() * 2,
-                                          default_calories * 1.2 );
+        const float lower_bound = std::min( default_calories - mystats.calories.stddev() * 2,
+                                            default_calories * 0.8 );
+        const float upper_bound = std::max( default_calories + mystats.calories.stddev() * 2,
+                                            default_calories * 1.2 );
         if( mystats.calories.min() != mystats.calories.max() && is_food && !has_override ) {
-            if( lower_bound < mystats.calories.avg() || mystats.calories.avg() < upper_bound ) {
-                printf( "\n\nRecipeID: %s, Lower Bound: %i, Average: %f, Upper Bound: %i\n\n", i->first.c_str(),
+            if( lower_bound >= mystats.calories.avg() || mystats.calories.avg() >= upper_bound )  {
+                printf( "\n\nRecipeID: %s, Lower Bound: %f, Average: %f, Upper Bound: %f\n\n", i->first.c_str(),
                         lower_bound, mystats.calories.avg(), upper_bound );
             }
             REQUIRE( lower_bound < mystats.calories.avg() );
