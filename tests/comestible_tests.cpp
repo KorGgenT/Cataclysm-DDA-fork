@@ -85,18 +85,9 @@ all_stats run_stats( std::vector<std::vector<item_comp>> permutations )
     return mystats;
 }
 
-TEST_CASE( "charges" )
-{
-    recipe_id fruit = recipe_id( "apple_canned_jarred_3l" );
-    item it = fruit.obj().create_result();
-    int charges = it.contents.front().charges;
-    printf( "\n\n%i\n%s\n", charges, it.display_name().c_str() );
-}
-
-TEST_CASE( "hamburger" )
+TEST_CASE( "recipe_permutations" )
 {
     recipe_dict;
-    int count = 0;
     for( auto i = recipe_dict.begin(); i != recipe_dict.end(); i++ ) {
         all_stats mystats = run_stats( recipe_permutations(
                                            i->first.obj().requirements().get_components() ) );
@@ -105,25 +96,22 @@ TEST_CASE( "hamburger" )
         const bool is_food = res_it.type->get_item_type_string() == "FOOD";
         const bool has_override = res_it.type->item_tags.count( "NUTRIENT_OVERRIDE" ) > 0;
         int default_calories = res_it.type->comestible->get_calories();
-        const int charges = res_it.charges;
-        if( charges > 0 ) {
-            default_calories *= charges;
-        } else if( charges == 0 && !res_it.contents.empty() ) {
+        if( res_it.charges > 0 ) {
+            default_calories *= res_it.charges;
+        } else if( res_it.charges == 0 && !res_it.contents.empty() ) {
             default_calories *= res_it.contents.front().charges;
         }
         const int lower_bound = std::min( default_calories - mystats.calories.stddev() * 2,
-                                     default_calories * 0.8 );
+                                          default_calories * 0.8 );
         const int upper_bound = std::max( default_calories + mystats.calories.stddev() * 2,
-                                     default_calories * 1.2 );
+                                          default_calories * 1.2 );
         if( mystats.calories.min() != mystats.calories.max() && is_food && !has_override ) {
-            if( lower_bound < default_calories && default_calories > upper_bound ) {
-                count++;
-                printf( "\n\nRecipeID: %s, Min kcal: %i, Max kcal: %i, Avg kcal: %f, Std Deviation: %f, Total Permutations: %i, Default kcal: %i, Acceptable lower bound: %i, Acceptable upper bound: %i\n\n",
-                        i->first.c_str(), mystats.calories.min(), mystats.calories.max(), mystats.calories.avg(),
-                        mystats.calories.stddev(), mystats.calories.n(), default_calories, lower_bound, upper_bound );
-                REQUIRE( lower_bound < default_calories );
-                REQUIRE( default_calories > upper_bound );
+            if( lower_bound < mystats.calories.avg() || mystats.calories.avg() < upper_bound ) {
+                printf( "\n\nRecipeID: %s, Lower Bound: %i, Average: %f, Upper Bound: %i\n\n", i->first.c_str(),
+                        lower_bound, mystats.calories.avg(), upper_bound );
             }
+            REQUIRE( lower_bound < mystats.calories.avg() );
+            REQUIRE( mystats.calories.avg() < upper_bound );
         }
     }
 }
