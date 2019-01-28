@@ -292,6 +292,8 @@ std::string action_ident( action_id act )
             return "toggle_pixel_minimap";
         case ACTION_TOGGLE_PANEL_ADM:
             return "toggle_panel_adm";
+        case ACTION_ACTIVATE_PANEL:
+            return "activate_panel";
         case ACTION_RELOAD_TILESET:
             return "reload_tileset";
         case ACTION_TOGGLE_AUTO_FEATURES:
@@ -381,6 +383,7 @@ bool can_action_change_worldstate( const action_id act )
         case ACTION_ZOOM_IN:
         case ACTION_TOGGLE_PIXEL_MINIMAP:
         case ACTION_TOGGLE_PANEL_ADM:
+        case ACTION_ACTIVATE_PANEL:
         case ACTION_RELOAD_TILESET:
         case ACTION_TIMEOUT:
         case ACTION_TOGGLE_AUTO_FEATURES:

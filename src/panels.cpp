@@ -28,9 +28,42 @@ static const trait_id trait_SELFAWARE( "SELFAWARE" );
 // ===============================
 void draw_panel_adm( const catacurses::window &w )
 {
-    static const std::string title = _( "panel admin" );
-    decorate_panel( title, w );
-    wrefresh( w );
+
+    input_context ctxt( "ACTIVATE_PANEL" );
+    ctxt.register_action( "HELP_KEYBINDINGS" );
+    ctxt.register_action( "QUIT" );
+    ctxt.register_action( "UP" );
+    ctxt.register_action( "DOWN" );
+
+    int index = 0;
+    bool redraw = true;
+    bool exit = false;
+
+    while( !exit ) {
+        if( redraw ) {
+            redraw = false;
+            werase( w );
+            static const std::string title = _( "panel admin" );
+            decorate_panel( title, w );
+            for( int i = 1; i < 5; i++ ) {
+                mvwprintz( w, i, 4, c_white, "Panel %d", i );
+            }
+            mvwprintz( w, index, 1, c_yellow, ">>" );
+        }
+        wrefresh( w );
+
+        const std::string action = ctxt.handle_input();
+        if( action == "UP" ) {
+            index -= 1;
+            redraw = true;
+        } else if( action == "DOWN" ) {
+            index += 1;
+            redraw = true;
+        } else if( action == "QUIT" ) {
+            exit = true;
+            g->show_panel_adm = false;
+        }
+    }
 }
 
 void draw_character( player &u, const catacurses::window &w )

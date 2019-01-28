@@ -3,6 +3,7 @@
 #define PANELS_H
 #include "color.h"
 #include "game.h"
+#include "input.h"
 #include <string>
 
 

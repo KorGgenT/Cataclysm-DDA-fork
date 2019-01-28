@@ -639,7 +639,7 @@ void game::init_ui( const bool resized )
     w_panel5 = w_panel5_ptr = catacurses::newwin( 13, 32, 52, 88 );
     werase( w_panel5 );
 
-    w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 30, 60, 15, 20 );
+    w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 30, 60, 8, 20 );
     werase( w_panel_adm );
 
     //    w_status = w_status_ptr = catacurses::newwin( statH, statW, _y + statY, _x + statX );
