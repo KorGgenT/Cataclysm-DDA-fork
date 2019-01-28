@@ -681,6 +681,7 @@ class game
         catacurses::window w_panel3_ptr;
         catacurses::window w_panel4_ptr;
         catacurses::window w_panel5_ptr;
+        catacurses::window w_panel6_ptr;
         //        catacurses::window w_status_ptr;
         //        catacurses::window w_status2_ptr;
         catacurses::window w_panel_adm_ptr;
@@ -697,11 +698,13 @@ class game
         catacurses::window w_messages_short;
         catacurses::window w_messages_long;
         // catacurses::window w_location;
+        std::vector<catacurses::window> win_vec;
         catacurses::window w_panel1;
         catacurses::window w_panel2;
         catacurses::window w_panel3;
         catacurses::window w_panel4;
         catacurses::window w_panel5;
+        catacurses::window w_panel6;
         catacurses::window w_panel_adm;
         //        catacurses::window w_status;
         //        catacurses::window w_status2;

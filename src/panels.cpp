@@ -17,9 +17,13 @@
 #include <cmath>
 #include <string>
 
-#ifdef TILES
-#include "cata_tiles.h"
-#endif // TILES
+#if (defined TILES || defined _WIN32 || defined WINDOWS)
+#include "cursesport.h"
+#endif
+
+//#ifdef TILES
+//#include "cata_tiles.h"
+//#endif // TILES
 
 static const trait_id trait_SELFAWARE( "SELFAWARE" );
 
@@ -53,20 +57,31 @@ void draw_panel_adm( const catacurses::window &w )
             mvwprintz( w, 2, 4, g->env_panel ?  c_white : c_red, "Environment Panel" );
             mvwprintz( w, 3, 4, g->msg_panel ?  c_white : c_red, "Message Panel" );
             mvwprintz( w, 4, 4, g->mod_panel ?  c_white : c_red, "Modifier Panel" );
+            mvwprintz( w, 5, 4, g->com_panel ?  c_white : c_red, "Compass Panel" );
+            mvwprintz( w, 6, 4, g->map_panel ?  c_white : c_red, "Minimap Panel" );
             mvwprintz( w, index, 1, c_yellow, ">>" );
         }
         wrefresh( w );
+        // catacurses::window.get
 
         const std::string action = ctxt.handle_input();
         if( action == "UP" ) {
             if( !( index <= 1 ) ) {
                 index -= 1;
                 redraw = true;
+                int huh = g->win_vec[index - 1].get<cata_cursesport::WINDOW>()->y;
+
+                std::cout << "winY=" << huh << "\n";
+                fflush( stdout );
             }
         } else if( action == "DOWN" ) {
-            if( !( index >= 4 ) ) {
+            if( !( index >= 6 ) ) {
                 index += 1;
                 redraw = true;
+                int huh = g->win_vec[index - 1].get<cata_cursesport::WINDOW>()->y;
+
+                std::cout << "winY=" << huh << "\n";
+                fflush( stdout );
             }
         } else if( action == "RIGHT" ) {
             switch( index ) {
@@ -82,10 +97,14 @@ void draw_panel_adm( const catacurses::window &w )
                 case 4:
                     g->mod_panel = !g->mod_panel;
                     break;
+                case 5:
+                    g->com_panel = !g->com_panel;
+                    break;
+                case 6:
+                    g->map_panel = !g->map_panel;
+                    break;
             }
-
-            std::cout << "panel=" << index << "\n";
-            fflush( stdout );
+            redraw = true;
         } else if( action == "QUIT" ) {
             exit = true;
             g->show_panel_adm = false;

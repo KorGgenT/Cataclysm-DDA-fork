@@ -275,6 +275,8 @@ void game::load_static_data()
     env_panel = true;
     msg_panel = true;
     mod_panel = true;
+    map_panel = false;
+    com_panel = false;
 
     // These functions do not load stuff from json.
     // The content they load/initialize is hardcoded into the program.
@@ -629,19 +631,28 @@ void game::init_ui( const bool resized )
     //    werase( w_location );
 
     w_panel1 = w_panel1_ptr = catacurses::newwin( 13, 32, 0, 88 );
+    win_vec.push_back( w_panel1 );
     werase( w_panel1 );
 
     w_panel2 = w_panel2_ptr = catacurses::newwin( 13, 32, 13, 88 );
+    win_vec.push_back( w_panel2 );
     werase( w_panel2 );
 
     w_panel3 = w_panel3_ptr = catacurses::newwin( 13, 32, 26, 88 );
+    win_vec.push_back( w_panel3 );
     werase( w_panel3 );
 
     w_panel4 = w_panel4_ptr = catacurses::newwin( 13, 32, 39, 88 );
+    win_vec.push_back( w_panel4 );
     werase( w_panel4 );
 
     w_panel5 = w_panel5_ptr = catacurses::newwin( 13, 32, 52, 88 );
+    win_vec.push_back( w_panel5 );
     werase( w_panel5 );
+
+    w_panel6 = w_panel6_ptr = catacurses::newwin( 13, 32, 65, 88 );
+    win_vec.push_back( w_panel6 );
+    werase( w_panel6 );
 
     w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 15, 35, 8, 20 );
     werase( w_panel_adm );
@@ -3586,16 +3597,17 @@ void game::draw()
 void game::draw_panels()
 {
     if( narrow_sidebar ) {
-        if( pixel_minimap_option ) {
+        if( map_panel ) {
             draw_mminimap( w_panel1 );
+        }
+        if( com_panel ) {
             draw_compass( w_panel2 );
-        } else {
-            if( char_panel ) {
-                draw_character( u, w_panel1 );
-            }
-            if( env_panel ) {
-                draw_environment( u, w_panel2 );
-            }
+        }
+        if( char_panel ) {
+            draw_character( u, w_panel1 );
+        }
+        if( env_panel ) {
+            draw_environment( u, w_panel2 );
         }
         if( msg_panel ) {
             draw_messages( w_panel3 );
@@ -3603,9 +3615,6 @@ void game::draw_panels()
         if( mod_panel ) {
             draw_modifiers( u, w_panel4 );
         }
-
-        // draw_mminimap( w_panel5 );
-        // draw_lookaround();
         if( show_panel_adm ) {
             draw_panel_adm( w_panel_adm );
         }
