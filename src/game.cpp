@@ -271,6 +271,10 @@ void game::load_static_data()
     fullscreen = false;
     was_fullscreen = false;
     show_panel_adm = false;
+    char_panel = true;
+    env_panel = true;
+    msg_panel = true;
+    mod_panel = true;
 
     // These functions do not load stuff from json.
     // The content they load/initialize is hardcoded into the program.
@@ -639,7 +643,7 @@ void game::init_ui( const bool resized )
     w_panel5 = w_panel5_ptr = catacurses::newwin( 13, 32, 52, 88 );
     werase( w_panel5 );
 
-    w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 30, 60, 8, 20 );
+    w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 15, 35, 8, 20 );
     werase( w_panel_adm );
 
     //    w_status = w_status_ptr = catacurses::newwin( statH, statW, _y + statY, _x + statX );
@@ -3586,11 +3590,20 @@ void game::draw_panels()
             draw_mminimap( w_panel1 );
             draw_compass( w_panel2 );
         } else {
-            draw_character( u, w_panel1 );
-            draw_environment( u, w_panel2 );
+            if( char_panel ) {
+                draw_character( u, w_panel1 );
+            }
+            if( env_panel ) {
+                draw_environment( u, w_panel2 );
+            }
         }
-        draw_messages( w_panel3 );
-        draw_modifiers( u, w_panel4 );
+        if( msg_panel ) {
+            draw_messages( w_panel3 );
+        }
+        if( mod_panel ) {
+            draw_modifiers( u, w_panel4 );
+        }
+
         // draw_mminimap( w_panel5 );
         // draw_lookaround();
         if( show_panel_adm ) {

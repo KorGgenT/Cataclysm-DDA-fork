@@ -34,8 +34,9 @@ void draw_panel_adm( const catacurses::window &w )
     ctxt.register_action( "QUIT" );
     ctxt.register_action( "UP" );
     ctxt.register_action( "DOWN" );
+    ctxt.register_action( "RIGHT" );
 
-    int index = 0;
+    int index = 1;
     bool redraw = true;
     bool exit = false;
 
@@ -45,20 +46,46 @@ void draw_panel_adm( const catacurses::window &w )
             werase( w );
             static const std::string title = _( "panel admin" );
             decorate_panel( title, w );
-            for( int i = 1; i < 5; i++ ) {
-                mvwprintz( w, i, 4, c_white, "Panel %d", i );
-            }
+            //            for( int i = 1; i < 5; i++ ) {
+            //                mvwprintz( w, i, 4, c_white, "Panel %d", i );
+            //            }
+            mvwprintz( w, 1, 4, g->char_panel ? c_white : c_red, "Character Panel" );
+            mvwprintz( w, 2, 4, g->env_panel ?  c_white : c_red, "Environment Panel" );
+            mvwprintz( w, 3, 4, g->msg_panel ?  c_white : c_red, "Message Panel" );
+            mvwprintz( w, 4, 4, g->mod_panel ?  c_white : c_red, "Modifier Panel" );
             mvwprintz( w, index, 1, c_yellow, ">>" );
         }
         wrefresh( w );
 
         const std::string action = ctxt.handle_input();
         if( action == "UP" ) {
-            index -= 1;
-            redraw = true;
+            if( !( index <= 1 ) ) {
+                index -= 1;
+                redraw = true;
+            }
         } else if( action == "DOWN" ) {
-            index += 1;
-            redraw = true;
+            if( !( index >= 4 ) ) {
+                index += 1;
+                redraw = true;
+            }
+        } else if( action == "RIGHT" ) {
+            switch( index ) {
+                case 1:
+                    g->char_panel = !g->char_panel;
+                    break;
+                case 2:
+                    g->env_panel = !g->env_panel;
+                    break;
+                case 3:
+                    g->msg_panel = !g->msg_panel;
+                    break;
+                case 4:
+                    g->mod_panel = !g->mod_panel;
+                    break;
+            }
+
+            std::cout << "panel=" << index << "\n";
+            fflush( stdout );
         } else if( action == "QUIT" ) {
             exit = true;
             g->show_panel_adm = false;

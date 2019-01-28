@@ -865,6 +865,12 @@ class game
         bool right_sidebar;
         bool fullscreen;
         bool was_fullscreen;
+        bool char_panel;
+        bool env_panel;
+        bool msg_panel;
+        bool mod_panel;
+        bool map_panel;
+        bool com_panel;
 
         /** open vehicle interaction screen */
         void exam_vehicle( vehicle &veh, int cx = 0, int cy = 0 );
