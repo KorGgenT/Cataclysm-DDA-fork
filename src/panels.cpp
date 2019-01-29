@@ -16,6 +16,7 @@
 #include "weather_gen.h"
 #include <cmath>
 #include <string>
+#include <typeinfo>
 
 #if (defined TILES || defined _WIN32 || defined WINDOWS)
 #include "cursesport.h"
@@ -33,16 +34,43 @@ static const trait_id trait_SELFAWARE( "SELFAWARE" );
 void draw_panel_adm( const catacurses::window &w )
 {
 
-    input_context ctxt( "ACTIVATE_PANEL" );
+    input_context ctxt( "PANEL_MGMT" );
     ctxt.register_action( "HELP_KEYBINDINGS" );
     ctxt.register_action( "QUIT" );
     ctxt.register_action( "UP" );
     ctxt.register_action( "DOWN" );
     ctxt.register_action( "RIGHT" );
+    ctxt.register_action( "MOVE_PANEL" );
 
     int index = 1;
+    // bool moving = false;
+    catacurses::window w_null;
+    catacurses::window w_src = w_null;
+    catacurses::window w_dest = w_null;
+    std::string s_src = "";
+    std::string s_dst = "";
+    int srce = 0;
+    int dest = 0;
+    int saved_index = 0;
     bool redraw = true;
     bool exit = false;
+    std::cout << "here we are again" << "\n";
+    fflush( stdout );
+    std::vector<std::string> panel_list;
+    panel_list.push_back( "Character Panel" );
+    panel_list.push_back( "Environment Panel" );
+    panel_list.push_back( "Message Panel" );
+    panel_list.push_back( "Modifier Panel" );
+    panel_list.push_back( "Compass Panel" );
+    panel_list.push_back( "Minimap Panel" );
+
+    std::array<bool *, 6> panel_bool;
+    panel_bool[0] = &g->char_panel;
+    panel_bool[1] = &g->env_panel ;
+    panel_bool[2] = &g->msg_panel ;
+    panel_bool[3] = &g->mod_panel ;
+    panel_bool[4] = &g->com_panel ;
+    panel_bool[5] = &g->map_panel ;
 
     while( !exit ) {
         if( redraw ) {
@@ -50,60 +78,61 @@ void draw_panel_adm( const catacurses::window &w )
             werase( w );
             static const std::string title = _( "panel admin" );
             decorate_panel( title, w );
-            //            for( int i = 1; i < 5; i++ ) {
-            //                mvwprintz( w, i, 4, c_white, "Panel %d", i );
-            //            }
-            mvwprintz( w, 1, 4, g->char_panel ? c_white : c_red, "Character Panel" );
-            mvwprintz( w, 2, 4, g->env_panel ?  c_white : c_red, "Environment Panel" );
-            mvwprintz( w, 3, 4, g->msg_panel ?  c_white : c_red, "Message Panel" );
-            mvwprintz( w, 4, 4, g->mod_panel ?  c_white : c_red, "Modifier Panel" );
-            mvwprintz( w, 5, 4, g->com_panel ?  c_white : c_red, "Compass Panel" );
-            mvwprintz( w, 6, 4, g->map_panel ?  c_white : c_red, "Minimap Panel" );
+            for( int i = 0; i < 6; i++ ) {
+                mvwprintz( w, i + 1, 4, *panel_bool.at( i )  ? c_white : c_red, "%s", panel_list.at( i ) );
+            }
             mvwprintz( w, index, 1, c_yellow, ">>" );
         }
         wrefresh( w );
-        // catacurses::window.get
 
         const std::string action = ctxt.handle_input();
         if( action == "UP" ) {
             if( !( index <= 1 ) ) {
                 index -= 1;
                 redraw = true;
-                int huh = g->win_vec[index - 1].get<cata_cursesport::WINDOW>()->y;
-
-                std::cout << "winY=" << huh << "\n";
-                fflush( stdout );
             }
         } else if( action == "DOWN" ) {
             if( !( index >= 6 ) ) {
                 index += 1;
                 redraw = true;
-                int huh = g->win_vec[index - 1].get<cata_cursesport::WINDOW>()->y;
-
-                std::cout << "winY=" << huh << "\n";
+            }
+        } else if( action == "MOVE_PANEL" ) {
+            if( w_src == w_null ) {
+                w_src = g->win_map.at( index );
+                srce = g->win_map.at( index ).get<cata_cursesport::WINDOW>()->y;
+                s_src = panel_list[ index - 1 ];
+                saved_index = index - 1;
+                std::cout << "source=" << panel_list[ index - 1 ] <<
+                          " - " << index  - 1 <<
+                          " - " << srce <<
+                          " - " << s_src << "\n";
                 fflush( stdout );
             }
-        } else if( action == "RIGHT" ) {
-            switch( index ) {
-                case 1:
-                    g->char_panel = !g->char_panel;
-                    break;
-                case 2:
-                    g->env_panel = !g->env_panel;
-                    break;
-                case 3:
-                    g->msg_panel = !g->msg_panel;
-                    break;
-                case 4:
-                    g->mod_panel = !g->mod_panel;
-                    break;
-                case 5:
-                    g->com_panel = !g->com_panel;
-                    break;
-                case 6:
-                    g->map_panel = !g->map_panel;
-                    break;
+
+            if( !( w_src == g->win_map.at( index ) ) ) {
+                w_dest = g->win_map.at( index );
+                dest = w_dest.get<cata_cursesport::WINDOW>()->y;
+                w_src.get<cata_cursesport::WINDOW>()->y = dest;
+                w_dest.get<cata_cursesport::WINDOW>()->y = srce;
+
+                s_dst = panel_list[ index - 1 ];
+                panel_list.at( index - 1 ) = s_src;
+                panel_list.at( saved_index ) = s_dst;
+
+                std::cout << "destin=" << panel_list[ saved_index ] <<
+                          " - " << saved_index <<
+                          " - " << dest <<
+                          " - " << s_dst << "\n";
+                fflush( stdout );
+                w_src = w_null;
+                w_dest = w_null;
+                srce = 0;
+                dest = 0;
+                saved_index = 0;
+                redraw = true;
             }
+        } else if( action == "RIGHT" ) {
+            *panel_bool[ index - 1 ] = !( *panel_bool[ index - 1 ] );
             redraw = true;
         } else if( action == "QUIT" ) {
             exit = true;

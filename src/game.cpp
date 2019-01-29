@@ -631,27 +631,27 @@ void game::init_ui( const bool resized )
     //    werase( w_location );
 
     w_panel1 = w_panel1_ptr = catacurses::newwin( 13, 32, 0, 88 );
-    win_vec.push_back( w_panel1 );
+    win_map.insert( {1, w_panel1} ); //.push_back( w_panel1 );
     werase( w_panel1 );
 
     w_panel2 = w_panel2_ptr = catacurses::newwin( 13, 32, 13, 88 );
-    win_vec.push_back( w_panel2 );
+    win_map.insert( {2, w_panel2} );  //vec.push_back( w_panel2 );
     werase( w_panel2 );
 
     w_panel3 = w_panel3_ptr = catacurses::newwin( 13, 32, 26, 88 );
-    win_vec.push_back( w_panel3 );
+    win_map.insert( {3, w_panel3} ); //vec.push_back( w_panel3 );
     werase( w_panel3 );
 
     w_panel4 = w_panel4_ptr = catacurses::newwin( 13, 32, 39, 88 );
-    win_vec.push_back( w_panel4 );
+    win_map.insert( {4, w_panel4} ); //vec.push_back( w_panel4 );
     werase( w_panel4 );
 
     w_panel5 = w_panel5_ptr = catacurses::newwin( 13, 32, 52, 88 );
-    win_vec.push_back( w_panel5 );
+    win_map.insert( {5, w_panel5} );  //vec.push_back( w_panel5 );
     werase( w_panel5 );
 
     w_panel6 = w_panel6_ptr = catacurses::newwin( 13, 32, 65, 88 );
-    win_vec.push_back( w_panel6 );
+    win_map.insert( {6, w_panel6} );  //vec.push_back( w_panel6 );
     werase( w_panel6 );
 
     w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 15, 35, 8, 20 );

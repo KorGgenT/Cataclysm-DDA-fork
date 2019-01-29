@@ -263,8 +263,8 @@ enum action_id : int {
     ACTION_TOGGLE_PIXEL_MINIMAP,
     /** Turn admin panel on/off */
     ACTION_TOGGLE_PANEL_ADM,
-    /** select panels to show/hide */
-    ACTION_ACTIVATE_PANEL,
+    /** panels management */
+    ACTION_PANEL_MGMT,
     /** Reload current tileset */
     ACTION_RELOAD_TILESET,
     /** Turn auto features on/off */

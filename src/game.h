@@ -136,6 +136,7 @@ struct liquid_dest_opt {
     tripoint pos;
 };
 
+
 enum peek_act : int {
     PA_BLIND_THROW
     // obvious future additional value is PA_BLIND_FIRE
@@ -144,6 +145,12 @@ enum peek_act : int {
 struct look_around_result {
     cata::optional<tripoint> position;
     cata::optional<peek_act> peek_action;
+};
+
+struct w_map {
+    std::string name;
+    int posy;
+    catacurses::window win;
 };
 
 class game
@@ -698,7 +705,8 @@ class game
         catacurses::window w_messages_short;
         catacurses::window w_messages_long;
         // catacurses::window w_location;
-        std::vector<catacurses::window> win_vec;
+        // std::vector<catacurses::window> win_vec;
+        std::map<int, catacurses::window> win_map;
         catacurses::window w_panel1;
         catacurses::window w_panel2;
         catacurses::window w_panel3;
