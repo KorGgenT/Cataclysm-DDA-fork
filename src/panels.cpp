@@ -41,6 +41,7 @@ void draw_panel_adm( const catacurses::window &w )
 
     int index = 1;
     int counter = 0;
+    bool selected = false;
     catacurses::window w_null;
     struct w_map w_arr[3];
     w_arr[0].name = "";
@@ -70,7 +71,9 @@ void draw_panel_adm( const catacurses::window &w )
             decorate_panel( title, w );
             for( int i = 0; i < 6; i++ ) {
                 mvwprintz( w, i + 1, 4,
-                           g->win_map[ i ].toggle  ? c_white : c_red, "%s",
+                           g->win_map[ i ].toggle  ?
+                           savedindex == i && selected ? c_yellow : c_white : c_dark_gray,
+                           selected && index - 1 == i ? " %s" : "%s",
                            g->win_map[ i ].name );
             }
             mvwprintz( w, index, 1, c_yellow, ">>" );
@@ -88,9 +91,11 @@ void draw_panel_adm( const catacurses::window &w )
                 index += 1;
                 redraw = true;
             }
-        } else if( action == "MOVE_PANEL" ) {
+            // don't move disabled panels
+        } else if( action == "MOVE_PANEL" && g->win_map.at( index - 1 ).toggle ) {
             counter += 1;
             if( counter == 1 ) {
+                selected = true;
                 w_arr[0] = g->win_map.at( index - 1 );
                 w_arr[1] = g->win_map.at( index - 1 );
                 savedindex = index - 1;
@@ -104,15 +109,14 @@ void draw_panel_adm( const catacurses::window &w )
                 g->win_map.at( index - 1 ) = w_arr[1];
                 g->win_map.at( savedindex ) = w_arr[2];
                 counter = 0;
+                selected = false;
             }
-            std::cout << " " << "\n";
-            fflush( stdout );
             redraw = true;
         } else if( action == "RIGHT" ) {
             // toggling panels
             g->win_map[ index - 1 ].toggle = !g->win_map[ index - 1 ].toggle;
 
-            // hiding panel, slide all other upward
+            // hiding panels, slide all others upward
             if( !( g->win_map[ index - 1 ].toggle ) ) {
                 for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
                     if( i > index - 1 ) {
@@ -120,7 +124,7 @@ void draw_panel_adm( const catacurses::window &w )
                     }
                 }
             }
-            // showing panel slide all other downward
+            // showing panels slide all others downward
             else if( g->win_map[ index - 1 ].toggle ) {
                 for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
                     if( i > index - 1 ) {
