@@ -43,6 +43,7 @@ void draw_panel_adm( const catacurses::window &w )
     ctxt.register_action( "MOVE_PANEL" );
 
     int index = 1;
+    int counter = 0;
     // bool moving = false;
     catacurses::window w_null;
     struct w_map w_arr[3];
@@ -61,6 +62,7 @@ void draw_panel_adm( const catacurses::window &w )
     w_arr[2].toggle = false;
     w_arr[2].index = 2;
     w_arr[2].win = w_null;
+    int savedindex = 0;
     std::cout << "here we go again" << "\n";
     fflush( stdout );
     //    std::string s_src = "";
@@ -98,6 +100,57 @@ void draw_panel_adm( const catacurses::window &w )
                 redraw = true;
             }
         } else if( action == "MOVE_PANEL" ) {
+            counter += 1;
+            if( counter == 1 ) {
+                w_arr[0] = g->win_map.at( index - 1 );
+                w_arr[1] = g->win_map.at( index - 1 );
+                savedindex = index - 1;
+                std::cout << "win1 name = " << w_arr[0].name << " "
+                          << "s_index = " << savedindex << " "
+                          << "posy = " << w_arr[0].win.get<cata_cursesport::WINDOW>()->y << "\n";
+            }
+            if( counter == 2 ) {
+                w_arr[2] = g->win_map.at( index - 1 );
+                std::cout << "value of Y1 = "
+                          //<< g->win_map.at( savedindex ).win.get<cata_cursesport::WINDOW>()->y
+                          << w_arr[0].win.get<cata_cursesport::WINDOW>()->y
+                          << "\n";
+                int temp = w_arr[0].win.get<cata_cursesport::WINDOW>()->y;
+                std::cout << "win2 name = " << w_arr[2].name << " "
+                          << "c_index = " << index - 1 << " "
+                          << "s_index = " << savedindex << " "
+                          << "posy = " << w_arr[2].win.get<cata_cursesport::WINDOW>()->y << "\n";
+
+                w_arr[1].win.get<cata_cursesport::WINDOW>()->y =
+                    g->win_map.at( index - 1 ).win.get<cata_cursesport::WINDOW>()->y;
+
+                w_arr[2].win.get<cata_cursesport::WINDOW>()->y = temp;
+                //w_arr[0].win.get<cata_cursesport::WINDOW>()->y;
+                std::cout << "value of Y2 = "
+                          //<< g->win_map.at( savedindex ).win.get<cata_cursesport::WINDOW>()->y
+                          << w_arr[0].win.get<cata_cursesport::WINDOW>()->y
+                          << "\n";
+                //g->win_map.at( savedindex ).win.get<cata_cursesport::WINDOW>()->y;
+
+                g->win_map.at( index - 1 ) = w_arr[1];
+                g->win_map.at( savedindex ) = w_arr[2];
+
+                std::cout << "\n after the swap" << "\n";
+                std::cout << "win1 name = " << g->win_map.at( savedindex ).name << " "
+                          << "posy = " << g->win_map.at( savedindex ).win.get<cata_cursesport::WINDOW>()->y << "\n";
+                std::cout << "win2 name = " << g->win_map.at( index - 1 ).name << " "
+                          << "posy = " << g->win_map.at( index - 1 ).win.get<cata_cursesport::WINDOW>()->y << "\n";
+
+                //std::cout << "counter = 2" << "\n";
+                counter = 0;
+
+            }
+
+            /*
+
+              0 -> 1
+              1 -> 0
+
             if( w_arr[0].win == w_null ) {
                 w_arr[0] = g->win_map.at( index - 1 );
                 w_arr[1] = g->win_map.at( index - 1 );
@@ -126,11 +179,11 @@ void draw_panel_adm( const catacurses::window &w )
                 g->win_map.at( index - 1 ).win = w_arr[0].win;
                 std::cout << " sindex_f2 = " << g->win_map.at( index - 1 ).index
                           << " bindex = " << index - 1 << "\n";
-
-                std::cout << " " << "\n";
-                fflush( stdout );
-                redraw = true;
-            }
+            */
+            std::cout << " " << "\n";
+            fflush( stdout );
+            redraw = true;
+            //}
         } else if( action == "RIGHT" ) {
             g->win_map[ index - 1 ].toggle = !g->win_map[ index - 1 ].toggle;
             // printf( "bleh = %s", typename( g->win_map[ index - 1 ].toggle ) );

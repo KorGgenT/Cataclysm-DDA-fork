@@ -3631,6 +3631,7 @@ void game::draw_panels()
 {
     for( int i = 0; i < ( int )win_map.size(); i++ ) {
         if( win_map[ i ].toggle ) {
+
             if( win_map[ i ].name == "char" ) {
                 draw_character( u, win_map[ i ].win );
             }
