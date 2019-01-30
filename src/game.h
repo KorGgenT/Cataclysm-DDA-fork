@@ -876,6 +876,7 @@ class game
         bool narrow_sidebar;
         bool show_panel_adm;
         bool right_sidebar;
+        bool reinitmap;
         bool fullscreen;
         bool was_fullscreen;
         bool char_panel;

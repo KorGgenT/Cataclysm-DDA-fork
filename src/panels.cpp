@@ -113,6 +113,19 @@ void draw_panel_adm( const catacurses::window &w )
                 w_arr[2].win.get<cata_cursesport::WINDOW>()->y = temp;
                 g->win_map.at( index - 1 ) = w_arr[1];
                 g->win_map.at( savedindex ) = w_arr[2];
+
+                // reinit map if position changed
+                if( g->win_map.at( index - 1 ).name == "map" ||
+                    g->win_map.at( savedindex ).name == "map" ) {
+                    // ensure minimap is displayed on minimap panel
+                    for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
+                        if( g->win_map[ i ].name == "map" ) {
+                            g->w_pixel_minimap.get<cata_cursesport::WINDOW>()->y =
+                                g->win_map[ i ].win.get<cata_cursesport::WINDOW>()->y + 1;
+                        }
+                    }
+                    g->reinitmap = true;
+                }
                 counter = 0;
                 selected = false;
             }
