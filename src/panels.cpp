@@ -22,10 +22,6 @@
 #include "cursesport.h"
 #endif
 
-//#ifdef TILES
-//#include "cata_tiles.h"
-//#endif // TILES
-
 static const trait_id trait_SELFAWARE( "SELFAWARE" );
 
 // ===============================
@@ -39,12 +35,12 @@ void draw_panel_adm( const catacurses::window &w )
     ctxt.register_action( "QUIT" );
     ctxt.register_action( "UP" );
     ctxt.register_action( "DOWN" );
+    ctxt.register_action( "LEFT" );
     ctxt.register_action( "RIGHT" );
     ctxt.register_action( "MOVE_PANEL" );
 
     int index = 1;
     int counter = 0;
-    // bool moving = false;
     catacurses::window w_null;
     struct w_map w_arr[3];
     w_arr[0].name = "";
@@ -63,13 +59,6 @@ void draw_panel_adm( const catacurses::window &w )
     w_arr[2].index = 2;
     w_arr[2].win = w_null;
     int savedindex = 0;
-    std::cout << "here we go again" << "\n";
-    fflush( stdout );
-    //    std::string s_src = "";
-    //    std::string s_dst = "";
-    //    int srce = 0;
-    //    int dest = 0;
-    // int saved_index = 0;
     bool redraw = true;
     bool exit = false;
 
@@ -105,96 +94,60 @@ void draw_panel_adm( const catacurses::window &w )
                 w_arr[0] = g->win_map.at( index - 1 );
                 w_arr[1] = g->win_map.at( index - 1 );
                 savedindex = index - 1;
-                std::cout << "win1 name = " << w_arr[0].name << " "
-                          << "s_index = " << savedindex << " "
-                          << "posy = " << w_arr[0].win.get<cata_cursesport::WINDOW>()->y << "\n";
             }
             if( counter == 2 ) {
                 w_arr[2] = g->win_map.at( index - 1 );
-                std::cout << "value of Y1 = "
-                          //<< g->win_map.at( savedindex ).win.get<cata_cursesport::WINDOW>()->y
-                          << w_arr[0].win.get<cata_cursesport::WINDOW>()->y
-                          << "\n";
                 int temp = w_arr[0].win.get<cata_cursesport::WINDOW>()->y;
-                std::cout << "win2 name = " << w_arr[2].name << " "
-                          << "c_index = " << index - 1 << " "
-                          << "s_index = " << savedindex << " "
-                          << "posy = " << w_arr[2].win.get<cata_cursesport::WINDOW>()->y << "\n";
-
                 w_arr[1].win.get<cata_cursesport::WINDOW>()->y =
                     g->win_map.at( index - 1 ).win.get<cata_cursesport::WINDOW>()->y;
-
                 w_arr[2].win.get<cata_cursesport::WINDOW>()->y = temp;
-                //w_arr[0].win.get<cata_cursesport::WINDOW>()->y;
-                std::cout << "value of Y2 = "
-                          //<< g->win_map.at( savedindex ).win.get<cata_cursesport::WINDOW>()->y
-                          << w_arr[0].win.get<cata_cursesport::WINDOW>()->y
-                          << "\n";
-                //g->win_map.at( savedindex ).win.get<cata_cursesport::WINDOW>()->y;
-
                 g->win_map.at( index - 1 ) = w_arr[1];
                 g->win_map.at( savedindex ) = w_arr[2];
-
-                std::cout << "\n after the swap" << "\n";
-                std::cout << "win1 name = " << g->win_map.at( savedindex ).name << " "
-                          << "posy = " << g->win_map.at( savedindex ).win.get<cata_cursesport::WINDOW>()->y << "\n";
-                std::cout << "win2 name = " << g->win_map.at( index - 1 ).name << " "
-                          << "posy = " << g->win_map.at( index - 1 ).win.get<cata_cursesport::WINDOW>()->y << "\n";
-
-                //std::cout << "counter = 2" << "\n";
                 counter = 0;
-
             }
-
-            /*
-
-              0 -> 1
-              1 -> 0
-
-            if( w_arr[0].win == w_null ) {
-                w_arr[0] = g->win_map.at( index - 1 );
-                w_arr[1] = g->win_map.at( index - 1 );
-
-                std::cout << "name_orig = " << w_arr[0].name
-                          << " sindex = " << w_arr[0].index
-                          << " bindex = " << index - 1
-                          << "\n";
-                fflush( stdout );
-            }
-
-            if( !( w_arr[0].win == g->win_map.at( index - 1 ).win ) ) {
-                std::cout << "name_dest = " << g->win_map.at( index - 1 ).name
-                          << " sindex = " << g->win_map.at( index - 1 ).index
-                          << " bindex = " << index - 1
-                          << "\n";
-
-                g->win_map.at( w_arr[0].index ).index = index - 1;
-                // win_map[0].index = 1
-                g->win_map.at( w_arr[0].index ).win = g->win_map.at( index - 1 ).win;
-                std::cout << " sindex_f1 = " << g->win_map.at( w_arr[0].index ).index
-                          << " bindex = " << index - 1 << "\n";
-
-                g->win_map.at( index - 1 ).index = w_arr[0].index;
-                // win_map[1].index = 0
-                g->win_map.at( index - 1 ).win = w_arr[0].win;
-                std::cout << " sindex_f2 = " << g->win_map.at( index - 1 ).index
-                          << " bindex = " << index - 1 << "\n";
-            */
             std::cout << " " << "\n";
             fflush( stdout );
             redraw = true;
-            //}
         } else if( action == "RIGHT" ) {
+            // toggling panels
             g->win_map[ index - 1 ].toggle = !g->win_map[ index - 1 ].toggle;
-            // printf( "bleh = %s", typename( g->win_map[ index - 1 ].toggle ) );
-            // fflush( stdout );
-            // *panel_bool[ index - 1 ] = !( *panel_bool[ index - 1 ] );
+
+            // hiding panel, slide all other upward
+            if( !( g->win_map[ index - 1 ].toggle ) ) {
+                for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
+                    if( i > index - 1 ) {
+                        g->win_map[ i ].win.get<cata_cursesport::WINDOW>()->y -= 13;
+                    }
+                }
+            }
+            // showing panel slide all other downward
+            else if( g->win_map[ index - 1 ].toggle ) {
+                for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
+                    if( i > index - 1 ) {
+                        g->win_map[ i ].win.get<cata_cursesport::WINDOW>()->y += 13;
+                    }
+                }
+            }
+
             redraw = true;
         } else if( action == "QUIT" ) {
             exit = true;
             g->show_panel_adm = false;
+        } else if( action == "LEFT" ) {
+            debug();
         }
     }
+}
+
+void debug()
+{
+    for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
+        std::cout << "name: " << g->win_map[ i ].name << "\n";
+        std::cout << "togg: " << g->win_map[ i ].toggle << "\n";
+        std::cout << "posy: " << g->win_map[ i ].win.get<cata_cursesport::WINDOW>()->y << "\n";
+        std::cout << "\n";
+    }
+    fflush( stdout );
 }
 
 void draw_character( player &u, const catacurses::window &w )

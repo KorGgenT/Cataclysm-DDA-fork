@@ -3661,7 +3661,15 @@ void game::draw_pixel_minimap()
 {
     // Force a refresh of the pixel minimap.
     // only do so if it is in use
+
     if( pixel_minimap_option && w_pixel_minimap ) {
+        // ensure minimap is displayed on minimap panel
+        for( int i = 0; i < ( int )win_map.size(); i++ ) {
+            if( win_map[ i ].name == "map" ) {
+                w_pixel_minimap.get<cata_cursesport::WINDOW>()->y =
+                    win_map[ i ].win.get<cata_cursesport::WINDOW>()->y + 1;
+            }
+        }
         werase( w_pixel_minimap );
         //trick window into rendering
         mvwputch( w_pixel_minimap, 0, 0, c_black, ' ' );

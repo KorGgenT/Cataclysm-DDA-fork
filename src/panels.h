@@ -21,6 +21,7 @@ void draw_lookaround( const catacurses::window &w );
 void draw_mminimap( const catacurses::window &w );
 void draw_compass( const catacurses::window &w );
 void draw_panel_adm( const catacurses::window &w );
+void debug();
 nc_color stat_color( int stat );
 std::string time_approx();
 std::string get_temp( const player &u );
