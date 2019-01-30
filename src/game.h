@@ -150,6 +150,8 @@ struct look_around_result {
 struct w_map {
     std::string name;
     int posy;
+    bool toggle;
+    int index;
     catacurses::window win;
 };
 
@@ -706,7 +708,7 @@ class game
         catacurses::window w_messages_long;
         // catacurses::window w_location;
         // std::vector<catacurses::window> win_vec;
-        std::map<int, catacurses::window> win_map;
+        std::map<int, w_map> win_map;
         catacurses::window w_panel1;
         catacurses::window w_panel2;
         catacurses::window w_panel3;

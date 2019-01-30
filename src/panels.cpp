@@ -45,32 +45,31 @@ void draw_panel_adm( const catacurses::window &w )
     int index = 1;
     // bool moving = false;
     catacurses::window w_null;
-    catacurses::window w_src = w_null;
-    catacurses::window w_dest = w_null;
-    std::string s_src = "";
-    std::string s_dst = "";
-    int srce = 0;
-    int dest = 0;
-    int saved_index = 0;
+    struct w_map w_arr[3];
+    w_arr[0].name = "";
+    w_arr[0].posy = 0;
+    w_arr[0].toggle = false;
+    w_arr[0].index = 0;
+    w_arr[0].win = w_null;
+    w_arr[1].name = "";
+    w_arr[1].posy = 0;
+    w_arr[1].toggle = false;
+    w_arr[1].index = 1;
+    w_arr[1].win = w_null;
+    w_arr[2].name = "";
+    w_arr[2].posy = 0;
+    w_arr[2].toggle = false;
+    w_arr[2].index = 2;
+    w_arr[2].win = w_null;
+    std::cout << "here we go again" << "\n";
+    fflush( stdout );
+    //    std::string s_src = "";
+    //    std::string s_dst = "";
+    //    int srce = 0;
+    //    int dest = 0;
+    // int saved_index = 0;
     bool redraw = true;
     bool exit = false;
-    std::cout << "here we are again" << "\n";
-    fflush( stdout );
-    std::vector<std::string> panel_list;
-    panel_list.push_back( "Character Panel" );
-    panel_list.push_back( "Environment Panel" );
-    panel_list.push_back( "Message Panel" );
-    panel_list.push_back( "Modifier Panel" );
-    panel_list.push_back( "Compass Panel" );
-    panel_list.push_back( "Minimap Panel" );
-
-    std::array<bool *, 6> panel_bool;
-    panel_bool[0] = &g->char_panel;
-    panel_bool[1] = &g->env_panel ;
-    panel_bool[2] = &g->msg_panel ;
-    panel_bool[3] = &g->mod_panel ;
-    panel_bool[4] = &g->com_panel ;
-    panel_bool[5] = &g->map_panel ;
 
     while( !exit ) {
         if( redraw ) {
@@ -79,7 +78,9 @@ void draw_panel_adm( const catacurses::window &w )
             static const std::string title = _( "panel admin" );
             decorate_panel( title, w );
             for( int i = 0; i < 6; i++ ) {
-                mvwprintz( w, i + 1, 4, *panel_bool.at( i )  ? c_white : c_red, "%s", panel_list.at( i ) );
+                mvwprintz( w, i + 1, 4,
+                           g->win_map[ i ].toggle  ? c_white : c_red, "%s",
+                           g->win_map[ i ].name );
             }
             mvwprintz( w, index, 1, c_yellow, ">>" );
         }
@@ -97,42 +98,44 @@ void draw_panel_adm( const catacurses::window &w )
                 redraw = true;
             }
         } else if( action == "MOVE_PANEL" ) {
-            if( w_src == w_null ) {
-                w_src = g->win_map.at( index );
-                srce = g->win_map.at( index ).get<cata_cursesport::WINDOW>()->y;
-                s_src = panel_list[ index - 1 ];
-                saved_index = index - 1;
-                std::cout << "source=" << panel_list[ index - 1 ] <<
-                          " - " << index  - 1 <<
-                          " - " << srce <<
-                          " - " << s_src << "\n";
+            if( w_arr[0].win == w_null ) {
+                w_arr[0] = g->win_map.at( index - 1 );
+                w_arr[1] = g->win_map.at( index - 1 );
+
+                std::cout << "name_orig = " << w_arr[0].name
+                          << " sindex = " << w_arr[0].index
+                          << " bindex = " << index - 1
+                          << "\n";
                 fflush( stdout );
             }
 
-            if( !( w_src == g->win_map.at( index ) ) ) {
-                w_dest = g->win_map.at( index );
-                dest = w_dest.get<cata_cursesport::WINDOW>()->y;
-                w_src.get<cata_cursesport::WINDOW>()->y = dest;
-                w_dest.get<cata_cursesport::WINDOW>()->y = srce;
+            if( !( w_arr[0].win == g->win_map.at( index - 1 ).win ) ) {
+                std::cout << "name_dest = " << g->win_map.at( index - 1 ).name
+                          << " sindex = " << g->win_map.at( index - 1 ).index
+                          << " bindex = " << index - 1
+                          << "\n";
 
-                s_dst = panel_list[ index - 1 ];
-                panel_list.at( index - 1 ) = s_src;
-                panel_list.at( saved_index ) = s_dst;
+                g->win_map.at( w_arr[0].index ).index = index - 1;
+                // win_map[0].index = 1
+                g->win_map.at( w_arr[0].index ).win = g->win_map.at( index - 1 ).win;
+                std::cout << " sindex_f1 = " << g->win_map.at( w_arr[0].index ).index
+                          << " bindex = " << index - 1 << "\n";
 
-                std::cout << "destin=" << panel_list[ saved_index ] <<
-                          " - " << saved_index <<
-                          " - " << dest <<
-                          " - " << s_dst << "\n";
+                g->win_map.at( index - 1 ).index = w_arr[0].index;
+                // win_map[1].index = 0
+                g->win_map.at( index - 1 ).win = w_arr[0].win;
+                std::cout << " sindex_f2 = " << g->win_map.at( index - 1 ).index
+                          << " bindex = " << index - 1 << "\n";
+
+                std::cout << " " << "\n";
                 fflush( stdout );
-                w_src = w_null;
-                w_dest = w_null;
-                srce = 0;
-                dest = 0;
-                saved_index = 0;
                 redraw = true;
             }
         } else if( action == "RIGHT" ) {
-            *panel_bool[ index - 1 ] = !( *panel_bool[ index - 1 ] );
+            g->win_map[ index - 1 ].toggle = !g->win_map[ index - 1 ].toggle;
+            // printf( "bleh = %s", typename( g->win_map[ index - 1 ].toggle ) );
+            // fflush( stdout );
+            // *panel_bool[ index - 1 ] = !( *panel_bool[ index - 1 ] );
             redraw = true;
         } else if( action == "QUIT" ) {
             exit = true;

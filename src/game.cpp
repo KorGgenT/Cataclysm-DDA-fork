@@ -629,29 +629,60 @@ void game::init_ui( const bool resized )
 
     //    w_location = w_location_ptr = catacurses::newwin( locH, locW, _y + locY, _x + locX );
     //    werase( w_location );
+    struct w_map w_arr[6];
 
     w_panel1 = w_panel1_ptr = catacurses::newwin( 13, 32, 0, 88 );
-    win_map.insert( {1, w_panel1} ); //.push_back( w_panel1 );
+    w_arr[0].name = "char";
+    w_arr[0].posy = 0;
+    w_arr[0].toggle = true;
+    w_arr[0].index = 0;
+    w_arr[0].win = w_panel1;
+    win_map.insert( {0, w_arr[0]} );
     werase( w_panel1 );
 
     w_panel2 = w_panel2_ptr = catacurses::newwin( 13, 32, 13, 88 );
-    win_map.insert( {2, w_panel2} );  //vec.push_back( w_panel2 );
+    w_arr[1].name = "env";
+    w_arr[1].posy = 13;
+    w_arr[1].toggle = true;
+    w_arr[1].index = 1;
+    w_arr[1].win = w_panel2;
+    win_map.insert( {1, w_arr[1]} );
     werase( w_panel2 );
 
     w_panel3 = w_panel3_ptr = catacurses::newwin( 13, 32, 26, 88 );
-    win_map.insert( {3, w_panel3} ); //vec.push_back( w_panel3 );
+    w_arr[2].name = "msg";
+    w_arr[2].posy = 26;
+    w_arr[2].toggle = true;
+    w_arr[2].index = 2;
+    w_arr[2].win = w_panel3;
+    win_map.insert( {2, w_arr[2]} );
     werase( w_panel3 );
 
     w_panel4 = w_panel4_ptr = catacurses::newwin( 13, 32, 39, 88 );
-    win_map.insert( {4, w_panel4} ); //vec.push_back( w_panel4 );
+    w_arr[3].name = "mod";
+    w_arr[3].posy = 39;
+    w_arr[3].toggle = true;
+    w_arr[3].index = 3;
+    w_arr[3].win = w_panel4;
+    win_map.insert( {3, w_arr[3]} );
     werase( w_panel4 );
 
     w_panel5 = w_panel5_ptr = catacurses::newwin( 13, 32, 52, 88 );
-    win_map.insert( {5, w_panel5} );  //vec.push_back( w_panel5 );
+    w_arr[4].name = "com";
+    w_arr[4].posy = 52;
+    w_arr[4].toggle = false;
+    w_arr[4].index = 4;
+    w_arr[4].win = w_panel5;
+    win_map.insert( {4, w_arr[4]} );
     werase( w_panel5 );
 
     w_panel6 = w_panel6_ptr = catacurses::newwin( 13, 32, 65, 88 );
-    win_map.insert( {6, w_panel6} );  //vec.push_back( w_panel6 );
+    w_arr[5].name = "map";
+    w_arr[5].posy = 65;
+    w_arr[5].toggle = false;
+    w_arr[5].index = 5;
+    w_arr[5].win = w_panel6;
+    win_map.insert( {5, w_arr[5]} );
     werase( w_panel6 );
 
     w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 15, 35, 8, 20 );
@@ -3589,35 +3620,39 @@ void game::draw()
     werase( w_terrain );
     draw_ter();
     wrefresh( w_terrain );
+
     draw_panels();
+
     //draw_pixel_minimap();
 }
 
 
 void game::draw_panels()
 {
-    if( narrow_sidebar ) {
-        if( map_panel ) {
-            draw_mminimap( w_panel1 );
+    for( int i = 0; i < ( int )win_map.size(); i++ ) {
+        if( win_map[ i ].toggle ) {
+            if( win_map[ i ].name == "char" ) {
+                draw_character( u, win_map[ i ].win );
+            }
+            if( win_map[ i ].name == "env" ) {
+                draw_environment( u, win_map[ i ].win );
+            }
+            if( win_map[ i ].name == "msg" ) {
+                draw_messages( win_map[ i ].win );
+            }
+            if( win_map[ i ].name == "mod" ) {
+                draw_modifiers( u, win_map[ i ].win );
+            }
+            if( win_map[ i ].name == "com" ) {
+                draw_compass( win_map[ i ].win );
+            }
+            if( win_map[ i ].name == "map" ) {
+                draw_mminimap( win_map[ i ].win );
+            }
         }
-        if( com_panel ) {
-            draw_compass( w_panel2 );
-        }
-        if( char_panel ) {
-            draw_character( u, w_panel1 );
-        }
-        if( env_panel ) {
-            draw_environment( u, w_panel2 );
-        }
-        if( msg_panel ) {
-            draw_messages( w_panel3 );
-        }
-        if( mod_panel ) {
-            draw_modifiers( u, w_panel4 );
-        }
-        if( show_panel_adm ) {
-            draw_panel_adm( w_panel_adm );
-        }
+    }
+    if( show_panel_adm ) {
+        draw_panel_adm( w_panel_adm );
     }
 }
 
