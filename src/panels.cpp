@@ -62,6 +62,8 @@ void draw_panel_adm( const catacurses::window &w )
     int savedindex = 0;
     bool redraw = true;
     bool exit = false;
+    // std::string message = "right: toggle panels, enter: change order.";
+
 
     while( !exit ) {
         if( redraw ) {
@@ -77,6 +79,9 @@ void draw_panel_adm( const catacurses::window &w )
                            g->win_map[ i ].name );
             }
             mvwprintz( w, index, 1, c_yellow, ">>" );
+            mvwvline( w, 1, 10, 0, 13 );
+            mvwprintz( w, 1, 12, c_white, "right: toggle panels" );
+            mvwprintz( w, 2, 12, c_white, "enter: change order" );
         }
         wrefresh( w );
 

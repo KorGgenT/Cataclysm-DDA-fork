@@ -685,7 +685,7 @@ void game::init_ui( const bool resized )
     win_map.insert( {5, w_arr[5]} );
     werase( w_panel6 );
 
-    w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 15, 35, 8, 20 );
+    w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 15, 45, 8, 20 );
     werase( w_panel_adm );
 
     //    w_status = w_status_ptr = catacurses::newwin( statH, statW, _y + statY, _x + statX );
