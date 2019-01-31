@@ -78,8 +78,8 @@ void draw_panel_adm( const catacurses::window &w )
             }
             mvwprintz( w, index, 1, c_yellow, ">>" );
             mvwvline( w, 1, 10, 0, 13 );
-            mvwprintz( w, 1, 13, c_white, "right: toggle panels" );
-            mvwprintz( w, 2, 13, c_white, "enter: change order" );
+            mvwprintz( w, 1, 13, c_white, "right: toggle panels on/off" );
+            mvwprintz( w, 2, 13, c_white, "enter: change display order" );
         }
         wrefresh( w );
 
@@ -179,40 +179,45 @@ void draw_character( player &u, const catacurses::window &w )
     decorate_panel( title, w );
     std::pair<nc_color, int> morale_pair = morale_stat( u );
 
-    mvwprintz( w,  1, 1,  c_light_gray, _( "Head    :" ) );
-    mvwprintz( w,  2, 1,  c_light_gray, _( "L_arm   :" ) );
-    mvwprintz( w,  3, 1,  c_light_gray, _( "L_leg   :" ) );
+    mvwprintz( w,  1, 1,  c_light_gray, _( "Head :" ) );
+    mvwprintz( w,  2, 1,  c_light_gray, _( "L_arm:" ) );
+    mvwprintz( w,  3, 1,  c_light_gray, _( "L_leg:" ) );
     mvwprintz( w,  1, 15, c_light_gray, _( "|  " ) );
     mvwprintz( w,  2, 15, c_light_gray, _( "|  " ) );
     mvwprintz( w,  3, 15, c_light_gray, _( "|  " ) );
-    mvwprintz( w,  1, 18, c_light_gray, _( "Torso   :" ) );
-    mvwprintz( w,  2, 18, c_light_gray, _( "R_arm   :" ) );
-    mvwprintz( w,  3, 18, c_light_gray, _( "R_leg   :" ) );
+    mvwprintz( w,  1, 19, c_light_gray, _( "Torso:" ) );
+    mvwprintz( w,  2, 19, c_light_gray, _( "R_arm:" ) );
+    mvwprintz( w,  3, 19, c_light_gray, _( "R_leg:" ) );
 
-    mvwprintz( w,  1, 11, stat_color( u.hp_cur[hp_head] ),  "%s", u.hp_cur[hp_head] );
-    mvwprintz( w,  2, 11, stat_color( u.hp_cur[hp_arm_l] ), "%s", u.hp_cur[hp_arm_l] );
-    mvwprintz( w,  3, 11, stat_color( u.hp_cur[hp_leg_l] ), "%s", u.hp_cur[hp_leg_l] );
+    mvwprintz( w,  1, 10, stat_color( u.hp_cur[hp_head] ),  "%s", u.hp_cur[hp_head] );
+    mvwprintz( w,  2, 10, stat_color( u.hp_cur[hp_arm_l] ), "%s", u.hp_cur[hp_arm_l] );
+    mvwprintz( w,  3, 10, stat_color( u.hp_cur[hp_leg_l] ), "%s", u.hp_cur[hp_leg_l] );
     mvwprintz( w,  1, 28, stat_color( u.hp_cur[hp_torso] ), "%s", u.hp_cur[hp_torso] );
     mvwprintz( w,  2, 28, stat_color( u.hp_cur[hp_arm_r] ), "%s", u.hp_cur[hp_arm_r] );
     mvwprintz( w,  3, 28, stat_color( u.hp_cur[hp_leg_r] ), "%s", u.hp_cur[hp_leg_r] );
 
-    mvwprintz( w,  5, 1,  c_light_gray, _( "Sound   :" ) );
-    mvwprintz( w,  6, 1,  c_light_gray, _( "Stamina :" ) );
-    mvwprintz( w,  7, 1,  c_light_gray, _( "Focus   :" ) );
-    mvwprintz( w,  9, 1,  c_light_gray, _( "Strength:" ) );
-    mvwprintz( w, 10, 1,  c_light_gray, _( "Intel   :" ) );
+    mvwprintz( w,  5, 1,  c_light_gray, _( "Sound:" ) );
+    mvwprintz( w,  6, 1,  c_light_gray, _( "Sta  :" ) );
+    mvwprintz( w,  7, 1,  c_light_gray, _( "Focus:" ) );
+    mvwprintz( w,  9, 1,  c_light_gray, _( "Str  :" ) );
+    mvwprintz( w, 10, 1,  c_light_gray, _( "Intel:" ) );
 
-    mvwprintz( w,  5, 11, c_light_gray, "%s", u.volume );
-    mvwprintz( w,  6, 11, stat_color( u.stamina / 10 ), "%s", u.stamina / 10 );
-    mvwprintz( w,  7, 11, stat_color( u.focus_pool ), "%s", u.focus_pool );
-    mvwprintz( w,  9, 11, stat_color( u.str_cur * 10 ), "%s", u.str_cur * 10 );
-    mvwprintz( w, 10, 11, stat_color( u.int_cur * 10 ), "%s", u.int_cur * 10 );
+    mvwprintz( w,  5, 10, c_light_gray, "%s", u.volume );
+    mvwprintz( w,  6, 10, stat_color( u.stamina / 10 ), "%s", u.stamina / 10 );
+    mvwprintz( w,  7, 10, stat_color( u.focus_pool ), "%s", u.focus_pool );
+    mvwprintz( w,  9, 10, stat_color( u.str_cur * 10 ), "%s", u.str_cur * 10 );
+    mvwprintz( w, 10, 10, stat_color( u.int_cur * 10 ), "%s", u.int_cur * 10 );
 
-    mvwprintz( w,  5, 15, c_light_gray, _( "|  Morale  :" ) );
-    mvwprintz( w,  6, 15, c_light_gray, _( "|  Speed   :" ) );
-    mvwprintz( w,  7, 15, c_light_gray, _( "|  move    :" ) );
-    mvwprintz( w,  9, 15, c_light_gray, _( "|  Dexter  :" ) );
-    mvwprintz( w, 10, 15, c_light_gray, _( "|  Percep  :" ) );
+    mvwprintz( w,  5, 15, c_light_gray, "|" );
+    mvwprintz( w,  5, 19, c_light_gray, _( "Mood :" ) );
+    mvwprintz( w,  6, 15, c_light_gray, "|" );
+    mvwprintz( w,  6, 19, c_light_gray, _( "Spd  :" ) );
+    mvwprintz( w,  7, 15, c_light_gray, "|" );
+    mvwprintz( w,  7, 19, c_light_gray, _( "move :" ) );
+    mvwprintz( w,  9, 15, c_light_gray, "|" );
+    mvwprintz( w,  9, 19, c_light_gray, _( "Dext :" ) );
+    mvwprintz( w, 10, 15, c_light_gray, "|" );
+    mvwprintz( w, 10, 19, c_light_gray, _( "Per  :" ) );
 
     mvwprintz( w,  5, 28, morale_pair.first, "%s", morale_pair.second );
     mvwprintz( w,  6, 28, stat_color( u.get_speed() ), "%s", u.get_speed() );
@@ -231,42 +236,43 @@ void draw_environment( const player &u, const catacurses::window &w )
 
     // display location
     const oter_id &cur_ter = overmap_buffer.ter( u.global_omt_location() );
-    mvwprintz( w, 1, 1, c_light_gray, "Location: " );
+    mvwprintz( w, 1, 1, c_light_gray, "Place: " );
     // std::string loc =
     wprintz( w, c_white, utf8_truncate( cur_ter->get_name(), getmaxx( w ) - 13 ) );
 
     // display weather
     if( g->get_levz() < 0 ) {
-        mvwprintz( w, 2, 1, c_light_gray, _( "Underground" ) );
+        mvwprintz( w, 2, 1, c_light_gray, _( "Sky  : Underground" ) );
     } else {
-        mvwprintz( w, 2, 1, c_light_gray, _( "Weather :" ) );
+        mvwprintz( w, 2, 1, c_light_gray, _( "Sky  :" ) );
         wprintz( w, weather_data( g->weather ).color, " %s",
                  weather_data( g->weather ).name.c_str() );
     }
 
     // display lighting
     const auto ll = get_light_level( g->u.fine_detail_vision_mod() );
-    mvwprintz( w, 3, 1, c_light_gray, "%s ", _( "Lighting:" ) );
+    mvwprintz( w, 3, 1, c_light_gray, "%s ", _( "Light:" ) );
     wprintz( w, ll.second, ll.first.c_str() );
 
     // display date
-    mvwprintz( w, 4, 1, c_light_gray, _( "Date    : %s, day %d" ),
+    mvwprintz( w, 4, 1, c_light_gray, _( "Date : %s, day %d" ),
                calendar::name_season( season_of_year( calendar::turn ) ),
                day_of_season<int>( calendar::turn ) + 1 );
 
     // display time
     if( u.has_watch() ) {
-        mvwprintz( w, 5, 1, c_light_gray, _( "Time    : %s" ),
+        mvwprintz( w, 5, 1, c_light_gray, _( "Time : %s" ),
                    to_string_time_of_day( calendar::turn ) );
     } else if( g->get_levz() >= 0 ) {
-        mvwprintz( w, 5, 1, c_light_gray, _( "Time    : %s" ), time_approx() );
+        mvwprintz( w, 5, 1, c_light_gray, _( "Time : %s" ), time_approx() );
     } else {
-        mvwprintz( w, 5, 1, c_light_gray, _( "Time    : ???" ) );
+        mvwprintz( w, 5, 1, c_light_gray, _( "Time : ???" ) );
     }
 
-    mvwprintz( w, 6, 1, c_light_gray, _( "Moon    : %s" ), get_moon( ) );
-    mvwprintz( w, 8, 1, c_light_gray, _( "Temp    : %s" ), get_temp( u ) );
-    mvwprintz( w, 9, 1, c_light_gray, _( "Rad     : -" ) );
+    mvwprintz( w,  6, 1, c_light_gray, _( "Moon : %s" ), get_moon( ) );
+    mvwprintz( w,  8, 1, c_light_gray, _( "Temp : %s" ), get_temp( u ) );
+    mvwprintz( w,  9, 1, c_light_gray, _( "wind : -" ) );
+    mvwprintz( w, 10, 1, c_light_gray, _( "Rad  : -" ) );
     wrefresh( w );
 }
 
@@ -281,37 +287,45 @@ void draw_modifiers( const player &u, const catacurses::window &w )
     std::pair<nc_color, std::string> rest_pair = rest_stat( u );
     std::pair<nc_color, std::string> temp_pair = temp_stat( u );
     std::pair<nc_color, std::string> pain_pair = pain_stat( u );
-    mvwprintz( w, 1,  1,  c_light_gray, _( "Weapon  :" ) );
-    mvwprintz( w, 2,  1,  c_light_gray, _( "Food    :" ) );
-    mvwprintz( w, 3,  1,  c_light_gray, _( "Drink   :" ) );
-    mvwprintz( w, 4,  1,  c_light_gray, _( "Rest    :" ) );
-    mvwprintz( w, 5,  1,  c_light_gray, _( "Pain    :" ) );
-    mvwprintz( w, 6,  1,  c_light_gray, _( "Heat    :" ) );
-    mvwprintz( w, 7,  1,  c_light_gray, _( "Drug    :" ) );
-    mvwprintz( w, 8,  1,  c_light_gray, _( "Head    :" ) );
-    mvwprintz( w, 9,  1,  c_light_gray, _( "Torso   :" ) );
-    mvwprintz( w, 10, 1,  c_light_gray, _( "Legs    :" ) );
-    mvwprintz( w, 11, 1,  c_light_gray, _( "Feet    :" ) );
+    mvwprintz( w, 1,  1,  c_light_gray, _( "Arm  :" ) );
+    mvwprintz( w, 2,  1,  c_light_gray, _( "Food :" ) );
+    mvwprintz( w, 3,  1,  c_light_gray, _( "Drink:" ) );
+    mvwprintz( w, 4,  1,  c_light_gray, _( "Rest :" ) );
+    mvwprintz( w, 5,  1,  c_light_gray, _( "Pain :" ) );
+    mvwprintz( w, 6,  1,  c_light_gray, _( "Heat :" ) );
+    mvwprintz( w, 7,  1,  c_light_gray, _( "Drug :" ) );
+    mvwprintz( w, 8,  1,  c_light_gray, _( "Head :" ) );
+    mvwprintz( w, 9,  1,  c_light_gray, _( "Torso:" ) );
+    mvwprintz( w, 10, 1,  c_light_gray, _( "Legs :" ) );
+    mvwprintz( w, 11, 1,  c_light_gray, _( "Feet :" ) );
 
-    mvwprintz( w, 1,  11, c_light_gray, u.weapname().c_str() );
-    mvwprintz( w, 2,  11, hunger_pair.first, hunger_pair.second );
-    mvwprintz( w, 3,  11, thirst_pair.first, thirst_pair.second );
-    mvwprintz( w, 4,  11, rest_pair.first, rest_pair.second );
-    mvwprintz( w, 5,  11, pain_pair.first, pain_pair.second );
-    mvwprintz( w, 6,  11, temp_pair.first, temp_pair.second );
-    mvwprintz( w, 8,  11, c_light_gray, utf8_truncate( get_armor( u, bp_head ), getmaxx( w ) - 2 ) );
-    mvwprintz( w, 9,  11, c_light_gray, utf8_truncate( get_armor( u, bp_torso ), getmaxx( w ) - 13 ) );
-    mvwprintz( w, 10, 11, c_light_gray, utf8_truncate( get_armor( u, bp_leg_r ), getmaxx( w ) - 13 ) );
-    mvwprintz( w, 11, 11, c_light_gray, utf8_truncate( get_armor( u, bp_foot_r ), getmaxx( w ) - 2 ) );
+    mvwprintz( w, 1,  8, c_light_gray, u.weapname().c_str() );
+    mvwprintz( w, 2,  8, hunger_pair.first, hunger_pair.second );
+    mvwprintz( w, 3,  8, thirst_pair.first, thirst_pair.second );
+    mvwprintz( w, 4,  8, rest_pair.first, rest_pair.second );
+    mvwprintz( w, 5,  8, pain_pair.first, pain_pair.second );
+    mvwprintz( w, 6,  8, temp_pair.first, temp_pair.second );
+    mvwprintz( w, 7,  8, c_light_gray, "" ); // put drugs modifier here
+    mvwprintz( w, 8,  8, c_light_gray, get_armor( u, bp_head, w ) );
+    mvwprintz( w, 9,  8, c_light_gray, get_armor( u, bp_torso, w ) );
+    mvwprintz( w, 10, 8, c_light_gray, get_armor( u, bp_leg_r, w ) );
+    mvwprintz( w, 11, 8, c_light_gray, get_armor( u, bp_foot_r, w ) );
     wrefresh( w );
 }
 
-std::string get_armor( const player &u, body_part bp )
+std::string get_armor( const player &u, body_part bp, const catacurses::window &w )
 {
     for( std::list<item>::const_iterator it = u.worn.end(); it != u.worn.begin(); ) {
         --it;
         if( it->covers( bp ) ) {
-            return it->display_name();
+            std::string temp = it->tname( 1, false );
+            if( ( int )temp.length() > getmaxx( w ) ) {
+                // string minus window size.x and label
+                temp = temp.substr( 0, getmaxx( w ) - 11 );
+                temp += "..";
+                return temp;
+            }
+            return temp;
         }
     }
     return "-";
