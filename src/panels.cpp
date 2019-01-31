@@ -62,8 +62,6 @@ void draw_panel_adm( const catacurses::window &w )
     int savedindex = 0;
     bool redraw = true;
     bool exit = false;
-    // std::string message = "right: toggle panels, enter: change order.";
-
 
     while( !exit ) {
         if( redraw ) {
@@ -80,8 +78,8 @@ void draw_panel_adm( const catacurses::window &w )
             }
             mvwprintz( w, index, 1, c_yellow, ">>" );
             mvwvline( w, 1, 10, 0, 13 );
-            mvwprintz( w, 1, 12, c_white, "right: toggle panels" );
-            mvwprintz( w, 2, 12, c_white, "enter: change order" );
+            mvwprintz( w, 1, 13, c_white, "right: toggle panels" );
+            mvwprintz( w, 2, 13, c_white, "enter: change order" );
         }
         wrefresh( w );
 
@@ -99,12 +97,14 @@ void draw_panel_adm( const catacurses::window &w )
             // don't move disabled panels
         } else if( action == "MOVE_PANEL" && g->win_map.at( index - 1 ).toggle ) {
             counter += 1;
+            // source window from the swap
             if( counter == 1 ) {
                 selected = true;
                 w_arr[0] = g->win_map.at( index - 1 );
                 w_arr[1] = g->win_map.at( index - 1 );
                 savedindex = index - 1;
             }
+            // dest window for the swap
             if( counter == 2 ) {
                 w_arr[2] = g->win_map.at( index - 1 );
                 int temp = w_arr[0].win.get<cata_cursesport::WINDOW>()->y;
@@ -163,13 +163,13 @@ void draw_panel_adm( const catacurses::window &w )
 
 void debug()
 {
-    for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
-        std::cout << "name: " << g->win_map[ i ].name << "\n";
-        std::cout << "togg: " << g->win_map[ i ].toggle << "\n";
-        std::cout << "posy: " << g->win_map[ i ].win.get<cata_cursesport::WINDOW>()->y << "\n";
-        std::cout << "\n";
-    }
-    fflush( stdout );
+    //    for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
+    //        std::cout << "name: " << g->win_map[ i ].name << "\n";
+    //        std::cout << "togg: " << g->win_map[ i ].toggle << "\n";
+    //        std::cout << "posy: " << g->win_map[ i ].win.get<cata_cursesport::WINDOW>()->y << "\n";
+    //        std::cout << "\n";
+    //    }
+    //    fflush( stdout );
 }
 
 void draw_character( player &u, const catacurses::window &w )
@@ -300,7 +300,7 @@ void draw_modifiers( const player &u, const catacurses::window &w )
     mvwprintz( w, 5,  11, pain_pair.first, pain_pair.second );
     mvwprintz( w, 6,  11, temp_pair.first, temp_pair.second );
     mvwprintz( w, 8,  11, c_light_gray, utf8_truncate( get_armor( u, bp_head ), getmaxx( w ) - 2 ) );
-    mvwprintz( w, 9,  11, c_light_gray, utf8_truncate( get_armor( u, bp_torso ), getmaxx( w ) - 2 ) );
+    mvwprintz( w, 9,  11, c_light_gray, utf8_truncate( get_armor( u, bp_torso ), getmaxx( w ) - 13 ) );
     mvwprintz( w, 10, 11, c_light_gray, utf8_truncate( get_armor( u, bp_leg_r ), getmaxx( w ) - 13 ) );
     mvwprintz( w, 11, 11, c_light_gray, utf8_truncate( get_armor( u, bp_foot_r ), getmaxx( w ) - 2 ) );
     wrefresh( w );

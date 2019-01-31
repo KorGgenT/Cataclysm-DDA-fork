@@ -772,16 +772,9 @@ void Pickup::pick_up( const tripoint &pos, int min )
         }
     } else {
         int pickupH = maxitems + pickupBorderRows;
-        int pickupW = 60; // getmaxx( g->w_messages );
-        // int pickupY = 10; // VIEW_OFFSET_Y;
-        // int pickupX = getbegx( g->w_messages );
+        int pickupW = 60;
 
         int itemsW = pickupW;
-        // int itemsY = pickupY + pickupH;
-        // int itemsX = pickupX;
-
-        // catacurses::window w_pickup = catacurses::newwin( pickupH, pickupW, pickupY, pickupX );
-        // catacurses::window w_item_info = catacurses::newwin( itemsH,  itemsW,  itemsY,  itemsX );
 
         catacurses::window w_pickup = catacurses::newwin( pickupH, 32, 0, 88 );
         catacurses::window w_item_info = catacurses::newwin( TERMY - pickupH,

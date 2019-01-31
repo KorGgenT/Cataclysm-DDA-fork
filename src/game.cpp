@@ -520,31 +520,14 @@ void game::init_ui( const bool resized )
     // minimapX x minimapY is always MINIMAP_WIDTH x MINIMAP_HEIGHT in size
     int minimapX = 0;
     int minimapY = 0;
-    //    int hpX = 0;
-    //    int hpY = 0;
-    //    int hpW = 0;
-    //    int hpH = 0;
     int messX = 0;
     int messY = 0;
     int messW = 0;
     int messHshort = 0;
     int messHlong = 0;
-    // int locX = 0;
-    // int locY = 0;
-    // int locW = 0;
-    // int locH = 0;
-    //    int statX = 0;
-    //    int statY = 0;
-    //    int statW = 0;
-    //    int statH = 0;
-    //    int stat2X = 0;
-    //    int stat2Y = 0;
-    //    int stat2W = 0;
-    //    int stat2H = 0;
     int pixelminimapW = 0;
     int pixelminimapH = 0;
-    // int pixelminimapX = 0;
-    // int pixelminimapY = 0;
+
 
     bool pixel_minimap_custom_height = false;
 
@@ -565,34 +548,6 @@ void game::init_ui( const bool resized )
     if( pixel_minimap_custom_height && pixelminimapH > get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) ) {
         pixelminimapH = get_option<int>( "PIXEL_MINIMAP_HEIGHT" );
     }
-    //    messHshort = TERRAIN_WINDOW_TERM_HEIGHT - ( locH + statH +
-    //                 pixelminimapH ); // 3 for w_location + 4 for w_stat, w_messages starts at 0
-    //    if( messHshort < 9 ) {
-    //        pixelminimapH -= 9 - messHshort;
-    //        messHshort = 9;
-    //    }
-    //    messHlong = TERRAIN_WINDOW_TERM_HEIGHT - ( locH + statH );
-    //pixelminimapX = MINIMAP_WIDTH;
-    //pixelminimapY = messHshort;
-    //    hpX = 0;
-    //    hpY = MINIMAP_HEIGHT;
-    // under the minimap, but down to the same line as w_location (which is under w_messages)
-    // so it erases the space between w_terrain and (w_messages and w_location)
-    //    hpH = messHshort + pixelminimapH - MINIMAP_HEIGHT + 3;
-    //    hpW = 7;
-    // locX = MINIMAP_WIDTH;
-    // locY = messY + messHshort + pixelminimapH;
-
-    // locW = locX;
-    // statY = locY + locH;
-
-    // statW = 0;
-
-    // The default style only uses one status window.
-    //    stat2X = 0;
-    //    stat2Y = statY + statH;
-    //    stat2H = 1;
-    //    stat2W = 0;
 
     int _y = VIEW_OFFSET_Y;
     int _x = VIEW_OFFSET_X;
@@ -600,9 +555,6 @@ void game::init_ui( const bool resized )
     w_minimap = w_minimap_ptr = catacurses::newwin( MINIMAP_HEIGHT, MINIMAP_WIDTH, _y + minimapY,
                                 _x + minimapX );
     werase( w_minimap );
-
-    //    w_HP = w_HP_ptr = catacurses::newwin( hpH, hpW, _y + hpY, _x + hpX );
-    //    werase( w_HP );
 
     w_messages_short = w_messages_short_ptr = catacurses::newwin( messHshort, messW, _y + messY,
                        _x + messX );
@@ -618,8 +570,6 @@ void game::init_ui( const bool resized )
     //    pmc_height = get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) > 0;
 #endif // TILES
 
-    //    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( pixelminimapH, pixelminimapW,
-    //                                            _y + pixelminimapY, _x + pixelminimapX );
     w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( 12, 32, 1, 88 );
     werase( w_pixel_minimap );
 
@@ -628,8 +578,6 @@ void game::init_ui( const bool resized )
         w_messages = w_messages_long;
     }
 
-    //    w_location = w_location_ptr = catacurses::newwin( locH, locW, _y + locY, _x + locX );
-    //    werase( w_location );
     struct w_map w_arr[6];
 
     w_panel1 = w_panel1_ptr = catacurses::newwin( 13, 32, 0, 88 );
@@ -689,12 +637,6 @@ void game::init_ui( const bool resized )
     w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 15, 45, 8, 20 );
     werase( w_panel_adm );
 
-    //    w_status = w_status_ptr = catacurses::newwin( statH, statW, _y + statY, _x + statX );
-    //    werase( w_status );
-
-    //    w_status2 = w_status2_ptr = catacurses::newwin( stat2H, stat2W, _y + stat2Y, _x + stat2X );
-    //    werase( w_status2 );
-
     liveview.init();
 
     // Only refresh if we are in-game, otherwise all resources are not initialized
@@ -706,9 +648,6 @@ void game::init_ui( const bool resized )
 
 void game::toggle_sidebar_style()
 {
-    //    bleh = !bleh;
-    //    std::cout << "blehzzz=" << bleh << "\n";
-    //    fflush( stdout );
     narrow_sidebar = !narrow_sidebar;
     //#ifdef TILES
     //    tilecontext->reinit_minimap();
@@ -7785,8 +7724,6 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
     catacurses::window w_item_info = catacurses::newwin( iInfoHeight, width,
                                      TERMY - iInfoHeight - VIEW_OFFSET_Y, offsetX );
 
-    //    std::cout << "maxy=" << getmaxy( g->w_terrain ) << "pkH=" << pickupH << "\n";
-    //    fflush( stdout );
     // use previously selected sorting method
     bool sort_radius = uistate.list_item_sort != 2;
     bool addcategory = !sort_radius;

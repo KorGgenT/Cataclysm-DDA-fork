@@ -970,7 +970,10 @@ void cata_cursesport::curses_drawwindow( const catacurses::window &w )
         update = true;
     } else if (g && w == g->w_pixel_minimap && g->pixel_minimap_option) {
         // Make sure the entire minimap window is black before drawing.
-        //        clear_window_area( w );
+
+        // commented out,
+        // don't draw over the panel borders (temporary, borders will go away)
+        // clear_window_area( w );
         tilecontext->draw_minimap(
             win->x * fontwidth, win->y * fontheight,
             tripoint( g->u.pos().x, g->u.pos().y, g->ter_view_z ),
