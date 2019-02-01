@@ -149,9 +149,9 @@ struct look_around_result {
 
 struct w_map {
     std::string name;
-    int posy;
+    // int posy;
     bool toggle;
-    int index;
+    // int index;
     catacurses::window win;
 };
 
@@ -239,7 +239,6 @@ class game
         void start_calendar();
         /** MAIN GAME LOOP. Returns true if game is over (death, saved, quit, etc.). */
         bool do_turn();
-        // void draw_mypanel( const player &u, const catacurses::window &w_panel1 );
         void draw();
         void draw_ter( bool draw_sounds = true );
         void draw_ter( const tripoint &center, bool looking = false, bool draw_sounds = true );
@@ -683,6 +682,14 @@ class game
         catacurses::window w_pixel_minimap_ptr;
         catacurses::window w_messages_short_ptr;
         catacurses::window w_messages_long_ptr;
+        catacurses::window w_panel_char_ptr;
+        catacurses::window w_panel_limb_ptr;
+        catacurses::window w_panel_stat_ptr;
+        catacurses::window w_panel_mod1_ptr;
+        catacurses::window w_panel_mod2_ptr;
+        catacurses::window w_panel_env1_ptr;
+        catacurses::window w_panel_env2_ptr;
+
         catacurses::window w_panel1_ptr;
         catacurses::window w_panel2_ptr;
         catacurses::window w_panel3_ptr;
@@ -702,6 +709,14 @@ class game
         catacurses::window w_messages_short;
         catacurses::window w_messages_long;
         std::map<int, w_map> win_map;
+        catacurses::window w_panel_char;
+        catacurses::window w_panel_limb;
+        catacurses::window w_panel_stat;
+        catacurses::window w_panel_mod1;
+        catacurses::window w_panel_mod2;
+        catacurses::window w_panel_env1;
+        catacurses::window w_panel_env2;
+
         catacurses::window w_panel1;
         catacurses::window w_panel2;
         catacurses::window w_panel3;
@@ -871,6 +886,13 @@ class game
         bool fullscreen;
         bool was_fullscreen;
         bool char_panel;
+        bool limb_panel;
+        bool stat_panel;
+        bool env1_panel;
+        bool env2_panel;
+        bool mod1_panel;
+        bool mod2_panel;
+
         bool env_panel;
         bool msg_panel;
         bool mod_panel;

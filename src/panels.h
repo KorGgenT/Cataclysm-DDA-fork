@@ -13,15 +13,23 @@ namespace catacurses
 class window;
 } // namespace catacurses
 void decorate_panel( const std::string name, const catacurses::window &w );
-void draw_character( player &p, const catacurses::window &w );
+void draw_limb( player &p, const catacurses::window &w );
+void draw_char( player &p, const catacurses::window &w );
+void draw_stat( player &p, const catacurses::window &w );
+void draw_env1( const player &u, const catacurses::window &w );
+void draw_env2( const player &u, const catacurses::window &w );
 void draw_environment( const player &u, const catacurses::window &w );
 void draw_messages( const catacurses::window &w );
+void draw_mod1( const player &u, const catacurses::window &w );
+void draw_mod2( const player &u, const catacurses::window &w );
+void draw_modifiers( const player &u, const catacurses::window &w );
 void draw_modifiers( const player &u, const catacurses::window &w );
 void draw_lookaround( const catacurses::window &w );
 void draw_mminimap( const catacurses::window &w );
 void draw_compass( const catacurses::window &w );
 void draw_panel_adm( const catacurses::window &w );
-void debug();
+void debug( int w1_saved_y, int w1_saved_h, int index, int savedindex, int w2_saved_y,
+            int w2_saved_h );
 nc_color stat_color( int stat );
 std::string time_approx();
 std::string get_temp( const player &u );
