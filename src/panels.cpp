@@ -44,6 +44,7 @@ void draw_panel_adm( const catacurses::window &w )
     bool selected = false;
     struct w_map w_arr[10];
     int savedindex = 0;
+    int targetindex = 0;
     bool redraw = true;
     bool exit = false;
 
@@ -90,18 +91,25 @@ void draw_panel_adm( const catacurses::window &w )
             // dest window for the swap
             if( counter == 2 ) {
                 // saving win2
+                targetindex = index - 1;
                 w_arr[1] = g->win_map.at( index - 1 );
 
-                for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
-                    // ex: msg
-                    if( g->win_map[ i ].win == w_arr[0].win ) {
-                        g->win_map[ i ] = w_arr[1];
-                    }
-                    // ex: stat
-                    if( g->win_map[ i ].win == w_arr[1].win && !( i == savedindex ) ) {
-                        g->win_map[ i ] = w_arr[0];
-                    }
+                int distance = targetindex - savedindex;
+                int step_dir = distance > 0 ? 1 : -1;
+                for( int i = savedindex; i != targetindex; i += step_dir ) {
+                    std::swap( g->win_map[i], g->win_map[i + step_dir] );
                 }
+
+                //for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
+                //    // ex: msg
+                //    if( g->win_map[ i ].win == w_arr[0].win ) {
+                //        g->win_map[ i ] = w_arr[1];
+                //    }
+                //    // ex: stat
+                //    if( g->win_map[ i ].win == w_arr[1].win && !( i == savedindex ) ) {
+                //        g->win_map[ i ] = w_arr[0];
+                //    }
+                //}
 
                 int y_top = 0;
                 for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
@@ -130,6 +138,12 @@ void draw_panel_adm( const catacurses::window &w )
                 if( g->win_map[ i ].toggle ) {
                     g->win_map[ i ].win.get<cata_cursesport::WINDOW>()->y = y_top;
                     y_top += g->win_map[ i ].win.get<cata_cursesport::WINDOW>()->height;
+                    // reinit map
+                    if( g->win_map[ i ].name == "map" ) {
+                        g->w_pixel_minimap.get<cata_cursesport::WINDOW>()->y =
+                            g->win_map[ i ].win.get<cata_cursesport::WINDOW>()->y;
+                        g->reinitmap = true;
+                    }
                 }
             }
             redraw = true;
@@ -310,6 +324,12 @@ void draw_lookaround( const catacurses::window &w )
 
 void draw_mminimap( const catacurses::window &w )
 {
+    //    for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
+    //        if( g->win_map[ i ].name == "map" && g->win_map[ i ].toggle ) {
+    //            wrefresh( w );
+    //            g->draw_pixel_minimap();
+    //        }
+    //    }
     wrefresh( w );
     g->draw_pixel_minimap();
 }

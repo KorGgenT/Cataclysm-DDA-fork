@@ -570,7 +570,7 @@ void game::init_ui( const bool resized )
     //    pmc_height = get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) > 0;
 #endif // TILES
 
-    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( 13, 32, 32, 88 );
+    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( 13, 32, 54, 88 );
     werase( w_pixel_minimap );
 
     w_messages = w_messages_short;
