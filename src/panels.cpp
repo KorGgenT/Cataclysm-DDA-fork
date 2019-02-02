@@ -3,15 +3,21 @@
 #include "cata_utility.h"
 #include "color.h"
 #include "cursesdef.h"
+#include "effect.h"
 #include "game.h"
 #include "gun_mode.h"
 #include "item.h"
+#include "map.h"
+#include "martialarts.h"
+#include "options.h"
 #include "messages.h"
 #include "overmap.h"
 #include "overmap_ui.h"
 #include "overmapbuffer.h"
 #include "output.h"
 #include "player.h"
+#include "translations.h"
+#include "vehicle.h"
 #include "weather.h"
 #include "weather_gen.h"
 #include <cmath>
@@ -23,6 +29,9 @@
 #endif
 
 static const trait_id trait_SELFAWARE( "SELFAWARE" );
+static const trait_id trait_THRESH_FELINE( "THRESH_FELINE" );
+static const trait_id trait_THRESH_BIRD( "THRESH_BIRD" );
+static const trait_id trait_THRESH_URSINE( "THRESH_URSINE" );
 
 // ===============================
 // panels code
@@ -42,9 +51,10 @@ void draw_panel_adm( const catacurses::window &w )
     int index = 1;
     int counter = 0;
     bool selected = false;
-    struct w_map w_arr[10];
-    int savedindex = 0;
-    int targetindex = 0;
+    int source_index = 0;
+    int target_index = 0;
+    std::string saved_name = "";
+
     bool redraw = true;
     bool exit = false;
 
@@ -54,12 +64,15 @@ void draw_panel_adm( const catacurses::window &w )
             werase( w );
             static const std::string title = _( "panel admin" );
             decorate_panel( title, w );
+
             for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
+
                 mvwprintz( w, i + 1, 4,
                            g->win_map[ i ].toggle  ?
-                           savedindex == i && selected ? c_yellow : c_white : c_dark_gray,
+                           source_index == i && selected ? c_yellow : c_white : c_dark_gray,
                            selected && index - 1 == i ? " %s" : "%s",
-                           g->win_map[ i ].name );
+                           selected && index - 1 == i ? saved_name : g->win_map[ i ].name );
+
             }
             mvwprintz( w, index, 1, c_yellow, ">>" );
             mvwvline( w, 1, 10, 0, 13 );
@@ -83,33 +96,21 @@ void draw_panel_adm( const catacurses::window &w )
             counter += 1;
             // source window from the swap
             if( counter == 1 ) {
-                // saving win1
+                // saving win1 index
+                source_index = index - 1;
                 selected = true;
-                w_arr[0] = g->win_map.at( index - 1 );
-                savedindex = index - 1;
+                saved_name = g->win_map[ source_index ].name;
             }
             // dest window for the swap
             if( counter == 2 ) {
-                // saving win2
-                targetindex = index - 1;
-                w_arr[1] = g->win_map.at( index - 1 );
+                // saving win2 index
+                target_index = index - 1;
 
-                int distance = targetindex - savedindex;
+                int distance = target_index - source_index;
                 int step_dir = distance > 0 ? 1 : -1;
-                for( int i = savedindex; i != targetindex; i += step_dir ) {
+                for( int i = source_index; i != target_index; i += step_dir ) {
                     std::swap( g->win_map[i], g->win_map[i + step_dir] );
                 }
-
-                //for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
-                //    // ex: msg
-                //    if( g->win_map[ i ].win == w_arr[0].win ) {
-                //        g->win_map[ i ] = w_arr[1];
-                //    }
-                //    // ex: stat
-                //    if( g->win_map[ i ].win == w_arr[1].win && !( i == savedindex ) ) {
-                //        g->win_map[ i ] = w_arr[0];
-                //    }
-                //}
 
                 int y_top = 0;
                 for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
@@ -159,12 +160,12 @@ void draw_limb( player &u, const catacurses::window &w )
     werase( w );
     // limb panel
 
-    mvwprintz( w,  1, 1,  c_light_gray, _( "Head  :" ) );
-    mvwprintz( w,  1, 18, c_light_gray, _( "Torso :" ) );
-    mvwprintz( w,  2, 1,  c_light_gray, _( "L_Arm :" ) );
-    mvwprintz( w,  2, 18, c_light_gray, _( "R_Arm :" ) );
-    mvwprintz( w,  3, 1,  c_light_gray, _( "L_Leg :" ) );
-    mvwprintz( w,  3, 18, c_light_gray, _( "R_Leg :" ) );
+    mvwprintz( w,  0, 1,  c_light_gray, _( "Head :" ) );
+    mvwprintz( w,  0, 18, c_light_gray, _( "Torso:" ) );
+    mvwprintz( w,  1, 1,  c_light_gray, _( "L_Arm:" ) );
+    mvwprintz( w,  1, 18, c_light_gray, _( "R_Arm:" ) );
+    mvwprintz( w,  2, 1,  c_light_gray, _( "L_Leg:" ) );
+    mvwprintz( w,  2, 18, c_light_gray, _( "R_Leg:" ) );
 
     const auto &head =  get_hp_bar( u.hp_cur[hp_head], u.hp_max[hp_head] );
     const auto &torso = get_hp_bar( u.hp_cur[hp_torso], u.hp_max[hp_torso] );
@@ -173,12 +174,12 @@ void draw_limb( player &u, const catacurses::window &w )
     const auto &legl =  get_hp_bar( u.hp_cur[hp_leg_l], u.hp_max[hp_leg_l] );
     const auto &legr =  get_hp_bar( u.hp_cur[hp_leg_r], u.hp_max[hp_leg_r] );
 
-    mvwprintz( w,  1, 9,  stat_color( u.hp_cur[hp_head] ),  "%s", head.first );
-    mvwprintz( w,  1, 26, stat_color( u.hp_cur[hp_torso] ), "%s", torso.first );
-    mvwprintz( w,  2, 9,  stat_color( u.hp_cur[hp_arm_l] ), "%s", arml.first );
-    mvwprintz( w,  2, 26, stat_color( u.hp_cur[hp_arm_r] ), "%s", armr.first );
-    mvwprintz( w,  3, 9,  stat_color( u.hp_cur[hp_leg_l] ), "%s", legl.first );
-    mvwprintz( w,  3, 26, stat_color( u.hp_cur[hp_leg_r] ), "%s", legr.first );
+    mvwprintz( w,  0, 9,  stat_color( u.hp_cur[hp_head] ),  "%s", head.first );
+    mvwprintz( w,  0, 26, stat_color( u.hp_cur[hp_torso] ), "%s", torso.first );
+    mvwprintz( w,  1, 9,  stat_color( u.hp_cur[hp_arm_l] ), "%s", arml.first );
+    mvwprintz( w,  1, 26, stat_color( u.hp_cur[hp_arm_r] ), "%s", armr.first );
+    mvwprintz( w,  2, 9,  stat_color( u.hp_cur[hp_leg_l] ), "%s", legl.first );
+    mvwprintz( w,  2, 26, stat_color( u.hp_cur[hp_leg_r] ), "%s", legr.first );
     wrefresh( w );
 }
 
@@ -186,34 +187,34 @@ void draw_char( player &u, const catacurses::window &w )
 {
     werase( w );
     std::pair<nc_color, int> morale_pair = morale_stat( u );
-    mvwprintz( w,  1, 1,  c_light_gray, _( "Sound :" ) );
-    mvwprintz( w,  2, 1,  c_light_gray, _( "Stam  :" ) );
-    mvwprintz( w,  3, 1,  c_light_gray, _( "Focus :" ) );
-    mvwprintz( w,  1, 18, c_light_gray, _( "Mood  :" ) );
-    mvwprintz( w,  2, 18, c_light_gray, _( "Speed :" ) );
-    mvwprintz( w,  3, 18, c_light_gray, _( "move  :" ) );
+    mvwprintz( w,  0, 1,  c_light_gray, _( "Sound:" ) );
+    mvwprintz( w,  1, 1,  c_light_gray, _( "Stam :" ) );
+    mvwprintz( w,  2, 1,  c_light_gray, _( "Focus:" ) );
+    mvwprintz( w,  0, 18, c_light_gray, _( "Mood :" ) );
+    mvwprintz( w,  1, 18, c_light_gray, _( "Speed:" ) );
+    mvwprintz( w,  2, 18, c_light_gray, _( "move :" ) );
 
-    mvwprintz( w,  1, 9, c_light_gray, "%s", u.volume );
-    mvwprintz( w,  2, 9, stat_color( u.stamina / 10 ), "%s", u.stamina / 10 );
-    mvwprintz( w,  3, 9, stat_color( u.focus_pool ), "%s", u.focus_pool );
-    mvwprintz( w,  1, 26, morale_pair.first, "%s", morale_pair.second );
-    mvwprintz( w,  2, 26, stat_color( u.get_speed() ), "%s", u.get_speed() );
-    mvwprintz( w,  3, 26, c_light_gray, "%s", u.movecounter );
+    mvwprintz( w,  0, 9, c_light_gray, "%s", u.volume );
+    mvwprintz( w,  1, 9, stat_color( u.stamina / 10 ), "%s", u.stamina / 10 );
+    mvwprintz( w,  2, 9, stat_color( u.focus_pool ), "%s", u.focus_pool );
+    mvwprintz( w,  0, 26, morale_pair.first, "%s", morale_pair.second );
+    mvwprintz( w,  1, 26, stat_color( u.get_speed() ), "%s", u.get_speed() );
+    mvwprintz( w,  2, 26, c_light_gray, "%s", u.movecounter );
     wrefresh( w );
 }
 
 void draw_stat( player &u, const catacurses::window &w )
 {
     werase( w );
-    mvwprintz( w, 1, 1,  c_light_gray, _( "Str:" ) );
-    mvwprintz( w, 1, 9, c_light_gray,  _( "Int:" ) );
-    mvwprintz( w, 1, 18, c_light_gray, _( "Dex:" ) );
-    mvwprintz( w, 1, 26, c_light_gray, _( "Per:" ) );
+    mvwprintz( w, 0, 1,  c_light_gray, _( "Str:" ) );
+    mvwprintz( w, 0, 9, c_light_gray,  _( "Int:" ) );
+    mvwprintz( w, 0, 18, c_light_gray, _( "Dex:" ) );
+    mvwprintz( w, 0, 26, c_light_gray, _( "Per:" ) );
 
-    mvwprintz( w, 1, 5,  stat_color( u.str_cur ), "%s", u.str_cur );
-    mvwprintz( w, 1, 13, stat_color( u.int_cur ), "%s", u.int_cur );
-    mvwprintz( w, 1, 22, stat_color( u.dex_cur ), "%s", u.dex_cur );
-    mvwprintz( w, 1, 30, stat_color( u.per_cur ), "%s", u.per_cur );
+    mvwprintz( w, 0, 5,  stat_color( u.str_cur ), "%s", u.str_cur );
+    mvwprintz( w, 0, 13, stat_color( u.int_cur ), "%s", u.int_cur );
+    mvwprintz( w, 0, 22, stat_color( u.dex_cur ), "%s", u.dex_cur );
+    mvwprintz( w, 0, 30, stat_color( u.per_cur ), "%s", u.per_cur );
     wrefresh( w );
 }
 
@@ -256,10 +257,10 @@ void draw_env1( const player &u, const catacurses::window &w )
 void draw_env2( const player &u, const catacurses::window &w )
 {
     werase( w );
-    mvwprintz( w, 1, 1, c_light_gray, _( "Moon : %s" ), get_moon( ) );
-    mvwprintz( w, 2, 1, c_light_gray, _( "Temp : %s" ), get_temp( u ) );
-    mvwprintz( w, 3, 1, c_light_gray, _( "wind : -" ) );
-    mvwprintz( w, 4, 1, c_light_gray, _( "Rad  : -" ) );
+    mvwprintz( w, 0, 1, c_light_gray, _( "Moon : %s" ), get_moon( ) );
+    mvwprintz( w, 1, 1, c_light_gray, _( "Temp : %s" ), get_temp( u ) );
+    mvwprintz( w, 2, 1, c_light_gray, _( "wind : -" ) );
+    mvwprintz( w, 3, 1, c_light_gray, _( "Rad  : -" ) );
     wrefresh( w );
 }
 
@@ -289,19 +290,18 @@ void draw_mod1( const player &u, const catacurses::window &w )
 void draw_mod2( const player &u, const catacurses::window &w )
 {
     werase( w );
-    mvwprintz( w, 1, 1, c_light_gray, _( "Temp : %s" ), get_temp( u ) );
-    mvwprintz( w, 2, 1, c_light_gray, _( "Drug : too much cafeine O_O" ) );
-    mvwprintz( w, 3, 1, c_light_gray, _( "Head :" ) );
-    mvwprintz( w, 4, 1, c_light_gray, _( "Torso:" ) );
-    mvwprintz( w, 5, 1, c_light_gray, _( "Arms :" ) );
-    mvwprintz( w, 6, 1, c_light_gray, _( "Legs :" ) );
-    mvwprintz( w, 7, 1, c_light_gray, _( "Feet :" ) );
+    mvwprintz( w, 0, 1, c_light_gray, _( "Drug : too much cafeine O_O" ) );
+    mvwprintz( w, 1, 1, c_light_gray, _( "Head :" ) );
+    mvwprintz( w, 2, 1, c_light_gray, _( "Torso:" ) );
+    mvwprintz( w, 3, 1, c_light_gray, _( "Arms :" ) );
+    mvwprintz( w, 4, 1, c_light_gray, _( "Legs :" ) );
+    mvwprintz( w, 5, 1, c_light_gray, _( "Feet :" ) );
 
-    mvwprintz( w, 3, 8, c_light_gray, get_armor( u, bp_head, w ) );
-    mvwprintz( w, 4, 8, c_light_gray, get_armor( u, bp_torso, w ) );
-    mvwprintz( w, 5, 8, c_light_gray, get_armor( u, bp_arm_r, w ) );
-    mvwprintz( w, 6, 8, c_light_gray, get_armor( u, bp_leg_r, w ) );
-    mvwprintz( w, 7, 8, c_light_gray, get_armor( u, bp_foot_r, w ) );
+    mvwprintz( w, 1, 8, c_light_gray, get_armor( u, bp_head, w ) );
+    mvwprintz( w, 2, 8, c_light_gray, get_armor( u, bp_torso, w ) );
+    mvwprintz( w, 3, 8, c_light_gray, get_armor( u, bp_arm_r, w ) );
+    mvwprintz( w, 4, 8, c_light_gray, get_armor( u, bp_leg_r, w ) );
+    mvwprintz( w, 5, 8, c_light_gray, get_armor( u, bp_foot_r, w ) );
     wrefresh( w );
 }
 
@@ -310,15 +310,15 @@ void draw_messages( const catacurses::window &w )
     werase( w );
     int line = getmaxy( w ) - 2;
     int maxlength = getmaxx( w );
-    Messages::display_messages( w, 0, 1 /*topline*/, maxlength - 1, line );
+    Messages::display_messages( w, 1, 0 /*topline*/, maxlength - 1, line );
     wrefresh( w );
 }
 
 void draw_lookaround( const catacurses::window &w )
 {
     // look_around panel
-    const std::string title = _( "Look around" );
-    decorate_panel( title, w );
+    // const std::string title = _( "Look around" );
+    // decorate_panel( title, w );
     wrefresh( w );
 }
 
@@ -381,6 +381,9 @@ std::string get_temp( const player &u )
         u.has_bionic( bionic_id( "bio_meteorologist" ) ) ) {
         temp = print_temperature( g->get_temperature( u.pos() ) ).c_str();
     }
+    if( ( int )temp.size() == 0 ) {
+        return "-";
+    }
     return temp;
 }
 
@@ -433,7 +436,7 @@ std::string time_approx()
     } else if( iHour >= 11 ) {
         time_approx = "Around noon";
     } else if( iHour >= 8 ) {
-        time_approx = "In the Morning";
+        time_approx = "Early Morning";
     } else if( iHour >= 5 ) {
         time_approx = "Around Dawn";
     } else if( iHour >= 0 ) {
@@ -467,6 +470,19 @@ std::pair<nc_color, int> morale_stat( const player &u )
         morale_color = c_red;
     }
     return std::make_pair( morale_color, morale_int );
+}
+
+face_type get_face_type( const player &u )
+{
+    face_type fc = face_human;
+    if( u.has_trait( trait_THRESH_FELINE ) ) {
+        fc = face_cat;
+    } else if( u.has_trait( trait_THRESH_URSINE ) ) {
+        fc = face_bear;
+    } else if( u.has_trait( trait_THRESH_BIRD ) ) {
+        fc = face_bird;
+    }
+    return fc;
 }
 
 std::pair<nc_color, std::string> hunger_stat( const player &u )
@@ -625,4 +641,86 @@ std::string get_armor( const player &u, body_part bp, const catacurses::window &
         }
     }
     return "-";
+}
+
+std::string morale_emotion( const int morale_cur, const face_type face,
+                            const bool horizontal_style )
+{
+    if( horizontal_style ) {
+        if( face == face_bear || face == face_cat ) {
+            if( morale_cur >= 200 ) {
+                return "@W@";
+            } else if( morale_cur >= 100 ) {
+                return "OWO";
+            } else if( morale_cur >= 50 ) {
+                return "owo";
+            } else if( morale_cur >= 10 ) {
+                return "^w^";
+            } else if( morale_cur >= -10 ) {
+                return "-w-";
+            } else if( morale_cur >= -50 ) {
+                return "-m-";
+            } else if( morale_cur >= -100 ) {
+                return "TmT";
+            } else if( morale_cur >= -200 ) {
+                return "XmX";
+            } else {
+                return "@m@";
+            }
+        } else if( face == face_bird ) {
+            if( morale_cur >= 200 ) {
+                return "@v@";
+            } else if( morale_cur >= 100 ) {
+                return "OvO";
+            } else if( morale_cur >= 50 ) {
+                return "ovo";
+            } else if( morale_cur >= 10 ) {
+                return "^v^";
+            } else if( morale_cur >= -10 ) {
+                return "-v-";
+            } else if( morale_cur >= -50 ) {
+                return ".v.";
+            } else if( morale_cur >= -100 ) {
+                return "TvT";
+            } else if( morale_cur >= -200 ) {
+                return "XvX";
+            } else {
+                return "@v@";
+            }
+        } else if( morale_cur >= 200 ) {
+            return "@U@";
+        } else if( morale_cur >= 100 ) {
+            return "OuO";
+        } else if( morale_cur >= 50 ) {
+            return "^u^";
+        } else if( morale_cur >= 10 ) {
+            return "n_n";
+        } else if( morale_cur >= -10 ) {
+            return "-_-";
+        } else if( morale_cur >= -50 ) {
+            return "-n-";
+        } else if( morale_cur >= -100 ) {
+            return "TnT";
+        } else if( morale_cur >= -200 ) {
+            return "XnX";
+        } else {
+            return "@n@";
+        }
+    } else if( morale_cur >= 100 ) {
+        return "8D";
+    } else if( morale_cur >= 50 ) {
+        return ":D";
+    } else if( face == face_cat && morale_cur >= 10 ) {
+        return ":3";
+    } else if( face != face_cat && morale_cur >= 10 ) {
+        return ":)";
+    } else if( morale_cur >= -10 ) {
+        return ":|";
+    } else if( morale_cur >= -50 ) {
+        return "):";
+    } else if( morale_cur >= -100 ) {
+        return "D:";
+    } else {
+        return "D8";
+    }
 }

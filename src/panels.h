@@ -41,4 +41,11 @@ std::pair<nc_color, std::string> thirst_stat( const player &u );
 std::pair<nc_color, std::string> rest_stat( const player &u );
 std::pair<nc_color, std::string> pain_stat( const player &u );
 std::string get_armor( const player &u, body_part bp, const catacurses::window &w );
+enum face_type : int {
+    face_human = 0,
+    face_bird,
+    face_bear,
+    face_cat,
+    num_face_types
+};
 #endif
