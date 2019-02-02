@@ -18,6 +18,7 @@
 #include "player.h"
 #include "translations.h"
 #include "vehicle.h"
+#include "vpart_position.h"
 #include "weather.h"
 #include "weather_gen.h"
 #include <cmath>
@@ -161,11 +162,11 @@ void draw_limb( player &u, const catacurses::window &w )
     // limb panel
 
     mvwprintz( w,  0, 1,  c_light_gray, _( "Head :" ) );
-    mvwprintz( w,  0, 18, c_light_gray, _( "Torso:" ) );
+    mvwprintz( w,  0, 19, c_light_gray, _( "Torso:" ) );
     mvwprintz( w,  1, 1,  c_light_gray, _( "L_Arm:" ) );
-    mvwprintz( w,  1, 18, c_light_gray, _( "R_Arm:" ) );
+    mvwprintz( w,  1, 19, c_light_gray, _( "R_Arm:" ) );
     mvwprintz( w,  2, 1,  c_light_gray, _( "L_Leg:" ) );
-    mvwprintz( w,  2, 18, c_light_gray, _( "R_Leg:" ) );
+    mvwprintz( w,  2, 19, c_light_gray, _( "R_Leg:" ) );
 
     const auto &head =  get_hp_bar( u.hp_cur[hp_head], u.hp_max[hp_head] );
     const auto &torso = get_hp_bar( u.hp_cur[hp_torso], u.hp_max[hp_torso] );
@@ -174,11 +175,11 @@ void draw_limb( player &u, const catacurses::window &w )
     const auto &legl =  get_hp_bar( u.hp_cur[hp_leg_l], u.hp_max[hp_leg_l] );
     const auto &legr =  get_hp_bar( u.hp_cur[hp_leg_r], u.hp_max[hp_leg_r] );
 
-    mvwprintz( w,  0, 9,  stat_color( u.hp_cur[hp_head] ),  "%s", head.first );
+    mvwprintz( w,  0, 8,  stat_color( u.hp_cur[hp_head] ),  "%s", head.first );
     mvwprintz( w,  0, 26, stat_color( u.hp_cur[hp_torso] ), "%s", torso.first );
-    mvwprintz( w,  1, 9,  stat_color( u.hp_cur[hp_arm_l] ), "%s", arml.first );
+    mvwprintz( w,  1, 8,  stat_color( u.hp_cur[hp_arm_l] ), "%s", arml.first );
     mvwprintz( w,  1, 26, stat_color( u.hp_cur[hp_arm_r] ), "%s", armr.first );
-    mvwprintz( w,  2, 9,  stat_color( u.hp_cur[hp_leg_l] ), "%s", legl.first );
+    mvwprintz( w,  2, 8,  stat_color( u.hp_cur[hp_leg_l] ), "%s", legl.first );
     mvwprintz( w,  2, 26, stat_color( u.hp_cur[hp_leg_r] ), "%s", legr.first );
     wrefresh( w );
 }
@@ -190,13 +191,13 @@ void draw_char( player &u, const catacurses::window &w )
     mvwprintz( w,  0, 1,  c_light_gray, _( "Sound:" ) );
     mvwprintz( w,  1, 1,  c_light_gray, _( "Stam :" ) );
     mvwprintz( w,  2, 1,  c_light_gray, _( "Focus:" ) );
-    mvwprintz( w,  0, 18, c_light_gray, _( "Mood :" ) );
-    mvwprintz( w,  1, 18, c_light_gray, _( "Speed:" ) );
-    mvwprintz( w,  2, 18, c_light_gray, _( "move :" ) );
+    mvwprintz( w,  0, 19, c_light_gray, _( "Mood :" ) );
+    mvwprintz( w,  1, 19, c_light_gray, _( "Speed:" ) );
+    mvwprintz( w,  2, 19, c_light_gray, _( "move :" ) );
 
-    mvwprintz( w,  0, 9, c_light_gray, "%s", u.volume );
-    mvwprintz( w,  1, 9, stat_color( u.stamina / 10 ), "%s", u.stamina / 10 );
-    mvwprintz( w,  2, 9, stat_color( u.focus_pool ), "%s", u.focus_pool );
+    mvwprintz( w,  0, 8, c_light_gray, "%s", u.volume );
+    mvwprintz( w,  1, 8, stat_color( u.stamina / 10 ), "%s", u.stamina / 10 );
+    mvwprintz( w,  2, 8, stat_color( u.focus_pool ), "%s", u.focus_pool );
     mvwprintz( w,  0, 26, morale_pair.first, "%s", morale_pair.second );
     mvwprintz( w,  1, 26, stat_color( u.get_speed() ), "%s", u.get_speed() );
     mvwprintz( w,  2, 26, c_light_gray, "%s", u.movecounter );
@@ -206,15 +207,48 @@ void draw_char( player &u, const catacurses::window &w )
 void draw_stat( player &u, const catacurses::window &w )
 {
     werase( w );
-    mvwprintz( w, 0, 1,  c_light_gray, _( "Str:" ) );
-    mvwprintz( w, 0, 9, c_light_gray,  _( "Int:" ) );
-    mvwprintz( w, 0, 18, c_light_gray, _( "Dex:" ) );
-    mvwprintz( w, 0, 26, c_light_gray, _( "Per:" ) );
+    // display vehicle controls
+    vehicle *veh = g->remoteveh();
+    if( veh == nullptr && u.in_vehicle ) {
+        veh = veh_pointer_or_null( g->m.veh_at( u.pos() ) );
+    }
+    if( veh ) {
+        // display direction
+        int rotation = ( ( veh->face.dir() + 90 ) % 360 );
+        mvwprintz( w, 0, 19, c_light_gray, _( "Turn :" ) );
+        mvwprintz( w, 0, 26, c_light_gray, "%d°", rotation );
 
-    mvwprintz( w, 0, 5,  stat_color( u.str_cur ), "%s", u.str_cur );
-    mvwprintz( w, 0, 13, stat_color( u.int_cur ), "%s", u.int_cur );
-    mvwprintz( w, 0, 22, stat_color( u.dex_cur ), "%s", u.dex_cur );
-    mvwprintz( w, 0, 30, stat_color( u.per_cur ), "%s", u.per_cur );
+        // target speed > current speed
+        const float strain = veh->strain();
+        nc_color col_vel = strain <= 0 ? c_light_blue :
+                           ( strain <= 0.2 ? c_yellow :
+                             ( strain <= 0.4 ? c_light_red : c_red ) );
+
+        const std::string type = get_option<std::string>( "USE_METRIC_SPEEDS" );
+        if( veh->cruise_on ) {
+            int t_speed = int( convert_velocity( veh->cruise_velocity, VU_VEHICLE ) );
+            int c_speed = int( convert_velocity( veh->velocity, VU_VEHICLE ) );
+            int offset = get_int_digits( t_speed );
+            mvwprintz( w, 0, 1, c_light_gray, "%s :", type );
+            mvwprintz( w, 0, 8, c_light_green, "%d", t_speed );
+            mvwprintz( w, 0, 9 + offset, c_light_gray, "%s", ">" );
+            mvwprintz( w, 0, 10 + offset, col_vel, "%d", c_speed );
+        }
+
+        // display fuel
+        mvwprintz( w, 1, 19, c_light_gray, "Fuel :" );
+        veh->print_fuel_indicators( w, 1, 26 );
+    } else {
+        mvwprintz( w, 0, 1,  c_light_gray, _( "Str:" ) );
+        mvwprintz( w, 0, 9,  c_light_gray, _( "Int:" ) );
+        mvwprintz( w, 0, 18, c_light_gray, _( "Dex:" ) );
+        mvwprintz( w, 0, 26, c_light_gray, _( "Per:" ) );
+
+        mvwprintz( w, 0, 5,  stat_color( u.str_cur ), "%s", u.str_cur );
+        mvwprintz( w, 0, 13, stat_color( u.int_cur ), "%s", u.int_cur );
+        mvwprintz( w, 0, 22, stat_color( u.dex_cur ), "%s", u.dex_cur );
+        mvwprintz( w, 0, 30, stat_color( u.per_cur ), "%s", u.per_cur );
+    }
     wrefresh( w );
 }
 
@@ -723,4 +757,10 @@ std::string morale_emotion( const int morale_cur, const face_type face,
     } else {
         return "D8";
     }
+}
+
+int get_int_digits( const int &digits )
+{
+    int offset = digits > 0 ? ( int ) log10( ( double ) digits ) + 1 : 1;
+    return offset;
 }
