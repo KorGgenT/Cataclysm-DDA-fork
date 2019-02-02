@@ -40,6 +40,7 @@ std::pair<nc_color, std::string> temp_stat( const player &u );
 std::pair<nc_color, std::string> thirst_stat( const player &u );
 std::pair<nc_color, std::string> rest_stat( const player &u );
 std::pair<nc_color, std::string> pain_stat( const player &u );
+std::pair<nc_color, std::string> power_stat( const player &u );
 std::string get_armor( const player &u, body_part bp, const catacurses::window &w );
 int get_int_digits( const int &digits );
 enum face_type : int {

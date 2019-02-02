@@ -593,56 +593,56 @@ void game::init_ui( const bool resized )
     win_map.insert( {1, w_arr[1]} );
     werase( w_panel_char );
 
-    w_panel_stat = w_panel_stat_ptr = catacurses::newwin( 2, 32, 8, 88 );
+    w_panel_stat = w_panel_stat_ptr = catacurses::newwin( 4, 32, 8, 88 );
     w_arr[2].name = "stat";
     w_arr[2].toggle = true;
     w_arr[2].win = w_panel_stat;
     win_map.insert( {2, w_arr[2]} );
     werase( w_panel_stat );
 
-    w_panel_env1 = w_panel_env1_ptr = catacurses::newwin( 6, 32, 10, 88 );
+    w_panel_env1 = w_panel_env1_ptr = catacurses::newwin( 6, 32, 12, 88 );
     w_arr[3].name = "env1";
     w_arr[3].toggle = true;
     w_arr[3].win = w_panel_env1;
     win_map.insert( {3, w_arr[3]} );
     werase( w_panel_env1 );
 
-    w_panel_mod1 = w_panel_mod1_ptr = catacurses::newwin( 7, 32, 16, 88 );
+    w_panel_mod1 = w_panel_mod1_ptr = catacurses::newwin( 7, 32, 18, 88 );
     w_arr[4].name = "mod1";
     w_arr[4].toggle = true;
     w_arr[4].win = w_panel_mod1;
     win_map.insert( {4, w_arr[4]} );
     werase( w_panel_mod1 );
 
-    w_panel3 = w_panel3_ptr = catacurses::newwin( 13, 32, 23, 88 );
+    w_panel3 = w_panel3_ptr = catacurses::newwin( 13, 32, 25, 88 );
     w_arr[5].name = "msg";
     w_arr[5].toggle = true;
     w_arr[5].win = w_panel3;
     win_map.insert( {5, w_arr[5]} );
     werase( w_panel3 );
 
-    w_panel5 = w_panel5_ptr = catacurses::newwin( 8, 32, 36, 88 );
+    w_panel5 = w_panel5_ptr = catacurses::newwin( 8, 32, 38, 88 );
     w_arr[6].name = "com";
     w_arr[6].toggle = true;
     w_arr[6].win = w_panel5;
     win_map.insert( {6, w_arr[6]} );
     werase( w_panel5 );
 
-    w_panel_env2 = w_panel_env2_ptr = catacurses::newwin( 5, 32, 44, 88 );
+    w_panel_env2 = w_panel_env2_ptr = catacurses::newwin( 5, 32, 46, 88 );
     w_arr[7].name = "env2";
     w_arr[7].toggle = true;
     w_arr[7].win = w_panel_env2;
     win_map.insert( {7, w_arr[7]} );
     werase( w_panel_env2 );
 
-    w_panel_mod2 = w_panel_mod2_ptr = catacurses::newwin( 7, 32, 49, 88 );
+    w_panel_mod2 = w_panel_mod2_ptr = catacurses::newwin( 7, 32, 51, 88 );
     w_arr[8].name = "mod2";
     w_arr[8].toggle = true;
     w_arr[8].win = w_panel_mod2;
     win_map.insert( {8, w_arr[8]} );
     werase( w_panel_mod2 );
 
-    w_panel6 = w_panel6_ptr = catacurses::newwin( 13, 32, 56, 88 );
+    w_panel6 = w_panel6_ptr = catacurses::newwin( 13, 32, 57, 88 );
     w_arr[9].name = "map";
     w_arr[9].toggle = true;
     w_arr[9].win = w_panel6;

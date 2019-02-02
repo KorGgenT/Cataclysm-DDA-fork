@@ -162,10 +162,10 @@ void draw_limb( player &u, const catacurses::window &w )
     // limb panel
 
     mvwprintz( w,  0, 1,  c_light_gray, _( "Head :" ) );
-    mvwprintz( w,  0, 19, c_light_gray, _( "Torso:" ) );
     mvwprintz( w,  1, 1,  c_light_gray, _( "L_Arm:" ) );
-    mvwprintz( w,  1, 19, c_light_gray, _( "R_Arm:" ) );
     mvwprintz( w,  2, 1,  c_light_gray, _( "L_Leg:" ) );
+    mvwprintz( w,  0, 19, c_light_gray, _( "Torso:" ) );
+    mvwprintz( w,  1, 19, c_light_gray, _( "R_Arm:" ) );
     mvwprintz( w,  2, 19, c_light_gray, _( "R_Leg:" ) );
 
     const auto &head =  get_hp_bar( u.hp_cur[hp_head], u.hp_max[hp_head] );
@@ -176,11 +176,11 @@ void draw_limb( player &u, const catacurses::window &w )
     const auto &legr =  get_hp_bar( u.hp_cur[hp_leg_r], u.hp_max[hp_leg_r] );
 
     mvwprintz( w,  0, 8,  stat_color( u.hp_cur[hp_head] ),  "%s", head.first );
-    mvwprintz( w,  0, 26, stat_color( u.hp_cur[hp_torso] ), "%s", torso.first );
     mvwprintz( w,  1, 8,  stat_color( u.hp_cur[hp_arm_l] ), "%s", arml.first );
-    mvwprintz( w,  1, 26, stat_color( u.hp_cur[hp_arm_r] ), "%s", armr.first );
     mvwprintz( w,  2, 8,  stat_color( u.hp_cur[hp_leg_l] ), "%s", legl.first );
+    mvwprintz( w,  1, 26, stat_color( u.hp_cur[hp_arm_r] ), "%s", armr.first );
     mvwprintz( w,  2, 26, stat_color( u.hp_cur[hp_leg_r] ), "%s", legr.first );
+    mvwprintz( w,  0, 26, stat_color( u.hp_cur[hp_torso] ), "%s", torso.first );
     wrefresh( w );
 }
 
@@ -215,8 +215,8 @@ void draw_stat( player &u, const catacurses::window &w )
     if( veh ) {
         // display direction
         int rotation = ( ( veh->face.dir() + 90 ) % 360 );
-        mvwprintz( w, 0, 19, c_light_gray, _( "Turn :" ) );
-        mvwprintz( w, 0, 26, c_light_gray, "%d°", rotation );
+        mvwprintz( w, 0, 1, c_light_gray, _( "Turn :" ) );
+        mvwprintz( w, 0, 8, c_light_gray, "%d°", rotation );
 
         // target speed > current speed
         const float strain = veh->strain();
@@ -229,26 +229,29 @@ void draw_stat( player &u, const catacurses::window &w )
             int t_speed = int( convert_velocity( veh->cruise_velocity, VU_VEHICLE ) );
             int c_speed = int( convert_velocity( veh->velocity, VU_VEHICLE ) );
             int offset = get_int_digits( t_speed );
-            mvwprintz( w, 0, 1, c_light_gray, "%s :", type );
-            mvwprintz( w, 0, 8, c_light_green, "%d", t_speed );
-            mvwprintz( w, 0, 9 + offset, c_light_gray, "%s", ">" );
-            mvwprintz( w, 0, 10 + offset, col_vel, "%d", c_speed );
+            mvwprintz( w, 1, 1, c_light_gray, "%s :", type );
+            mvwprintz( w, 1, 8, c_light_green, "%d", t_speed );
+            mvwprintz( w, 1, 9 + offset, c_light_gray, "%s", ">" );
+            mvwprintz( w, 1, 11 + offset, col_vel, "%d", c_speed );
         }
 
         // display fuel
-        mvwprintz( w, 1, 19, c_light_gray, "Fuel :" );
-        veh->print_fuel_indicators( w, 1, 26 );
+        mvwprintz( w, 0, 19, c_light_gray, "Fuel :" );
+        veh->print_fuel_indicators( w, 0, 26 );
     } else {
-        mvwprintz( w, 0, 1,  c_light_gray, _( "Str:" ) );
-        mvwprintz( w, 0, 9,  c_light_gray, _( "Int:" ) );
-        mvwprintz( w, 0, 18, c_light_gray, _( "Dex:" ) );
-        mvwprintz( w, 0, 26, c_light_gray, _( "Per:" ) );
+        mvwprintz( w, 0, 1,  c_light_gray, _( "Str  :" ) );
+        mvwprintz( w, 1, 1,  c_light_gray, _( "Int  :" ) );
+        mvwprintz( w, 0, 19, c_light_gray, _( "Dex  :" ) );
+        mvwprintz( w, 1, 19, c_light_gray, _( "Per  :" ) );
 
-        mvwprintz( w, 0, 5,  stat_color( u.str_cur ), "%s", u.str_cur );
-        mvwprintz( w, 0, 13, stat_color( u.int_cur ), "%s", u.int_cur );
-        mvwprintz( w, 0, 22, stat_color( u.dex_cur ), "%s", u.dex_cur );
-        mvwprintz( w, 0, 30, stat_color( u.per_cur ), "%s", u.per_cur );
+        mvwprintz( w, 0, 8,  stat_color( u.str_cur ), "%s", u.str_cur );
+        mvwprintz( w, 1, 8,  stat_color( u.int_cur ), "%s", u.int_cur );
+        mvwprintz( w, 0, 26, stat_color( u.dex_cur ), "%s", u.dex_cur );
+        mvwprintz( w, 1, 26, stat_color( u.per_cur ), "%s", u.per_cur );
     }
+    std::pair<nc_color, std::string> pwr_pair = power_stat( u );
+    mvwprintz( w, 2, 1,  c_light_gray, _( "Power:" ) );
+    mvwprintz( w, 2, 8, pwr_pair.first, "%s", pwr_pair.second );
     wrefresh( w );
 }
 
@@ -759,8 +762,28 @@ std::string morale_emotion( const int morale_cur, const face_type face,
     }
 }
 
+std::pair<nc_color, std::string> power_stat( const player &u )
+{
+    nc_color c_pwr = c_red;
+    std::string s_pwr = "";
+    if( u.max_power_level == 0 ) {
+        s_pwr = "--";
+    } else {
+        if( u.power_level >= u.max_power_level / 2 ) {
+            c_pwr = c_green;
+        } else if( u.power_level >= u.max_power_level / 3 ) {
+            c_pwr = c_yellow;
+        } else if( u.power_level >= u.max_power_level / 4 ) {
+            c_pwr = c_red;
+        }
+        s_pwr = u.power_level;
+    }
+    return std::make_pair( c_pwr, s_pwr );
+}
+
 int get_int_digits( const int &digits )
 {
-    int offset = digits > 0 ? ( int ) log10( ( double ) digits ) + 1 : 1;
+    int temp = abs( digits );
+    int offset = temp > 0 ? ( int ) log10( ( double ) temp ) + 1 : 1;
     return offset;
 }
