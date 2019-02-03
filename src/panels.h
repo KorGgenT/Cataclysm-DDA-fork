@@ -12,6 +12,13 @@ namespace catacurses
 {
 class window;
 } // namespace catacurses
+enum face_type : int {
+    face_human = 0,
+    face_bird,
+    face_bear,
+    face_cat,
+    num_face_types
+};
 void decorate_panel( const std::string name, const catacurses::window &w );
 void draw_limb( player &p, const catacurses::window &w );
 void draw_char( player &p, const catacurses::window &w );
@@ -41,14 +48,10 @@ std::pair<nc_color, std::string> thirst_stat( const player &u );
 std::pair<nc_color, std::string> rest_stat( const player &u );
 std::pair<nc_color, std::string> pain_stat( const player &u );
 std::pair<nc_color, std::string> power_stat( const player &u );
+face_type get_face_type( const player &u );
+std::string morale_emotion( const int morale_cur, const face_type face,
+                            const bool horizontal_style );
 nc_color safe_color();
 std::string get_armor( const player &u, body_part bp, const catacurses::window &w );
 int get_int_digits( const int &digits );
-enum face_type : int {
-    face_human = 0,
-    face_bird,
-    face_bear,
-    face_cat,
-    num_face_types
-};
 #endif

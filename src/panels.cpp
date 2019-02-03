@@ -159,8 +159,91 @@ void draw_panel_adm( const catacurses::window &w )
 void draw_limb( player &u, const catacurses::window &w )
 {
     werase( w );
-    // limb panel
+    int ny = 0;
+    int ny2 = 0;
+    int nx = 0;
+    const bool is_self_aware = u.has_trait( trait_SELFAWARE );
+    for( int i = 0; i < num_hp_parts; i++ ) {
+        if( i < 3 ) {
+            ny = i;
+            nx = 8;
+        } else {
+            ny = ny2++;
+            nx = 26;
+        }
+        wmove( w, ny, nx );
+        static auto print_symbol_num = []( const catacurses::window & w, int num, const std::string & sym,
+        const nc_color & color ) {
+            while( num-- > 0 ) {
+                wprintz( w, color, sym.c_str() );
+            }
+        };
 
+        if( u.hp_cur[i] == 0 && ( i >= hp_arm_l && i <= hp_leg_r ) ) {
+            //Limb is broken
+            std::string limb = "~~%~~";
+            nc_color color = c_light_red;
+
+            const auto bp = u.hp_to_bp( static_cast<hp_part>( i ) );
+            if( u.worn_with_flag( "SPLINT", bp ) ) {
+                static const efftype_id effect_mending( "mending" );
+                const auto &eff = u.get_effect( effect_mending, bp );
+                const int mend_perc = eff.is_null() ? 0.0 : 100 * eff.get_duration() / eff.get_max_duration();
+
+                if( is_self_aware ) {
+                    limb = string_format( "=%2d%%=", mend_perc );
+                    color = c_blue;
+                } else {
+                    const int num = mend_perc / 20;
+                    print_symbol_num( w, num, "#", c_blue );
+                    print_symbol_num( w, 5 - num, "=", c_blue );
+                    continue;
+                }
+            }
+
+            wprintz( w, color, limb );
+            continue;
+        }
+
+        const auto &hp = get_hp_bar( u.hp_cur[i], u.hp_max[i] );
+
+        if( is_self_aware ) {
+            wprintz( w, hp.second, "%3d  ", u.hp_cur[i] );
+        } else {
+            wprintz( w, hp.second, hp.first );
+
+            //Add the trailing symbols for a not-quite-full health bar
+            print_symbol_num( w, 5 - static_cast<int>( hp.first.size() ), ".", c_white );
+        }
+    }
+
+    // display limbs status
+    static std::array<body_part, 6> part = {{
+            bp_head, bp_torso, bp_arm_l, bp_arm_r, bp_leg_l, bp_leg_r
+        }
+    };
+    ny = 0;
+    ny2 = 0;
+    nx = 0;
+    for( size_t i = 0; i < part.size(); i++ ) {
+        if( i < 3 ) {
+            ny = i;
+            nx = 1;
+        } else {
+            ny = ny2++;
+            nx = 19;
+        }
+
+        const std::string str = body_part_hp_bar_ui_text( part[i] );
+        wmove( w, ny, nx );
+        if( i == 0 ) {
+            wprintz( w, u.limb_color( part[i], true, true, true ), str + " :" );
+        } else {
+            wprintz( w, u.limb_color( part[i], true, true, true ), str + ":" );
+        }
+    }
+
+    /*
     mvwprintz( w,  0, 1,  c_light_gray, _( "Head :" ) );
     mvwprintz( w,  1, 1,  c_light_gray, _( "L_Arm:" ) );
     mvwprintz( w,  2, 1,  c_light_gray, _( "L_Leg:" ) );
@@ -181,6 +264,7 @@ void draw_limb( player &u, const catacurses::window &w )
     mvwprintz( w,  1, 26, stat_color( u.hp_cur[hp_arm_r] ), "%s", armr.first );
     mvwprintz( w,  2, 26, stat_color( u.hp_cur[hp_leg_r] ), "%s", legr.first );
     mvwprintz( w,  0, 26, stat_color( u.hp_cur[hp_torso] ), "%s", torso.first );
+    */
     wrefresh( w );
 }
 
@@ -195,12 +279,18 @@ void draw_char( player &u, const catacurses::window &w )
     mvwprintz( w,  1, 19, c_light_gray, _( "Speed:" ) );
     mvwprintz( w,  2, 19, c_light_gray, _( "move :" ) );
 
+    const auto str_walk = pgettext( "movement-type", "W" );
+    const auto str_run = pgettext( "movement-type", "R" );
+    const char *move = u.move_mode == "walk" ? str_walk : str_run;
+    std::string movecost = std::to_string( u.movecounter ) + "(" + move + ")";
+    bool m_style = get_option<std::string>( "MORALE_STYLE" ) == "horizontal";
+    std::string smiley = morale_emotion( morale_pair.second, get_face_type( u ), m_style );
     mvwprintz( w,  0, 8, c_light_gray, "%s", u.volume );
     mvwprintz( w,  1, 8, stat_color( u.stamina / 10 ), "%s", u.stamina / 10 );
     mvwprintz( w,  2, 8, stat_color( u.focus_pool ), "%s", u.focus_pool );
-    mvwprintz( w,  0, 26, morale_pair.first, "%s", morale_pair.second );
+    mvwprintz( w,  0, 26, morale_pair.first, "%s", smiley );
     mvwprintz( w,  1, 26, stat_color( u.get_speed() ), "%s", u.get_speed() );
-    mvwprintz( w,  2, 26, c_light_gray, "%s", u.movecounter );
+    mvwprintz( w,  2, 26, c_light_gray, "%s", movecost );
     wrefresh( w );
 }
 
@@ -512,19 +602,6 @@ std::pair<nc_color, int> morale_stat( const player &u )
     return std::make_pair( morale_color, morale_int );
 }
 
-face_type get_face_type( const player &u )
-{
-    face_type fc = face_human;
-    if( u.has_trait( trait_THRESH_FELINE ) ) {
-        fc = face_cat;
-    } else if( u.has_trait( trait_THRESH_URSINE ) ) {
-        fc = face_bear;
-    } else if( u.has_trait( trait_THRESH_BIRD ) ) {
-        fc = face_bird;
-    }
-    return fc;
-}
-
 std::pair<nc_color, std::string> hunger_stat( const player &u )
 {
     std::string hunger_string = "";
@@ -681,6 +758,19 @@ std::string get_armor( const player &u, body_part bp, const catacurses::window &
         }
     }
     return "-";
+}
+
+face_type get_face_type( const player &u )
+{
+    face_type fc = face_human;
+    if( u.has_trait( trait_THRESH_FELINE ) ) {
+        fc = face_cat;
+    } else if( u.has_trait( trait_THRESH_URSINE ) ) {
+        fc = face_bear;
+    } else if( u.has_trait( trait_THRESH_BIRD ) ) {
+        fc = face_bird;
+    }
+    return fc;
 }
 
 std::string morale_emotion( const int morale_cur, const face_type face,
