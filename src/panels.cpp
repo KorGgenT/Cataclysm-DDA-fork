@@ -251,7 +251,10 @@ void draw_stat( player &u, const catacurses::window &w )
     }
     std::pair<nc_color, std::string> pwr_pair = power_stat( u );
     mvwprintz( w, 2, 1,  c_light_gray, _( "Power:" ) );
+    mvwprintz( w, 2, 19, c_light_gray, "Safe :" );
     mvwprintz( w, 2, 8, pwr_pair.first, "%s", pwr_pair.second );
+    mvwprintz( w, 2, 26, safe_color(), g->safe_mode ? "On" : "Off" );
+
     wrefresh( w );
 }
 
@@ -779,6 +782,25 @@ std::pair<nc_color, std::string> power_stat( const player &u )
         s_pwr = u.power_level;
     }
     return std::make_pair( c_pwr, s_pwr );
+}
+
+nc_color safe_color()
+{
+    nc_color s_color = g->safe_mode ? c_green : c_red;
+    if( g->safe_mode == SAFE_MODE_OFF && get_option<bool>( "AUTOSAFEMODE" ) ) {
+        int s_return = get_option<int>( "AUTOSAFEMODETURNS" );
+        int iPercent = g->turnssincelastmon * 100 / s_return;
+        if( iPercent >= 100 ) {
+            s_color = c_green;
+        } else if( iPercent >= 75 ) {
+            s_color = c_yellow;
+        } else if( iPercent >= 50 ) {
+            s_color = c_light_red;
+        } else if( iPercent >= 25 ) {
+            s_color = c_red;
+        }
+    }
+    return s_color;
 }
 
 int get_int_digits( const int &digits )

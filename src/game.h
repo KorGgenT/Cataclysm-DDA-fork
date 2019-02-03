@@ -149,9 +149,7 @@ struct look_around_result {
 
 struct w_map {
     std::string name;
-    // int posy;
     bool toggle;
-    // int index;
     catacurses::window win;
 };
 
@@ -1133,11 +1131,13 @@ class game
 
         // ########################## DATA ################################
 
+    public:
         safe_mode_type safe_mode;
+        int turnssincelastmon; // needed for auto run mode
+    private:
         bool safe_mode_warning_logged;
         std::vector<std::shared_ptr<monster>> new_seen_mon;
         int mostseen;  // # of mons seen last turn; if this increases, set safe_mode to SAFE_MODE_STOP
-        int turnssincelastmon; // needed for auto run mode
         //  quit_status uquit;    // Set to true if the player quits ('Q')
         bool bVMonsterLookFire;
         time_point nextweather; // The time on which weather will shift next.
