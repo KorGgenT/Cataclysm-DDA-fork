@@ -678,22 +678,23 @@ class game
         catacurses::window w_terrain_ptr;
         catacurses::window w_minimap_ptr;
         catacurses::window w_pixel_minimap_ptr;
-        catacurses::window w_messages_short_ptr;
-        catacurses::window w_messages_long_ptr;
+        //        catacurses::window w_messages_short_ptr;
+        //        catacurses::window w_messages_long_ptr;
         catacurses::window w_panel_char_ptr;
         catacurses::window w_panel_limb_ptr;
         catacurses::window w_panel_stat_ptr;
         catacurses::window w_panel_mod1_ptr;
         catacurses::window w_panel_mod2_ptr;
+        catacurses::window w_panel_msg_ptr;
         catacurses::window w_panel_env1_ptr;
         catacurses::window w_panel_env2_ptr;
-
+        catacurses::window w_panel_com_ptr;
+        catacurses::window w_panel_map_ptr;
+        /*
         catacurses::window w_panel1_ptr;
         catacurses::window w_panel2_ptr;
-        catacurses::window w_panel3_ptr;
         catacurses::window w_panel4_ptr;
-        catacurses::window w_panel5_ptr;
-        catacurses::window w_panel6_ptr;
+        */
         catacurses::window w_panel_adm_ptr;
 
     public:
@@ -703,24 +704,27 @@ class game
         catacurses::window w_minimap;
         catacurses::window w_pixel_minimap;
         //only a pointer, can refer to w_messages_short or w_messages_long
-        catacurses::window w_messages;
-        catacurses::window w_messages_short;
-        catacurses::window w_messages_long;
+        //        catacurses::window w_messages;
+        //        catacurses::window w_messages_short;
+        //        catacurses::window w_messages_long;
         std::map<int, w_map> win_map;
         catacurses::window w_panel_char;
         catacurses::window w_panel_limb;
         catacurses::window w_panel_stat;
         catacurses::window w_panel_mod1;
         catacurses::window w_panel_mod2;
+        catacurses::window w_panel_msg;
         catacurses::window w_panel_env1;
         catacurses::window w_panel_env2;
-
+        catacurses::window w_panel_com;
+        catacurses::window w_panel_map;
+        /*
         catacurses::window w_panel1;
         catacurses::window w_panel2;
         catacurses::window w_panel3;
         catacurses::window w_panel4;
-        catacurses::window w_panel5;
-        catacurses::window w_panel6;
+        */
+
         catacurses::window w_panel_adm;
         catacurses::window w_blackspace;
 

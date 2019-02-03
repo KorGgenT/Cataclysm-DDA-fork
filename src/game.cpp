@@ -520,49 +520,29 @@ void game::init_ui( const bool resized )
     // minimapX x minimapY is always MINIMAP_WIDTH x MINIMAP_HEIGHT in size
     int minimapX = 0;
     int minimapY = 0;
-    int messX = 0;
-    int messY = 0;
-    int messW = 0;
-    int messHshort = 0;
-    int messHlong = 0;
     int pixelminimapW = 0;
     int pixelminimapH = 0;
-
-
     bool pixel_minimap_custom_height = false;
 
 #ifdef TILES
     pixel_minimap_custom_height = get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) > 0;
 #endif // TILES
 
-    // locH = 3;
-    // statX = 0;
-    // statH = 4;
     minimapX = 0;
     minimapY = 0;
-    messX = MINIMAP_WIDTH;
-    messY = 0;
-    messW = messX;
-    pixelminimapW = messW;
+    pixelminimapW = MINIMAP_WIDTH;
     pixelminimapH = ( pixelminimapW / 2 );
-    if( pixel_minimap_custom_height && pixelminimapH > get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) ) {
+    if( pixel_minimap_custom_height &&
+        pixelminimapH > get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) ) {
         pixelminimapH = get_option<int>( "PIXEL_MINIMAP_HEIGHT" );
     }
 
     int _y = VIEW_OFFSET_Y;
     int _x = VIEW_OFFSET_X;
 
-    w_minimap = w_minimap_ptr = catacurses::newwin( MINIMAP_HEIGHT, MINIMAP_WIDTH, _y + minimapY,
-                                _x + minimapX );
+    w_minimap = w_minimap_ptr =
+                    catacurses::newwin( MINIMAP_HEIGHT, MINIMAP_WIDTH, _y + minimapY, _x + minimapX );
     werase( w_minimap );
-
-    w_messages_short = w_messages_short_ptr = catacurses::newwin( messHshort, messW, _y + messY,
-                       _x + messX );
-    werase( w_messages_short );
-
-    w_messages_long = w_messages_long_ptr = catacurses::newwin( messHlong, messW, _y + messY,
-                                            _x + messX );
-    werase( w_messages_long );
 
 #ifdef TILES
     // pmc= pixel minimap custom height
@@ -570,13 +550,8 @@ void game::init_ui( const bool resized )
     //    pmc_height = get_option<int>( "PIXEL_MINIMAP_HEIGHT" ) > 0;
 #endif // TILES
 
-    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( 13, 32, 54, 88 );
+    w_pixel_minimap = w_pixel_minimap_ptr = catacurses::newwin( 13, 32, 58, 88 );
     werase( w_pixel_minimap );
-
-    w_messages = w_messages_short;
-    if( !pixel_minimap_option ) {
-        w_messages = w_messages_long;
-    }
 
     struct w_map w_arr[10];
     w_panel_limb = w_panel_limb_ptr = catacurses::newwin( 4, 32, 0, 88 );
@@ -614,40 +589,40 @@ void game::init_ui( const bool resized )
     win_map.insert( {4, w_arr[4]} );
     werase( w_panel_mod1 );
 
-    w_panel3 = w_panel3_ptr = catacurses::newwin( 13, 32, 25, 88 );
+    w_panel_msg = w_panel_msg_ptr = catacurses::newwin( 13, 32, 25, 88 );
     w_arr[5].name = "msg";
     w_arr[5].toggle = true;
-    w_arr[5].win = w_panel3;
+    w_arr[5].win = w_panel_msg;
     win_map.insert( {5, w_arr[5]} );
-    werase( w_panel3 );
+    werase( w_panel_msg );
 
-    w_panel5 = w_panel5_ptr = catacurses::newwin( 8, 32, 38, 88 );
-    w_arr[6].name = "com";
+    w_panel_env2 = w_panel_env2_ptr = catacurses::newwin( 5, 32, 38, 88 );
+    w_arr[6].name = "env2";
     w_arr[6].toggle = true;
-    w_arr[6].win = w_panel5;
+    w_arr[6].win = w_panel_env2;
     win_map.insert( {6, w_arr[6]} );
-    werase( w_panel5 );
-
-    w_panel_env2 = w_panel_env2_ptr = catacurses::newwin( 5, 32, 46, 88 );
-    w_arr[7].name = "env2";
-    w_arr[7].toggle = true;
-    w_arr[7].win = w_panel_env2;
-    win_map.insert( {7, w_arr[7]} );
     werase( w_panel_env2 );
 
-    w_panel_mod2 = w_panel_mod2_ptr = catacurses::newwin( 7, 32, 51, 88 );
-    w_arr[8].name = "mod2";
-    w_arr[8].toggle = true;
-    w_arr[8].win = w_panel_mod2;
-    win_map.insert( {8, w_arr[8]} );
+    w_panel_mod2 = w_panel_mod2_ptr = catacurses::newwin( 7, 32, 43, 88 );
+    w_arr[7].name = "mod2";
+    w_arr[7].toggle = true;
+    w_arr[7].win = w_panel_mod2;
+    win_map.insert( {7, w_arr[7]} );
     werase( w_panel_mod2 );
 
-    w_panel6 = w_panel6_ptr = catacurses::newwin( 13, 32, 57, 88 );
+    w_panel_com = w_panel_com_ptr = catacurses::newwin( 8, 32, 50, 88 );
+    w_arr[8].name = "com";
+    w_arr[8].toggle = true;
+    w_arr[8].win = w_panel_com;
+    win_map.insert( {8, w_arr[8]} );
+    werase( w_panel_com );
+
+    w_panel_map = w_panel_map_ptr = catacurses::newwin( 13, 32, 58, 88 );
     w_arr[9].name = "map";
     w_arr[9].toggle = true;
-    w_arr[9].win = w_panel6;
+    w_arr[9].win = w_panel_map;
     win_map.insert( {9, w_arr[9]} );
-    werase( w_panel6 );
+    werase( w_panel_map );
 
     w_panel_adm = w_panel_adm_ptr = catacurses::newwin( 15, 45, 8, 20 );
     werase( w_panel_adm );
@@ -6624,16 +6599,6 @@ void game::print_graffiti_info( const tripoint &lp, const catacurses::window &w_
     }
 }
 
-void game::get_lookaround_dimensions( int &lookWidth, int &begin_y, int &begin_x ) const
-{
-    lookWidth = getmaxx( w_messages );
-    begin_y = TERMY - getmaxy( w_messages ) + 1;
-    if( getbegy( w_messages ) < begin_y ) {
-        begin_y = getbegy( w_messages );
-    }
-    begin_x = getbegx( w_messages );
-}
-
 bool game::check_zone( const zone_type_id &type, const tripoint &where ) const
 {
     return zone_manager::get_manager().has( type, m.getabs( where ) );
@@ -7228,14 +7193,13 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
     int soffset = get_option<int>( "MOVE_VIEW_OFFSET" );
     bool fast_scroll = false;
 
-    int lookWidth = 0;
-    int lookY = 0;
-    int lookX = 0;
-    get_lookaround_dimensions( lookWidth, lookY, lookX );
-
     bool bNewWindow = false;
     if( !w_info ) {
-        w_info = catacurses::newwin( 13, 32, 39, 88 ); //getmaxy( w_messages ), lookWidth, lookY, lookX );
+        int la_y = 0;
+        int la_x = 88; // w_panel_msg.get<cata_cursesport::WINDOW>()->x;
+        int la_h = 13;
+        int la_w = 32; // w_panel_msg.get<cata_cursesport::WINDOW>()->width;
+        w_info = catacurses::newwin( la_h, la_w, la_y, la_x );
         bNewWindow = true;
     }
 
@@ -7530,7 +7494,8 @@ void game::draw_trail_to_square( const tripoint &t, bool bDrawX )
     }
 
     wrefresh( w_terrain );
-    draw_panels();
+    // problem with list_monsters
+    //draw_panels();
 }
 
 //helper method so we can keep list_items shorter
@@ -7741,11 +7706,11 @@ void game::list_items_monsters()
 game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
 {
     int iInfoHeight = std::min( 25, TERMY / 2 );
-    const int width = 32; //55;
-    const int offsetX = 88; //VIEW_OFFSET_X;
+    const int width = 35; //55;
+    const int offsetX = TERMX - VIEW_OFFSET_X - width; //VIEW_OFFSET_X;
 
     catacurses::window w_items = catacurses::newwin( TERMY - 2 - iInfoHeight - VIEW_OFFSET_Y * 2,
-                                 width - 2, VIEW_OFFSET_Y + 1, offsetX + 1 );
+                                 width, VIEW_OFFSET_Y + 1, offsetX + 1 );
     catacurses::window w_items_border = catacurses::newwin( TERMY - iInfoHeight - VIEW_OFFSET_Y * 2,
                                         width, VIEW_OFFSET_Y, offsetX );
     catacurses::window w_item_info = catacurses::newwin( iInfoHeight, width,
@@ -8113,9 +8078,9 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
 
 game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list )
 {
-    int iInfoHeight = 12;
-    const int width = 32; //55;
-    const int offsetX = 88; //VIEW_OFFSET_X;
+    int iInfoHeight = 14;
+    const int width = 35;
+    const int offsetX = TERMX - VIEW_OFFSET_X - width; //VIEW_OFFSET_X;
     catacurses::window w_monsters = catacurses::newwin( TERMY - 2 - iInfoHeight - VIEW_OFFSET_Y * 2,
                                     width - 2, VIEW_OFFSET_Y + 1, offsetX + 1 );
     catacurses::window w_monsters_border = catacurses::newwin( TERMY - iInfoHeight - VIEW_OFFSET_Y * 2,
@@ -8352,6 +8317,7 @@ game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list
 
                 if( rl_dist( u.pos(), cCurMon->pos() ) <= max_gun_range ) {
                     wprintz( w_monsters, c_light_gray, "%s", " " );
+                    //mvwprintz( w_monsters, getmaxy( w_monsters ), 1, c_light_green, ctxt.press_x( "fire" ) );
                     wprintz( w_monsters, c_light_green, ctxt.press_x( "fire" ) );
                     wprintz( w_monsters, c_light_gray, " %s", _( "to shoot" ) );
                 }
@@ -8381,10 +8347,10 @@ game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list
         mvwputch( w_monster_info_border, iInfoHeight - 1, 0, c_light_gray, LINE_XXOO );
         mvwputch( w_monster_info_border, iInfoHeight - 1, width - 1, c_light_gray, LINE_XOOX );
 
+
         wrefresh( w_monsters );
         wrefresh( w_monster_info_border );
         wrefresh( w_monster_info );
-
         catacurses::refresh();
 
         action = ctxt.handle_input();

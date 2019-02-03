@@ -33,6 +33,7 @@ static const trait_id trait_SELFAWARE( "SELFAWARE" );
 static const trait_id trait_THRESH_FELINE( "THRESH_FELINE" );
 static const trait_id trait_THRESH_BIRD( "THRESH_BIRD" );
 static const trait_id trait_THRESH_URSINE( "THRESH_URSINE" );
+//power = 0;
 
 // ===============================
 // panels code
@@ -242,29 +243,6 @@ void draw_limb( player &u, const catacurses::window &w )
             wprintz( w, u.limb_color( part[i], true, true, true ), str + ":" );
         }
     }
-
-    /*
-    mvwprintz( w,  0, 1,  c_light_gray, _( "Head :" ) );
-    mvwprintz( w,  1, 1,  c_light_gray, _( "L_Arm:" ) );
-    mvwprintz( w,  2, 1,  c_light_gray, _( "L_Leg:" ) );
-    mvwprintz( w,  0, 19, c_light_gray, _( "Torso:" ) );
-    mvwprintz( w,  1, 19, c_light_gray, _( "R_Arm:" ) );
-    mvwprintz( w,  2, 19, c_light_gray, _( "R_Leg:" ) );
-
-    const auto &head =  get_hp_bar( u.hp_cur[hp_head], u.hp_max[hp_head] );
-    const auto &torso = get_hp_bar( u.hp_cur[hp_torso], u.hp_max[hp_torso] );
-    const auto &arml =  get_hp_bar( u.hp_cur[hp_arm_l], u.hp_max[hp_arm_l] );
-    const auto &armr =  get_hp_bar( u.hp_cur[hp_arm_r], u.hp_max[hp_arm_r] );
-    const auto &legl =  get_hp_bar( u.hp_cur[hp_leg_l], u.hp_max[hp_leg_l] );
-    const auto &legr =  get_hp_bar( u.hp_cur[hp_leg_r], u.hp_max[hp_leg_r] );
-
-    mvwprintz( w,  0, 8,  stat_color( u.hp_cur[hp_head] ),  "%s", head.first );
-    mvwprintz( w,  1, 8,  stat_color( u.hp_cur[hp_arm_l] ), "%s", arml.first );
-    mvwprintz( w,  2, 8,  stat_color( u.hp_cur[hp_leg_l] ), "%s", legl.first );
-    mvwprintz( w,  1, 26, stat_color( u.hp_cur[hp_arm_r] ), "%s", armr.first );
-    mvwprintz( w,  2, 26, stat_color( u.hp_cur[hp_leg_r] ), "%s", legr.first );
-    mvwprintz( w,  0, 26, stat_color( u.hp_cur[hp_torso] ), "%s", torso.first );
-    */
     wrefresh( w );
 }
 
@@ -344,7 +322,6 @@ void draw_stat( player &u, const catacurses::window &w )
     mvwprintz( w, 2, 19, c_light_gray, "Safe :" );
     mvwprintz( w, 2, 8, pwr_pair.first, "%s", pwr_pair.second );
     mvwprintz( w, 2, 26, safe_color(), g->safe_mode ? "On" : "Off" );
-
     wrefresh( w );
 }
 
@@ -444,22 +421,8 @@ void draw_messages( const catacurses::window &w )
     wrefresh( w );
 }
 
-void draw_lookaround( const catacurses::window &w )
-{
-    // look_around panel
-    // const std::string title = _( "Look around" );
-    // decorate_panel( title, w );
-    wrefresh( w );
-}
-
 void draw_mminimap( const catacurses::window &w )
 {
-    //    for( int i = 0; i < ( int )g->win_map.size(); i++ ) {
-    //        if( g->win_map[ i ].name == "map" && g->win_map[ i ].toggle ) {
-    //            wrefresh( w );
-    //            g->draw_pixel_minimap();
-    //        }
-    //    }
     wrefresh( w );
     g->draw_pixel_minimap();
 }
@@ -468,18 +431,6 @@ void draw_compass( const catacurses::window &w )
 {
     werase( w );
     g->mon_info( w );
-
-    // const std::string compass = "";
-    //    mvwprintz( w, 1,   1, c_light_gray, "Detected : No  |  Total : 0" );
-    //    mvwprintz( w, 2,  11, c_light_gray, " " );
-    //    mvwprintz( w, 4,  11, c_light_gray, " _   |   _ " );
-    //    mvwprintz( w, 5,  11, c_light_gray, "  \\_ N _/ " );
-    //    mvwprintz( w, 6,  11, c_light_gray, "  /  |  \\ " );
-    //    mvwprintz( w, 7,  11, c_light_gray, " W --+-- E " );
-    //    mvwprintz( w, 8,  11, c_light_gray, "  \\_ | _/ " );
-    //    mvwprintz( w, 9,  11, c_light_gray, " _/  S  \\_" );
-    //    mvwprintz( w, 10, 11, c_light_gray, "     |     " );
-
     wrefresh( w );
 }
 
@@ -869,7 +820,7 @@ std::pair<nc_color, std::string> power_stat( const player &u )
         } else if( u.power_level >= u.max_power_level / 4 ) {
             c_pwr = c_red;
         }
-        s_pwr = u.power_level;
+        s_pwr = to_string( u.power_level );
     }
     return std::make_pair( c_pwr, s_pwr );
 }

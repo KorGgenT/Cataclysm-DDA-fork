@@ -19,6 +19,7 @@ enum face_type : int {
     face_cat,
     num_face_types
 };
+//int power;
 void decorate_panel( const std::string name, const catacurses::window &w );
 void draw_limb( player &p, const catacurses::window &w );
 void draw_char( player &p, const catacurses::window &w );

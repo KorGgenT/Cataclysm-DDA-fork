@@ -1003,8 +1003,7 @@ std::vector<tripoint> target_handler::target_ui( player &pc, target_mode mode,
 
     // Default to the maximum window size we can use.
     int height = 31;
-    int top = use_narrow_sidebar() ? getbegy( g->w_messages ) :
-              getbegy( g->w_minimap ) + getmaxy( g->w_minimap );
+    int top = getbegy( g->w_minimap ) + getmaxy( g->w_minimap );
     if( tiny ) {
         // If we're extremely short on space, use the whole sidebar.
         top = 0;
@@ -1021,8 +1020,7 @@ std::vector<tripoint> target_handler::target_ui( player &pc, target_mode mode,
         // top -= 1;
     }
     //top = 0;
-    catacurses::window w_target = catacurses::newwin( height, getmaxx( g->w_messages ), top,
-                                  getbegx( g->w_messages ) );
+    catacurses::window w_target = catacurses::newwin( height, 32, top, 88 );
 
     input_context ctxt( "TARGET" );
     ctxt.set_iso( true );

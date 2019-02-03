@@ -1028,9 +1028,8 @@ bool Font::draw_window( const catacurses::window &w, const int offsetx, const in
 
     Everything else works on strict equality because there aren't yet IDs for some of them.
     */
-    if( g && ( w == g->w_terrain || w == g->w_minimap || w == g->w_messages ) ) {
-        if ( winBuffer == g->w_terrain || winBuffer == g->w_minimap ||
-             winBuffer == g->w_messages ) {
+    if( g && ( w == g->w_terrain || w == g->w_minimap ) ) {
+        if ( winBuffer == g->w_terrain || winBuffer == g->w_minimap ) {
             oldWinCompatible = true;
         }
     }else if( g && ( w == g->w_overmap || w == g->w_omlegend ) ) {
