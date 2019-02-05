@@ -11,9 +11,9 @@
 #include "weather.h"
 
 #ifdef TILES
-#include "cata_tiles.h" // all animation functions will be pushed out to a cata_tiles function in some manner
-
 #include <memory>
+
+#include "cata_tiles.h" // all animation functions will be pushed out to a cata_tiles function in some manner
 
 extern std::unique_ptr<cata_tiles> tilecontext; // obtained from sdltiles.cpp
 #endif
@@ -110,7 +110,7 @@ tripoint relative_view_pos( const game &g, const tripoint &p ) noexcept
              p.z - g.ter_view_z };
 }
 
-void draw_explosion_curses( game &g, const tripoint &center, const int r, nc_color const col )
+void draw_explosion_curses( game &g, const tripoint &center, const int r, const nc_color &col )
 {
     if( !is_radius_visible( center, r ) ) {
         return;
@@ -218,7 +218,7 @@ void draw_custom_explosion_curses( game &g,
 } // namespace
 
 #if defined(TILES)
-void game::draw_explosion( const tripoint &p, const int r, nc_color const col )
+void game::draw_explosion( const tripoint &p, const int r, const nc_color &col )
 {
     if( test_mode ) {
         return; // avoid segfault from null tilecontext in tests
@@ -248,7 +248,7 @@ void game::draw_explosion( const tripoint &p, const int r, nc_color const col )
     }
 }
 #else
-void game::draw_explosion( const tripoint &p, const int r, nc_color const col )
+void game::draw_explosion( const tripoint &p, const int r, const nc_color &col )
 {
     draw_explosion_curses( *this, p, r, col );
 }

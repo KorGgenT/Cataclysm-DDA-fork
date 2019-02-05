@@ -1,13 +1,13 @@
-#include "weather.h"
-
-#include "color.h"
-#include "game_constants.h"
-#include "translations.h"
+#include "weather.h" // IWYU pragma: associated
 
 #include <array>
 #include <cmath>
 #include <map>
 #include <vector>
+
+#include "color.h"
+#include "game_constants.h"
+#include "translations.h"
 
 /**
  * @ingroup Weather
@@ -56,7 +56,7 @@ weather_datum const weather_data( weather_type const type )
             },
             weather_datum {
                 translate_marker( "Sunny" ), c_light_cyan, 0, 1.0f, 2, 0, false,
-                &weather_effect::glare
+                &weather_effect::sunny
             },
             weather_datum {
                 translate_marker( "Cloudy" ), c_light_gray, 0, 1.0f, -20, 0, false,

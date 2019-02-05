@@ -1940,7 +1940,8 @@
     "type": "keybinding",
     "name": "Keybindings",
     "category": "DEFAULTMODE",
-    "id": "open_keybindings"
+    "id": "open_keybindings",
+    "bindings": [ { "input_method": "keyboard", "key": "?" } ]
   },
   {
     "type": "keybinding",
