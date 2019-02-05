@@ -264,10 +264,10 @@ void draw_char( player &u, const catacurses::window &w )
     bool m_style = get_option<std::string>( "MORALE_STYLE" ) == "horizontal";
     std::string smiley = morale_emotion( morale_pair.second, get_face_type( u ), m_style );
     mvwprintz( w,  0, 8, c_light_gray, "%s", u.volume );
-    mvwprintz( w,  1, 8, stat_color( u.stamina / 10 ), "%s", u.stamina / 10 );
-    mvwprintz( w,  2, 8, stat_color( u.focus_pool ), "%s", u.focus_pool );
+    mvwprintz( w,  1, 8, value_color( u.stamina / 10 ), "%s", u.stamina / 10 );
+    mvwprintz( w,  2, 8, value_color( u.focus_pool ), "%s", u.focus_pool );
     mvwprintz( w,  0, 26, morale_pair.first, "%s", smiley );
-    mvwprintz( w,  1, 26, stat_color( u.get_speed() ), "%s", u.get_speed() );
+    mvwprintz( w,  1, 26, value_color( u.get_speed() ), "%s", u.get_speed() );
     mvwprintz( w,  2, 26, c_light_gray, "%s", movecost );
     wrefresh( w );
 }
@@ -526,18 +526,36 @@ std::string time_approx()
     return time_approx;
 }
 
+nc_color value_color( int stat )
+{
+    nc_color valuecolor = c_light_gray;
+
+    if( stat >= 75 ) {
+        valuecolor = c_green;
+    } else if( stat >= 50 ) {
+        valuecolor = c_yellow;
+    } else if( stat >= 25 ) {
+        valuecolor = c_red;
+    } else {
+        valuecolor = c_magenta;
+    }
+    return valuecolor;
+}
+
 nc_color stat_color( int stat )
 {
     nc_color statcolor = c_light_gray;
-    if( stat >= 75 ) {
+
+    if( stat >= 7 ) {
         statcolor = c_green;
-    } else if( stat >= 50 ) {
+    } else if( stat >= 5 ) {
         statcolor = c_yellow;
-    } else if( stat >= 25 ) {
+    } else if( stat >= 2 ) {
         statcolor = c_red;
-    } else if( stat >= 0 ) {
+    } else {
         statcolor = c_magenta;
     }
+
     return statcolor;
 }
 

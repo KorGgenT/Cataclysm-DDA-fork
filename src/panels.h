@@ -36,9 +36,9 @@ void draw_lookaround( const catacurses::window &w );
 void draw_mminimap( const catacurses::window &w );
 void draw_compass( const catacurses::window &w );
 void draw_panel_adm( const catacurses::window &w );
-void debug( int w1_saved_y, int w1_saved_h, int index, int savedindex, int w2_saved_y,
-            int w2_saved_h );
+
 nc_color stat_color( int stat );
+nc_color value_color( int value );
 std::string time_approx();
 std::string get_temp( const player &u );
 std::string get_moon();

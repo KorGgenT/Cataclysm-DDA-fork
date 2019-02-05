@@ -272,12 +272,6 @@ void game::load_static_data()
     reinitmap = false;
     was_fullscreen = false;
     show_panel_adm = false;
-    //    char_panel = true;
-    //    env_panel = true;
-    //    msg_panel = true;
-    //    mod_panel = true;
-    //    map_panel = false;
-    //    com_panel = false;
 
     // These functions do not load stuff from json.
     // The content they load/initialize is hardcoded into the program.
@@ -7196,8 +7190,8 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
     bool bNewWindow = false;
     if( !w_info ) {
         int la_y = 0;
-        int la_x = 88; // w_panel_msg.get<cata_cursesport::WINDOW>()->x;
-        int la_h = 13;
+        int la_x = TERMX - 32; // w_panel_msg.get<cata_cursesport::WINDOW>()->x;
+        int la_h = 16;
         int la_w = 32; // w_panel_msg.get<cata_cursesport::WINDOW>()->width;
         w_info = catacurses::newwin( la_h, la_w, la_y, la_x );
         bNewWindow = true;
@@ -7291,7 +7285,7 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
 
             // redraw order: terrain, panels, look_around panel
             wrefresh( w_terrain );
-            draw_panels();
+            //draw_panels();
             wrefresh( w_info );
 
         }
@@ -7498,75 +7492,6 @@ void game::draw_trail_to_square( const tripoint &t, bool bDrawX )
     //draw_panels();
 }
 
-//helper method so we can keep list_items shorter
-void game::reset_item_list_state( const catacurses::window &window, int height, bool bRadiusSort )
-{
-    const int width = 55;
-    for( int i = 1; i < TERMX; i++ ) {
-        if( i < width ) {
-            mvwputch( window, 0, i, c_light_gray, LINE_OXOX ); // -
-            mvwputch( window, TERMY - height - 1 - VIEW_OFFSET_Y * 2, i, c_light_gray, LINE_OXOX ); // -
-        }
-
-        if( i < TERMY - height - VIEW_OFFSET_Y * 2 ) {
-            mvwputch( window, i, 0, c_light_gray, LINE_XOXO ); // |
-            mvwputch( window, i, width - 1, c_light_gray, LINE_XOXO ); // |
-        }
-    }
-
-    mvwputch( window, 0, 0, c_light_gray, LINE_OXXO ); // |^
-    mvwputch( window, 0, width - 1, c_light_gray, LINE_OOXX ); // ^|
-
-    mvwputch( window, TERMY - height - 1 - VIEW_OFFSET_Y * 2, 0, c_light_gray, LINE_XXXO ); // |-
-    mvwputch( window, TERMY - height - 1 - VIEW_OFFSET_Y * 2, width - 1, c_light_gray,
-              LINE_XOXX ); // -|
-
-    mvwprintz( window, 0, 2, c_light_green, "<Tab> " );
-    wprintz( window, c_white, _( "Items" ) );
-
-    std::string sSort;
-    if( bRadiusSort ) {
-        //~ Sort type: distance.
-        sSort = _( "<s>ort: dist" );
-    } else {
-        //~ Sort type: category.
-        sSort = _( "<s>ort: cat" );
-    }
-
-    int letters = utf8_width( sSort );
-
-    shortcut_print( window, 0, getmaxx( window ) - letters, c_white, c_light_green, sSort );
-
-    std::vector<std::string> tokens;
-    if( !sFilter.empty() ) {
-        tokens.emplace_back( _( "<R>eset" ) );
-    }
-
-    tokens.emplace_back( _( "<E>xamine" ) );
-    tokens.emplace_back( _( "<C>ompare" ) );
-    tokens.emplace_back( _( "<F>ilter" ) );
-    tokens.emplace_back( _( "<+/->Priority" ) );
-
-    int gaps = tokens.size() + 1;
-    letters = 0;
-    int n = tokens.size();
-    for( int i = 0; i < n; i++ ) {
-        letters += utf8_width( tokens[i] ) - 2; //length ignores < >
-    }
-
-    int usedwidth = letters;
-    const int gap_spaces = ( width - usedwidth ) / gaps;
-    usedwidth += gap_spaces * gaps;
-    int xpos = gap_spaces + ( width - usedwidth ) / 2;
-    const int ypos = TERMY - height - 1 - VIEW_OFFSET_Y * 2;
-
-    for( int i = 0; i < n; i++ ) {
-        xpos += shortcut_print( window, ypos, xpos, c_white, c_light_green, tokens[i] ) + gap_spaces;
-    }
-
-    refresh_all();
-}
-
 void centerlistview( const tripoint &active_item_position )
 {
     player &u = g->u;
@@ -7655,6 +7580,75 @@ int game::get_moves_since_last_save() const
 int game::get_user_action_counter() const
 {
     return user_action_counter;
+}
+
+//helper method so we can keep list_items shorter
+void game::reset_item_list_state( const catacurses::window &window, int height, bool bRadiusSort )
+{
+    const int width = 35;
+    for( int i = 1; i < TERMX; i++ ) {
+        if( i < width ) {
+            mvwputch( window, 0, i, c_light_gray, LINE_OXOX ); // -
+            mvwputch( window, TERMY - height - 1 - VIEW_OFFSET_Y * 2, i, c_light_gray, LINE_OXOX ); // -
+        }
+
+        if( i < TERMY - height - VIEW_OFFSET_Y * 2 ) {
+            mvwputch( window, i, 0, c_light_gray, LINE_XOXO ); // |
+            mvwputch( window, i, width - 1, c_light_gray, LINE_XOXO ); // |
+        }
+    }
+
+    mvwputch( window, 0, 0, c_light_gray, LINE_OXXO ); // |^
+    mvwputch( window, 0, width - 1, c_light_gray, LINE_OOXX ); // ^|
+
+    mvwputch( window, TERMY - height - 1 - VIEW_OFFSET_Y * 2, 0, c_light_gray, LINE_XXXO ); // |-
+    mvwputch( window, TERMY - height - 1 - VIEW_OFFSET_Y * 2, width - 1, c_light_gray,
+              LINE_XOXX ); // -|
+
+    mvwprintz( window, 0, 2, c_light_green, "<Tab> " );
+    wprintz( window, c_white, _( "Items" ) );
+
+    std::string sSort;
+    if( bRadiusSort ) {
+        //~ Sort type: distance.
+        sSort = _( "<s>ort: dist" );
+    } else {
+        //~ Sort type: category.
+        sSort = _( "<s>ort: cat" );
+    }
+
+    int letters = utf8_width( sSort );
+
+    shortcut_print( window, 0, getmaxx( window ) - letters, c_white, c_light_green, sSort );
+
+    std::vector<std::string> tokens;
+    if( !sFilter.empty() ) {
+        tokens.emplace_back( _( "<R>eset" ) );
+    }
+
+    tokens.emplace_back( _( "<E>xamine" ) );
+    tokens.emplace_back( _( "<C>ompare" ) );
+    tokens.emplace_back( _( "<F>ilter" ) );
+    tokens.emplace_back( _( "<+/->Priority" ) );
+
+    int gaps = tokens.size() + 1;
+    letters = 0;
+    int n = tokens.size();
+    for( int i = 0; i < n; i++ ) {
+        letters += utf8_width( tokens[i] ) - 2; //length ignores < >
+    }
+
+    int usedwidth = letters;
+    const int gap_spaces = ( width - usedwidth ) / gaps;
+    usedwidth += gap_spaces * gaps;
+    int xpos = gap_spaces + ( width - usedwidth ) / 2;
+    const int ypos = TERMY - height - 1 - VIEW_OFFSET_Y * 2;
+
+    for( int i = 0; i < n; i++ ) {
+        xpos += shortcut_print( window, ypos, xpos, c_white, c_light_green, tokens[i] ) + gap_spaces;
+    }
+
+    refresh_all();
 }
 
 void game::list_items_monsters()
@@ -7930,7 +7924,9 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
             draw_panels();
         } else if( action == "UP" ) {
             do {
+                //reset = true;
                 iActive--;
+
             } while( !mSortCategory[iActive].empty() );
             iScrollPos = 0;
             page_num = 0;
@@ -7939,7 +7935,9 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
             }
         } else if( action == "DOWN" ) {
             do {
+                //reset = true;
                 iActive++;
+
             } while( !mSortCategory[iActive].empty() );
             iScrollPos = 0;
             page_num = 0;
@@ -7954,8 +7952,10 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
             page_num = std::max( 0, page_num - 1 );
         } else if( action == "PAGE_UP" ) {
             iScrollPos--;
+            reset = true;
         } else if( action == "PAGE_DOWN" ) {
             iScrollPos++;
+            reset = true;
         } else if( action == "NEXT_TAB" || action == "PREV_TAB" ) {
             u.view_offset = stored_view_offset;
             return game::vmenu_ret::CHANGE_TAB;
@@ -8066,7 +8066,7 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
 
         const bool bDrawLeft = ground_items.empty() || filtered_items.empty();
         draw_custom_border( w_item_info, bDrawLeft, true, false, true, LINE_XOXO, LINE_XOXO, true, true );
-
+        reset = true;
         wrefresh( w_items );
         wrefresh( w_item_info );
         catacurses::refresh();
@@ -8080,7 +8080,7 @@ game::vmenu_ret game::list_items( const std::vector<map_item_stack> &item_list )
 game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list )
 {
     int iInfoHeight = 14;
-    const int width = 35;
+    const int width = 45;
     const int offsetX = TERMX - VIEW_OFFSET_X - width; //VIEW_OFFSET_X;
     catacurses::window w_monsters = catacurses::newwin( TERMY - iInfoHeight - VIEW_OFFSET_Y * 2,
                                     width - 2, VIEW_OFFSET_Y + 1, offsetX + 1 );
@@ -8102,17 +8102,13 @@ game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list
     cata::optional<tripoint> iLastActivePos;
     Creature *cCurMon = nullptr;
 
-    for( int i = 1; i < TERMX; i++ ) {
-        if( i < width ) {
-            mvwputch( w_monsters_border, 0, i, BORDER_COLOR, LINE_OXOX ); // -
-            mvwputch( w_monsters_border, TERMY - iInfoHeight - 1 - VIEW_OFFSET_Y * 2, i, BORDER_COLOR,
-                      LINE_OXOX ); // -
-        }
+    for( int j = 0; j < iInfoHeight - 1; j++ ) {
+        mvwputch( w_monster_info_border, j, 0, c_light_gray, LINE_XOXO );
+        mvwputch( w_monster_info_border, j, width - 1, c_light_gray, LINE_XOXO );
+    }
 
-        if( i < TERMY - iInfoHeight - VIEW_OFFSET_Y * 2 ) {
-            mvwputch( w_monsters_border, i, 0, BORDER_COLOR, LINE_XOXO ); // |
-            mvwputch( w_monsters_border, i, width - 1, BORDER_COLOR, LINE_XOXO ); // |
-        }
+    for( int j = 0; j < width - 1; j++ ) {
+        mvwputch( w_monster_info_border, iInfoHeight - 1, j, c_light_gray, LINE_OXOX );
     }
 
     mvwputch( w_monsters_border, 0, 0, BORDER_COLOR, LINE_OXXO ); // |^
@@ -8122,6 +8118,12 @@ game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list
               LINE_XXXO ); // |-
     mvwputch( w_monsters_border, TERMY - iInfoHeight - 1 - VIEW_OFFSET_Y * 2, width - 1, BORDER_COLOR,
               LINE_XOXX ); // -|
+
+    mvwputch( w_monsters_border, getmaxy( w_monsters ) - 2, 0, BORDER_COLOR, LINE_XOXO ); // |
+    mvwputch( w_monsters_border, getmaxy( w_monsters ) - 2, width - 1, BORDER_COLOR, LINE_XOXO ); // |
+    mvwputch( w_monsters_border, getmaxy( w_monsters ) - 1, 0, BORDER_COLOR, LINE_XOXO ); // |
+    mvwputch( w_monsters_border, getmaxy( w_monsters ) - 1, width - 1, BORDER_COLOR, LINE_XOXO ); // |
+
 
     mvwprintz( w_monsters_border, 0, 2, c_light_green, "<Tab> " );
     wprintz( w_monsters_border, c_white, _( "Monsters" ) );
@@ -8313,12 +8315,12 @@ game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list
             cCurMon->print_info( w_monster_info, 1, 11, 1 );
 
             if( bVMonsterLookFire ) {
-                mvwprintz( w_monsters, getmaxy( w_monsters ) - 4, 1, c_light_green, ctxt.press_x( "look" ) );
+                mvwprintz( w_monsters, getmaxy( w_monsters ) - 3, 1, c_light_green, ctxt.press_x( "look" ) );
                 wprintz( w_monsters, c_light_gray, " %s", _( "to look around" ) );
 
                 if( rl_dist( u.pos(), cCurMon->pos() ) <= max_gun_range ) {
                     wprintz( w_monsters, c_light_gray, "%s", " " );
-                    mvwprintz( w_monsters, getmaxy( w_monsters ) - 3, 1, c_light_green, ctxt.press_x( "fire" ) );
+                    mvwprintz( w_monsters, getmaxy( w_monsters ) - 3, 24, c_light_green, ctxt.press_x( "fire" ) );
                     wprintz( w_monsters, c_light_gray, " %s", _( "to shoot" ) );
                 }
             }
@@ -8335,6 +8337,8 @@ game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list
             wrefresh( w_monsters_border );
         }
 
+        // repairing the damage caused by refreshing the whole screen for w_terrain
+        // the previous situation was only refreshing the screen minus sidebar width.
         for( int j = 0; j < iInfoHeight - 1; j++ ) {
             mvwputch( w_monster_info_border, j, 0, c_light_gray, LINE_XOXO );
             mvwputch( w_monster_info_border, j, width - 1, c_light_gray, LINE_XOXO );
@@ -8344,11 +8348,20 @@ game::vmenu_ret game::list_monsters( const std::vector<Creature *> &monster_list
             mvwputch( w_monster_info_border, iInfoHeight - 1, j, c_light_gray, LINE_OXOX );
         }
 
-        mvwputch( w_monster_info_border, iInfoHeight - 1, 0, c_light_gray, LINE_XXOO );
-        mvwputch( w_monster_info_border, iInfoHeight - 1, width - 1, c_light_gray, LINE_XOOX );
+        mvwhline( w_monsters, getmaxy( w_monsters ) - 2, 0, 0, 45 );
+        mvwputch( w_monsters_border, getmaxy( w_monsters ) - 2, 0, BORDER_COLOR, LINE_XOXO ); // |
+        mvwputch( w_monsters_border, getmaxy( w_monsters ) - 2, width - 1, BORDER_COLOR, LINE_XOXO ); // |
+        mvwputch( w_monsters_border, getmaxy( w_monsters ) - 1, 0, BORDER_COLOR, LINE_XOXO ); // |
+        mvwputch( w_monsters_border, getmaxy( w_monsters ) - 1, width - 1, BORDER_COLOR, LINE_XOXO ); // |
 
-        wrefresh( w_monsters );
+        mvwputch( w_monster_info_border, getmaxy( w_monster_info_border ) - 1,
+                  0, BORDER_COLOR, LINE_XXOO );  // |_
+        mvwputch( w_monster_info_border, getmaxy( w_monster_info_border ) - 1,
+                  width - 1, BORDER_COLOR, LINE_XOOX ); // _|
+
+        wrefresh( w_monsters_border );
         wrefresh( w_monster_info_border );
+        wrefresh( w_monsters );
         wrefresh( w_monster_info );
         catacurses::refresh();
 

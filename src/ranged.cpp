@@ -31,7 +31,6 @@
 #include <cmath>
 #include <string>
 #include <vector>
-// #include <iostream>
 
 const skill_id skill_throw( "throw" );
 const skill_id skill_gun( "gun" );
@@ -1019,8 +1018,8 @@ std::vector<tripoint> target_handler::target_ui( player &pc, target_mode mode,
         // Cover up the redundant weapon line.
         // top -= 1;
     }
-    //top = 0;
-    catacurses::window w_target = catacurses::newwin( height, 32, top, TERMY - 32 );
+    top = 0;
+    catacurses::window w_target = catacurses::newwin( height, 45, top, TERMX - 45 );
 
     input_context ctxt( "TARGET" );
     ctxt.set_iso( true );
@@ -1244,8 +1243,12 @@ std::vector<tripoint> target_handler::target_ui( player &pc, target_mode mode,
             line_number = draw_throw_aim( pc, w_target, line_number, relevant, dst, true );
         }
 
-        wrefresh( w_target );
         wrefresh( g->w_terrain );
+        draw_targeting_window( w_target, relevant->tname(),
+                               mode, ctxt, aim_types,
+                               bool( on_mode_change ),
+                               bool( on_ammo_change ), tiny );
+        wrefresh( w_target );
         // don't daw panel over the firing info window
         //g->draw_panels();
         catacurses::refresh();
@@ -1442,7 +1445,7 @@ std::vector<tripoint> target_handler::target_ui( player &pc, target_mode mode,
         // TODO: get rid of this. Or move into the on-hit code?
         mon->add_effect( effect_hit_by_player, 10_minutes );
     }
-
+    wrefresh( w_target );
     return ret;
 }
 
