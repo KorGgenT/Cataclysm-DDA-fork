@@ -423,6 +423,7 @@ void draw_messages( const catacurses::window &w )
 
 void draw_mminimap( const catacurses::window &w )
 {
+    werase( w );
     wrefresh( w );
     g->draw_pixel_minimap();
 }
