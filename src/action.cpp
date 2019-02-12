@@ -282,8 +282,6 @@ std::string action_ident( action_id act )
             return "zoom_out";
         case ACTION_ZOOM_IN:
             return "zoom_in";
-        case ACTION_TOGGLE_SIDEBAR_STYLE:
-            return "toggle_sidebar_style";
         case ACTION_TOGGLE_FULLSCREEN:
             return "toggle_fullscreen";
         case ACTION_TOGGLE_PIXEL_MINIMAP:
@@ -373,7 +371,6 @@ bool can_action_change_worldstate( const action_id act )
         case ACTION_COLOR:
         case ACTION_WORLD_MODS:
         // Debug Functions
-        case ACTION_TOGGLE_SIDEBAR_STYLE:
         case ACTION_TOGGLE_FULLSCREEN:
         case ACTION_DEBUG:
         case ACTION_DISPLAY_SCENT:
@@ -718,7 +715,6 @@ action_id handle_action_menu()
             if( ( entry = &entries.back() ) ) {
                 entry->txt += "..."; // debug _is_a menu.
             }
-            REGISTER_ACTION( ACTION_TOGGLE_SIDEBAR_STYLE );
 #ifndef TILES
             REGISTER_ACTION( ACTION_TOGGLE_FULLSCREEN );
 #endif
