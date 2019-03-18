@@ -35,7 +35,7 @@
     "volume": 1,
     "flags": [ "EDIBLE_FROZEN" ],
     "charges": 5,
-    "vitamins": [ [ "vitC", 5 ] ],
+    "vitamins": [ [ "vitC", 21 ], ["calcium", 2 ], ["iron", 4 ] ],
     "fun": 3
   },
   {
@@ -74,7 +74,7 @@
     "material": "fruit",
     "volume": 1,
     "fun": 5,
-    "vitamins": [ [ "vitA", 1 ], [ "vitC", 2 ], [ "iron", 1 ] ]
+    "vitamins": [ [ "vitA", 4 ], [ "vitC", 9 ], [ "iron", 4 ] ]
   },
   {
     "type": "COMESTIBLE",
@@ -94,7 +94,7 @@
     "material": "fruit",
     "volume": 1,
     "fun": 7,
-    "vitamins": [ [ "vitC", 5 ], [ "calcium", 1 ], [ "iron", 1 ] ]
+    "vitamins": [ [ "vitC", 26 ], [ "calcium", 4 ], [ "iron", 6 ] ]
   },
   {
     "type": "COMESTIBLE",
@@ -114,7 +114,7 @@
     "volume": 1,
     "flags": [ "EDIBLE_FROZEN" ],
     "charges": 10,
-    "vitamins": [ [ "vitC", 1 ] ],
+    "vitamins": [ [ "vitC", 7 ] ],
     "fun": 1
   },
   {
@@ -135,7 +135,7 @@
     "phase": "liquid",
     "fun": 2,
     "//": "this item is intended to generally be inherited from the fruit that was cooked.",
-    "vitamins": [ [ "vitC", 5 ] ],
+    "vitamins": [ [ "vitC", 20 ] ],
     "flags": [ "USE_EAT_VERB", "EATEN_COLD" ]
   },
   {
@@ -239,6 +239,6 @@
     "volume": 1,
     "stack_size": 2,
     "fun": 1,
-    "vitamins": [ [ "iron", 2 ] ]
+    "vitamins": [ ["vitC", 3 ], ["calcium", 2 ], [ "iron", 10 ] ]
   }
 ]
