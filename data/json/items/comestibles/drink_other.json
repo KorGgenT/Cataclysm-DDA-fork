@@ -103,7 +103,8 @@
     "fun": -1,
     "calories": 5,
     "charges": 48,
-    "phase": "liquid"
+    "phase": "liquid",
+    "vitamins": [ ["iron", 2 ] ]
   },
   {
     "id": "honey_bottled",
@@ -145,7 +146,7 @@
     "charges": 8,
     "phase": "liquid",
     "flags": [ "USE_EAT_VERB" ],
-    "vitamins": [ [ "iron", 1 ] ],
+    "vitamins": [ [ "iron", 6 ] ],
     "fun": 2
   },
   {
@@ -218,7 +219,7 @@
     "charges": 4,
     "fun": 2,
     "flags": [ "USE_EAT_VERB" ],
-    "vitamins": [ [ "calcium", 4 ], [ "iron", 6 ] ],
+    "vitamins": [ [ "calcium", 18 ], [ "iron", 23 ] ],
     "freezing_point": -20
   },
   {
