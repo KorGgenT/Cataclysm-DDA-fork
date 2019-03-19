@@ -17,7 +17,8 @@
     "volume": 1,
     "phase": "liquid",
     "flags": [ "EATEN_HOT" ],
-    "fun": 1
+    "fun": 1,
+    "vitamins": [ ["iron", 3 ] ]
   },
   {
     "type": "COMESTIBLE",
@@ -37,7 +38,8 @@
     "volume": 1,
     "phase": "liquid",
     "flags": [ "EATEN_HOT", "NUTRIENT_OVERRIDE" ],
-    "fun": 10
+    "fun": 10,
+    "vitamins": [ ["calcium", 1 ], ["iron", 1 ] ]
   },
   {
     "type": "COMESTIBLE",
@@ -66,7 +68,7 @@
     "volume": 1,
     "phase": "liquid",
     "flags": [ "EATEN_HOT", "USE_EAT_VERB" ],
-    "vitamins": [ [ "vitA", 10 ], [ "vitC", 1 ], [ "iron", 1 ] ],
+    "vitamins": [ [ "vitA", 43 ], [ "vitC", 4 ], ["calcium", 1 ], [ "iron", 5 ] ],
     "fun": 1
   },
   {
@@ -88,7 +90,7 @@
     "volume": 1,
     "phase": "liquid",
     "flags": [ "EATEN_HOT", "USE_EAT_VERB" ],
-    "vitamins": [ [ "vitA", 20 ], [ "vitC", 9 ], [ "iron", 3 ], [ "vitB", 5 ] ],
+    "vitamins": [ [ "vitA", 80 ], [ "vitC", 36 ], ["calcium", 3 ], [ "iron", 13 ], [ "vitB", 20 ] ],
     "fun": 1
   },
   {
@@ -110,7 +112,7 @@
     "volume": 1,
     "phase": "liquid",
     "flags": [ "EATEN_HOT", "USE_EAT_VERB" ],
-    "vitamins": [ [ "vitA", 3 ], [ "vitC", 7 ], [ "iron", 1 ], [ "calcium", 1 ], [ "vitB", 5 ] ],
+    "vitamins": [ [ "vitA", 12 ], [ "vitC", 28 ], [ "calcium", 4 ], [ "iron", 5 ], [ "vitB", 20 ] ],
     "fun": 1
   },
   {
@@ -133,7 +135,7 @@
     "volume": 1,
     "phase": "liquid",
     "flags": [ "EATEN_HOT", "USE_EAT_VERB" ],
-    "vitamins": [ [ "vitA", 42 ], [ "vitC", 8 ], [ "iron", 3 ], [ "calcium", 1 ] ],
+    "vitamins": [ [ "vitA", 178 ], [ "vitC", 35 ],  [ "calcium", 4 ], [ "iron", 12 ] ],
     "fun": 5
   },
   {
@@ -157,7 +159,7 @@
     "phase": "liquid",
     "charges": 2,
     "flags": [ "EATEN_HOT", "USE_EAT_VERB" ],
-    "vitamins": [ [ "vitA", 4 ], [ "vitC", 6 ], [ "iron", 6 ], [ "calcium", 1 ], [ "vitB", 5 ] ],
+    "vitamins": [ [ "vitA", 19 ], [ "vitC", 30 ], [ "calcium", 5 ], [ "iron", 28 ], [ "vitB", 24 ] ],
     "fun": 8
   },
   {
@@ -210,7 +212,7 @@
     "volume": 1,
     "phase": "liquid",
     "flags": [ "EATEN_HOT", "USE_EAT_VERB" ],
-    "vitamins": [ [ "vitA", 2 ], [ "iron", 2 ] ],
+    "vitamins": [ [ "vitA", 10 ], ["calcium", 1 ], [ "iron", 9 ], ["vitB", 8 ] ],
     "fun": 2
   },
   {
@@ -233,7 +235,8 @@
     "phase": "liquid",
     "charges": 4,
     "flags": [ "EATEN_HOT", "USE_EAT_VERB" ],
-    "fun": 1
+    "fun": 1,
+    "vitamins": [ ["calcium", 2 ], ["iron", 2 ] ]
   },
   {
     "type": "COMESTIBLE",
@@ -254,7 +257,7 @@
     "volume": 1,
     "phase": "liquid",
     "flags": [ "EATEN_HOT", "USE_EAT_VERB" ],
-    "vitamins": [ [ "vitA", 1 ], [ "vitC", 2 ], [ "iron", 1 ] ],
+    "vitamins": [ [ "vitA", 7 ], [ "vitC", 10 ], ["calcium", 1 ], [ "iron", 4 ] ],
     "fun": 2
   },
   {
@@ -277,7 +280,7 @@
     "volume": 1,
     "phase": "liquid",
     "flags": [ "EATEN_HOT", "USE_EAT_VERB" ],
-    "vitamins": [ [ "vitA", 20 ], [ "vitC", 1 ], [ "calcium", 2 ], [ "iron", 3 ], [ "vitB", 5 ] ],
+    "vitamins": [ [ "vitA", 81 ], [ "vitC", 7 ], [ "calcium", 9 ], [ "iron", 13 ], [ "vitB", 20 ] ],
     "fun": 3
   },
   {
@@ -299,7 +302,7 @@
     "volume": 1,
     "phase": "liquid",
     "flags": [ "EATEN_HOT", "USE_EAT_VERB" ],
-    "vitamins": [ [ "vitA", 3 ], [ "vitC", 2 ], [ "calcium", 1 ], [ "iron", 1 ], [ "vitB", 2 ] ],
+    "vitamins": [ [ "vitA", 15 ], [ "vitC", 8 ], [ "calcium", 7 ], [ "iron", 7 ], [ "vitB", 8 ] ],
     "fun": 3
   }
 ]
