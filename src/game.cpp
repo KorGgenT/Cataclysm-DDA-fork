@@ -65,6 +65,7 @@
 #include "line.h"
 #include "live_view.h"
 #include "loading_ui.h"
+#include "magic.h"
 #include "map.h"
 #include "map_item_stack.h"
 #include "map_iterator.h"
@@ -2271,6 +2272,7 @@ input_context get_default_mode_input_context()
     ctxt.register_action( "unload" );
     ctxt.register_action( "throw" );
     ctxt.register_action( "fire" );
+    ctxt.register_action( "cast_spell" );
     ctxt.register_action( "fire_burst" );
     ctxt.register_action( "select_fire_mode" );
     ctxt.register_action( "drop" );
@@ -2960,7 +2962,8 @@ void game::debug()
         _( "Crash game (test crash handling)" ),// 35
         _( "Spawn Map Extra" ),                 // 36
         _( "Toggle NPC pathfinding on map" ),   // 37
-        _( "Quit to Main Menu" ),               // 38
+        _( "Learn All Spells" ),                // 38
+        _( "Quit to Main Menu" ),               // 39
     } );
     refresh_all();
     switch( action ) {
@@ -3385,6 +3388,16 @@ void game::debug()
             debug_pathfinding = !debug_pathfinding;
             break;
         case 38:
+            if( spell_type::get_all().empty() ) {
+                add_msg( m_bad, _( "There are no spells to learn. You must install a mod that adds some." ) );
+            } else {
+                for( const spell_type &learn : spell_type::get_all() ) {
+                    g->u.learn_spell( &learn, true );
+                }
+                add_msg( m_good, _( "You have become an Archwizardpriest! What will you do with your newfound power?" ) );
+            }
+            break;
+        case 39:
             if( query_yn(
                     _( "Quit without saving? This may cause issues such as duplicated or missing items and vehicles!" ) ) ) {
                 u.moves = 0;
