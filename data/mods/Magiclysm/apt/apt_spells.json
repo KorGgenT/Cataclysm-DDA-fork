@@ -223,7 +223,7 @@
 	"type": "SPELL",
 	"name": "Glide on Ice",
 	"description": "Encases your feet in a magical coating of ice, allowing you to glide along smooth surfaces faster.",
-	"valid_targets": [ "self" ],
+	"valid_targets": [ "none" ],
 	"min_damage": 1,
 	"max_damage": 1,
 	"effect": "spawn_item",
