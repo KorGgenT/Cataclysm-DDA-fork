@@ -107,6 +107,6 @@
     "price": 5000,
     "symbol": "?",
     "color": "light_grey",
-    "use_action": { "type": "learn_spell", "spells": [ "storm_hammer", "jolt", "stormfist", "windstrike" ] }
+    "use_action": { "type": "learn_spell", "spells": [ "storm_hammer", "jolt", "stormfist", "windstrike", "windrun" ] }
   }
 ]
