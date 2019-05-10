@@ -305,7 +305,7 @@ bool spell::can_cast() const
 
 int spell::modded_int() const
 {
-    return owner->int_cur;
+    return owner->get_int();
 }
 
 int spell::spellcraft_level() const
