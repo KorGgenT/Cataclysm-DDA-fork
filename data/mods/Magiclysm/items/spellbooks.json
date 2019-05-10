@@ -96,5 +96,17 @@
 	"symbol": "?",
 	"color": "light_blue",
 	"use_action": { "type": "learn_spell", "spells": [ "cone_cold", "ice_spike", "hoary_blast", "frost_armor", "ice_shield", "chilling_touch", "frost_spray", "glide_ice" ] }
+  },
+  {
+    "id": "tome_of_storms",
+    "type": "GENERIC",
+    "name": "The Tome of The Oncoming Storm",
+    "description": "A large book embossed with crossed lightning bolts and storm clouds, it tingles to the touch.",
+    "weight": 430,
+    "volume": 3,
+    "price": 5000,
+    "symbol": "?",
+    "color": "light_grey",
+    "use_action": { "type": "learn_spell", "spells": [ "storm_hammer", "jolt", "stormfist", "windstrike" ] }
   }
 ]
