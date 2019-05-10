@@ -636,18 +636,18 @@ known_magic::known_magic( known_magic &&know ) : owner( know.owner )
 
 known_magic known_magic::operator=( known_magic &know ) const
 {
-    known_magic new_magic( know.owner );
-    new_magic.mana = know.mana;
-    new_magic.mana_base = know.mana_base;
-    return new_magic;
+    known_magic temp_magic( know.owner );
+    temp_magic.mana = know.mana;
+    temp_magic.mana_base = know.mana_base;
+    return temp_magic;
 }
 
 known_magic known_magic::operator=( known_magic &&know ) const
 {
-    known_magic new_magic( know.owner );
-    new_magic.mana = know.mana;
-    new_magic.mana_base = know.mana_base;
-    return new_magic;
+    known_magic temp_magic( know.owner );
+    temp_magic.mana = know.mana;
+    temp_magic.mana_base = know.mana_base;
+    return temp_magic;
 }
 
 void known_magic::serialize( JsonOut &json ) const
