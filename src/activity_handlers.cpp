@@ -3621,6 +3621,11 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
 
 void activity_handlers::study_spell_do_turn( player_activity *act, player *p )
 {
+    if( p->fine_detail_vision_mod() > 4 ) {
+        act->values[2] = -1;
+        act->moves_left = 0;
+        return;
+    }
     if( act->get_str_value( 1 ) == "study" ) {
         spell &studying = p->magic.get_spell( spell_id( act->name ) );
         if( act->get_str_value( 0 ) == "gain_level" ) {
@@ -3646,7 +3651,10 @@ void activity_handlers::study_spell_finish( player_activity *act, player *p )
                               act->get_value( 0 ) );
         p->practice( skill_id( "spellcraft" ), act->get_value( 0 ) / 5,
                      p->magic.get_spell( spell_id( act->name ) ).get_difficulty() );
-    } else if( act->get_str_value( 1 ) == "learn" ) {
+    } else if( act->get_str_value( 1 ) == "learn" && act->values[2] == 0 ) {
         p->magic.learn_spell( act->name );
+    }
+    if( act->values[2] == -1 ) {
+        p->add_msg_if_player( m_bad, _( "It's too dark to read." ) );
     }
 }
