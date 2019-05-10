@@ -258,8 +258,8 @@ class known_magic
     public:
         known_magic();
         known_magic( player *const p );
-        known_magic operator=( known_magic & );
-        known_magic operator=( known_magic && );
+        known_magic operator=( known_magic & ) const;
+        known_magic operator=( known_magic && ) const;
         known_magic( known_magic & );
         known_magic( known_magic && );
         ~known_magic() = default;
