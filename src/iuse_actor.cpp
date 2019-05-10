@@ -2164,7 +2164,7 @@ long learn_spell_actor::use( player &p, item &, bool, const tripoint & ) const
                 know_it_all = false;
             }
         } else {
-            if( p.magic.can_learn_spell( sp_id ) ) {
+            if( p.magic.can_learn_spell( p, sp_id ) ) {
                 entry.ctxt = _( "Study to Learn" );
                 know_it_all = false;
             } else {
@@ -2186,7 +2186,7 @@ long learn_spell_actor::use( player &p, item &, bool, const tripoint & ) const
     }
     const bool knows_spell = p.magic.knows_spell( spells[action] );
     player_activity study_spell( activity_id( "ACT_STUDY_SPELL" ),
-                                 p.magic.time_to_learn_spell( spells[action] ) );
+                                 p.magic.time_to_learn_spell( p, spells[action] ) );
     study_spell.str_values = {
         "", // reserved for "until you gain a spell level" option [0]
         "learn"

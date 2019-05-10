@@ -3559,8 +3559,8 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
     }
 
     // no turning back now. it's all said and done.
-    bool success = rng_float( 0.0f, 1.0f ) >= casting.spell_fail();
-    int exp_gained = casting.casting_exp();
+    bool success = rng_float( 0.0f, 1.0f ) >= casting.spell_fail( *p );
+    int exp_gained = casting.casting_exp( *p );
     if( !success ) {
         add_msg( m_bad, "You lose your concentration!" );
         if( !casting.is_max_level() ) {
@@ -3579,13 +3579,13 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
     } else if( fx == "shallow_pit" ) {
         spell_effect::shallow_pit( target );
     } else if( fx == "target_attack" ) {
-        spell_effect::target_attack( casting, target );
+        spell_effect::target_attack( casting, p->pos(), target );
     } else if( fx == "projectile_attack" ) {
-        spell_effect::projectile_attack( casting, target );
+        spell_effect::projectile_attack( casting, p->pos(), target );
     } else if( fx == "cone_attack" ) {
-        spell_effect::cone_attack( casting, target );
+        spell_effect::cone_attack( casting, p->pos(), target );
     } else if( fx == "line_attack" ) {
-        spell_effect::line_attack( casting, target );
+        spell_effect::line_attack( casting, p->pos(), target );
     } else if( fx == "teleport_random" ) {
         spell_effect::teleport( casting.range(), casting.range() + casting.aoe() );
     } else if( fx == "spawn_item" ) {
@@ -3598,7 +3598,7 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
     int cost = casting.energy_cost();
     switch( casting.energy_source() ) {
         case mana_energy:
-            p->magic.mod_mana( -cost );
+            p->magic.mod_mana( *p, -cost );
             break;
         case stamina_energy:
             p->stamina -= cost;
@@ -3635,7 +3635,7 @@ void activity_handlers::study_spell_do_turn( player_activity *act, player *p )
                 act->moves_left = 0;
             }
         }
-        const int xp = roll_remainder( studying.exp_modifier() );
+        const int xp = roll_remainder( studying.exp_modifier( *p ) );
         act->values[0] += xp;
         studying.gain_exp( xp );
     }
@@ -3652,7 +3652,7 @@ void activity_handlers::study_spell_finish( player_activity *act, player *p )
         p->practice( skill_id( "spellcraft" ), act->get_value( 0 ) / 5,
                      p->magic.get_spell( spell_id( act->name ) ).get_difficulty() );
     } else if( act->get_str_value( 1 ) == "learn" && act->values[2] == 0 ) {
-        p->magic.learn_spell( act->name );
+        p->magic.learn_spell( act->name, *p );
     }
     if( act->values[2] == -1 ) {
         p->add_msg_if_player( m_bad, _( "It's too dark to read." ) );

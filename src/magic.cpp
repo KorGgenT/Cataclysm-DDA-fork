@@ -198,18 +198,13 @@ bool spell_type::is_valid() const
 
 // spell
 
-spell::spell( const spell_type *sp, player *p )
+spell::spell( const spell_type *sp, int xp )
 {
     type = sp;
-    owner = p;
-}
-
-spell::spell( spell_id sp, player *p, int xp )
-{
-    type = &sp.obj();
-    owner = p;
     experience = xp;
 }
+
+spell::spell( spell_id sp, int xp ) : spell( &sp.obj(), xp ) {}
 
 spell_id spell::id() const
 {
@@ -261,12 +256,12 @@ bool spell::is_max_level() const
     return get_level() >= type->max_level;
 }
 
-bool spell::can_learn() const
+bool spell::can_learn( const player &p ) const
 {
     if( type->spell_class == trait_id( "NONE" ) ) {
         return true;
     }
-    return owner->has_trait( type->spell_class );
+    return p.has_trait( type->spell_class );
 }
 
 int spell::energy_cost() const
@@ -275,42 +270,32 @@ int spell::energy_cost() const
     return type->base_energy_cost;
 }
 
-bool spell::can_cast() const
+bool spell::can_cast( const player &p ) const
 {
-    if( !owner->magic.knows_spell( type->id ) ) {
+    if( !p.magic.knows_spell( type->id ) ) {
         // how in the world can this happen?
         debugmsg( "ERROR: owner of spell does not know spell" );
         return false;
     }
     switch( type->energy_source ) {
         case mana_energy:
-            return owner->magic.available_mana() >= energy_cost();
+            return p.magic.available_mana() >= energy_cost();
         case stamina_energy:
-            return owner->stamina >= energy_cost();
+            return p.stamina >= energy_cost();
         case hp_energy: {
             for( int i = 0; i < num_hp_parts; i++ ) {
-                if( energy_cost() < owner->hp_cur[i] ) {
+                if( energy_cost() < p.hp_cur[i] ) {
                     return true;
                 }
             }
             return false;
         }
         case bionic_energy:
-            return owner->power_level >= energy_cost();
+            return p.power_level >= energy_cost();
         case none_energy:
         default:
             return true;
     }
-}
-
-int spell::modded_int() const
-{
-    return owner->get_int();
-}
-
-int spell::spellcraft_level() const
-{
-    return owner->get_skill_level( skill_id( "spellcraft" ) );
 }
 
 int spell::get_difficulty() const
@@ -329,15 +314,14 @@ std::string spell::name() const
     return _( type->name );
 }
 
-float spell::spell_fail() const
+float spell::spell_fail( const player &p ) const
 {
     // formula is based on the following:
     // exponential curve
     // effective skill of 0 or less is 100% failure
     // effective skill of 8 (8 int, 0 spellcraft, 0 spell level, spell difficulty 0) is ~50% failure
     // effective skill of 30 is 0% failure
-    const float effective_skill = 2 * ( get_level() - get_difficulty() ) + modded_int() +
-                                  spellcraft_level();
+    const float effective_skill = 2 * ( get_level() - get_difficulty() ) + p.get_int() + p.get_skill_level( skill_id( "SPELLCRAFT" ) );
     // add an if statement in here because sufficiently large numbers will definitely overflow because of exponents
     if( effective_skill > 30.0f ) {
         return 0.0f;
@@ -348,9 +332,9 @@ float spell::spell_fail() const
     return clamp( fail_chance, 0.0f, 1.0f );
 }
 
-std::string spell::colorized_fail_percent() const
+std::string spell::colorized_fail_percent( const player &p ) const
 {
-    const float fail_fl = spell_fail() * 100.0f;
+    const float fail_fl = spell_fail( p ) * 100.0f;
     std::string fail_str;
     fail_fl == 100.0f ? fail_str = _( "Difficult!" ) : fail_str = _( string_format( "%.1f %% %s",
                                    fail_fl, "Failure Chance" ) );
@@ -397,7 +381,7 @@ std::string spell::energy_string() const
     }
 }
 
-std::string spell::energy_cost_string() const
+std::string spell::energy_cost_string( const player &p ) const
 {
     if( energy_source() == none_energy ) {
         return _( "none" );
@@ -406,30 +390,30 @@ std::string spell::energy_cost_string() const
         return colorize( to_string( energy_cost() ), c_light_blue );
     }
     if( energy_source() == hp_energy ) {
-        auto pair = get_hp_bar( energy_cost(), owner->get_hp_max() / num_hp_parts );
+        auto pair = get_hp_bar( energy_cost(), p.get_hp_max() / num_hp_parts );
         return colorize( pair.first, pair.second );
     }
     if( energy_source() == stamina_energy ) {
-        auto pair = get_hp_bar( energy_cost(), owner->get_stamina_max() );
+        auto pair = get_hp_bar( energy_cost(), p.get_stamina_max() );
         return colorize( pair.first, pair.second );
     }
     debugmsg( _( "ERROR: Spell %s has invalid energy source." ), id().c_str() );
     return _( "error: energy_type" );
 }
 
-std::string spell::energy_cur_string() const
+std::string spell::energy_cur_string( const player &p ) const
 {
     if( energy_source() == none_energy ) {
         return _( "infinite" );
     }
     if( energy_source() == bionic_energy ) {
-        return colorize( to_string( owner->power_level ), c_light_blue );
+        return colorize( to_string( p.power_level ), c_light_blue );
     }
     if( energy_source() == mana_energy ) {
-        return colorize( to_string( owner->magic.available_mana() ), c_light_blue );
+        return colorize( to_string( p.magic.available_mana() ), c_light_blue );
     }
     if( energy_source() == stamina_energy ) {
-        auto pair = get_hp_bar( owner->stamina, owner->get_stamina_max() );
+        auto pair = get_hp_bar( p.stamina, p.get_stamina_max() );
         return colorize( pair.first, pair.second );
     }
     if( energy_source() == hp_energy ) {
@@ -507,11 +491,6 @@ nc_color spell::damage_type_color() const
     }
 }
 
-tripoint spell::get_source() const
-{
-    return owner->pos();
-}
-
 // constants defined below are just for the formula to be used,
 // in order for the inverse formula to be equivalent
 static const float a = 6200.0;
@@ -552,21 +531,21 @@ std::string spell::exp_progress() const
     return string_format( "%i%%", clamp( static_cast<int>( round( progress * 100 ) ), 0, 99 ) );
 }
 
-float spell::exp_modifier() const
+float spell::exp_modifier( const player &p ) const
 {
-    const float int_modifier = ( owner->get_int() - 8.0f ) / 8.0f;
+    const float int_modifier = ( p.get_int() - 8.0f ) / 8.0f;
     const float difficulty_modifier = get_difficulty() / 20.0f;
-    const float spellcraft_modifier = owner->get_skill_level( skill_id( "SPELLCRAFT" ) ) / 10.0f;
+    const float spellcraft_modifier = p.get_skill_level( skill_id( "SPELLCRAFT" ) ) / 10.0f;
 
     return int_modifier + difficulty_modifier + spellcraft_modifier + 1.0f;
 }
 
-int spell::casting_exp() const
+int spell::casting_exp( const player &p ) const
 {
     // the amount of xp you would get with no modifiers
     const int base_casting_xp = 75;
 
-    return round( owner->adjust_for_focus( base_casting_xp * exp_modifier() ) );
+    return round( p.adjust_for_focus( base_casting_xp * exp_modifier( p ) ) );
 }
 
 damage_type spell::dmg_type() const
@@ -610,44 +589,10 @@ int spell::heal( const tripoint &target ) const
 
 // player
 
-known_magic::known_magic() : owner( nullptr )
+known_magic::known_magic()
 {
     mana_base = 1000;
     mana = mana_base;
-}
-
-known_magic::known_magic( player *const p ) : owner( p )
-{
-    mana_base = 1000;
-    mana = mana_base;
-}
-
-known_magic::known_magic( known_magic &know ) : owner( know.owner )
-{
-    mana_base = know.mana_base;
-    mana = know.mana;
-}
-
-known_magic::known_magic( known_magic &&know ) : owner( know.owner )
-{
-    mana_base = know.mana_base;
-    mana = know.mana;
-}
-
-known_magic known_magic::operator=( known_magic &know ) const
-{
-    known_magic temp_magic( know.owner );
-    temp_magic.mana = know.mana;
-    temp_magic.mana_base = know.mana_base;
-    return temp_magic;
-}
-
-known_magic known_magic::operator=( known_magic &&know ) const
-{
-    known_magic temp_magic( know.owner );
-    temp_magic.mana = know.mana;
-    temp_magic.mana_base = know.mana_base;
-    return temp_magic;
 }
 
 void known_magic::serialize( JsonOut &json ) const
@@ -682,7 +627,7 @@ void known_magic::deserialize( JsonIn &jsin )
         spell_id sp = spell_id( id );
         int xp;
         jo.read( "xp", xp );
-        spellbook.emplace( sp, spell( sp, owner, xp ) );
+        spellbook.emplace( sp, spell( sp, xp ) );
     }
 }
 
@@ -696,44 +641,44 @@ bool known_magic::knows_spell( spell_id sp ) const
     return spellbook.count( sp ) == 1;
 }
 
-void known_magic::learn_spell( const std::string &sp, bool force )
+void known_magic::learn_spell( const std::string &sp, player &p, bool force )
 {
-    learn_spell( spell_id( sp ), force );
+    learn_spell( spell_id( sp ), p, force );
 }
 
-void known_magic::learn_spell( spell_id sp, bool force )
+void known_magic::learn_spell( spell_id sp, player &p, bool force )
 {
-    learn_spell( &sp.obj(), force );
+    learn_spell( &sp.obj(), p, force );
 }
 
-void known_magic::learn_spell( const spell_type *sp, bool force )
+void known_magic::learn_spell( const spell_type *sp, player &p, bool force )
 {
     if( !sp->is_valid() ) {
         debugmsg( "Tried to learn invalid spell" );
         return;
     }
-    spell new_spell( sp, owner );
-    if( !new_spell.is_valid() ) {
+    spell temp_spell( sp );
+    if( !temp_spell.is_valid() ) {
         debugmsg( "Tried to learn invalid spell" );
         return;
     }
     if( !force ) {
-        if( can_learn_spell( sp->id ) && !owner->has_trait( sp->spell_class ) ) {
+        if( can_learn_spell( p, sp->id ) && !p.has_trait( sp->spell_class ) ) {
             if( query_yn(
                     _( "Learning this spell will make you a %s and lock you out of other unique spells.\nContinue?" ),
                     sp->spell_class.obj().name() ) ) {
-                owner->set_mutation( sp->spell_class );
-                owner->add_msg_if_player( sp->spell_class.obj().desc() );
+                p.set_mutation( sp->spell_class );
+                p.add_msg_if_player( sp->spell_class.obj().desc() );
             } else {
                 return;
             }
         }
     }
-    if( force || can_learn_spell( sp->id ) ) {
-        spellbook.emplace( sp->id, new_spell );
-        owner->add_msg_if_player( m_good, _( "You learned %s!" ), _( sp->name ) );
+    if( force || can_learn_spell( p, sp->id ) ) {
+        spellbook.emplace( sp->id, temp_spell );
+        p.add_msg_if_player( m_good, _( "You learned %s!" ), _( sp->name ) );
     } else {
-        owner->add_msg_if_player( m_bad, _( "You can't learn this spell." ) );
+        p.add_msg_if_player( m_bad, _( "You can't learn this spell." ) );
     }
 }
 
@@ -751,13 +696,13 @@ void known_magic::forget_spell( spell_id sp )
     spellbook.erase( sp );
 }
 
-bool known_magic::can_learn_spell( spell_id sp ) const
+bool known_magic::can_learn_spell( const player &p, spell_id sp ) const
 {
     const spell_type sp_t = sp.obj();
     if( sp_t.spell_class == trait_id( "NONE" ) ) {
         return true;
     }
-    return !owner->has_opposite_trait( sp_t.spell_class );
+    return !p.has_opposite_trait( sp_t.spell_class );
 }
 
 spell &known_magic::get_spell( spell_id sp )
@@ -779,23 +724,23 @@ void known_magic::set_mana( int new_mana )
     mana = new_mana;
 }
 
-void known_magic::mod_mana( int add_mana )
+void known_magic::mod_mana( const player &p, int add_mana )
 {
-    set_mana( clamp( mana + add_mana, 0, max_mana() ) );
+    set_mana( clamp( mana + add_mana, 0, max_mana( p ) ) );
 }
 
-int known_magic::max_mana() const
+int known_magic::max_mana( const player &p ) const
 {
-    const float int_bonus = ( ( 0.2f + owner->get_int() * 0.1f ) - 1.0f ) * mana_base;
+    const float int_bonus = ( ( 0.2f + p.get_int() * 0.1f ) - 1.0f ) * mana_base;
     return mana_base + int_bonus;
 }
 
-void known_magic::update_mana( float turns )
+void known_magic::update_mana( const player &p, float turns )
 {
     // mana should replenish in 8 hours.
     const float full_replenish = to_turns<float>( 8_hours );
     const float ratio = turns / full_replenish;
-    mod_mana( floor( ratio * max_mana() ) );
+    mod_mana( p, floor( ratio * max_mana( p ) ) );
 }
 
 std::vector<spell_id> known_magic::spells() const
@@ -808,19 +753,19 @@ std::vector<spell_id> known_magic::spells() const
 }
 
 // does the player have enough energy (of the type of the spell) to cast the spell?
-bool known_magic::has_enough_energy( spell &sp ) const
+bool known_magic::has_enough_energy( const player &p, spell &sp ) const
 {
     int cost = sp.energy_cost();
     switch( sp.energy_source() ) {
         case mana_energy:
             return available_mana() >= cost;
         case bionic_energy:
-            return owner->power_level >= cost;
+            return p.power_level >= cost;
         case stamina_energy:
-            return owner->stamina >= cost;
+            return p.stamina >= cost;
         case hp_energy:
             for( int i = 0; i < num_hp_parts; i++ ) {
-                if( owner->hp_cur[i] > cost ) {
+                if( p.hp_cur[i] > cost ) {
                     return true;
                 }
             }
@@ -832,17 +777,17 @@ bool known_magic::has_enough_energy( spell &sp ) const
     }
 }
 
-int known_magic::time_to_learn_spell( const std::string &str ) const
+int known_magic::time_to_learn_spell( const player &p, const std::string &str ) const
 {
-    return time_to_learn_spell( spell_id( str ) );
+    return time_to_learn_spell( p, spell_id( str ) );
 }
 
-int known_magic::time_to_learn_spell( spell_id sp ) const
+int known_magic::time_to_learn_spell( const player &p, spell_id sp ) const
 {
     assert( !knows_spell( sp ) );
     const int base_time = 30000;
-    return base_time * ( 1.0 + sp.obj().difficulty / ( 1.0 + ( owner->get_int() - 8.0 ) / 8.0 ) +
-                         ( owner->get_skill_level( skill_id( "SPELLCRAFT" ) ) / 10.0 ) );
+    return base_time * ( 1.0 + sp.obj().difficulty / ( 1.0 + ( p.get_int() - 8.0 ) / 8.0 ) +
+                         ( p.get_skill_level( skill_id( "SPELLCRAFT" ) ) / 10.0 ) );
 }
 
 // spell_effect
@@ -922,7 +867,7 @@ static bool in_spell_aoe( const tripoint &target, const tripoint &epicenter, con
     return rl_dist( epicenter, target ) <= radius;
 }
 
-static std::set<tripoint> spell_effect_blast( spell &, const tripoint &target,
+static std::set<tripoint> spell_effect_blast( spell &, const tripoint &, const tripoint &target,
         const int aoe_radius, const bool ignore_walls )
 {
     std::set<tripoint> targets;
@@ -940,11 +885,10 @@ static std::set<tripoint> spell_effect_blast( spell &, const tripoint &target,
     return targets;
 }
 
-static std::set<tripoint> spell_effect_cone( spell &sp, const tripoint &target,
+static std::set<tripoint> spell_effect_cone( spell &sp, const tripoint &source, const tripoint &target,
         const int aoe_radius, const bool ignore_walls )
 {
     std::set<tripoint> targets;
-    const tripoint source = sp.get_source();
     // cones go all the way to end (if they don't hit an obstacle)
     const int range = sp.range();
     const int initial_angle = coord_to_angle( source, target );
@@ -970,11 +914,10 @@ static std::set<tripoint> spell_effect_cone( spell &sp, const tripoint &target,
     return targets;
 }
 
-static std::set<tripoint> spell_effect_line( spell &sp, const tripoint &target,
+static std::set<tripoint> spell_effect_line( spell &sp,const tripoint &source, const tripoint &target,
         const int aoe_radius, const bool ignore_walls )
 {
     std::set<tripoint> targets;
-    const tripoint source = sp.get_source();
     const int initial_angle = coord_to_angle( source, target );
     tripoint clockwise_starting_point;
     calc_ray_end( initial_angle - 90, floor( aoe_radius / 2.0 ), source, clockwise_starting_point );
@@ -1036,8 +979,8 @@ static std::set<tripoint> spell_effect_line( spell &sp, const tripoint &target,
 
 // spells do not reduce in damage the further away from the epicenter the targets are
 // rather they do their full damage in the entire area of effect
-static std::set<tripoint> spell_effect_area( spell &sp, const tripoint &target,
-        std::function<std::set<tripoint>( spell &, const tripoint &, const int, const bool )>
+static std::set<tripoint> spell_effect_area( spell &sp, const tripoint &source, const tripoint &target,
+        std::function<std::set<tripoint>( spell &, const tripoint &, const tripoint &, const int, const bool )>
         aoe_func, bool ignore_walls = false )
 {
     std::set<tripoint> targets = { target }; // initialize with epicenter
@@ -1046,7 +989,7 @@ static std::set<tripoint> spell_effect_area( spell &sp, const tripoint &target,
     }
 
     const int aoe_radius = sp.aoe();
-    targets = aoe_func( sp, target, aoe_radius, ignore_walls );
+    targets = aoe_func( sp, source,  target, aoe_radius, ignore_walls );
 
     for( const tripoint &p : targets ) {
         if( !sp.is_valid_target( p ) ) {
@@ -1097,30 +1040,29 @@ static void damage_targets( spell &sp, std::set<tripoint> targets )
     }
 }
 
-void projectile_attack( spell &sp, const tripoint &target )
+void projectile_attack( spell &sp, const tripoint &source, const tripoint &target )
 {
-    const tripoint source = sp.get_source();
     std::vector<tripoint> trajectory = line_to( source, target );
     for( const tripoint &pt : trajectory ) {
         if( g->m.impassable( pt ) || pt == trajectory.back() ) {
-            target_attack( sp, target );
+            target_attack( sp, source, target );
         }
     }
 }
 
-void target_attack( spell &sp, const tripoint &epicenter )
+void target_attack( spell &sp, const tripoint &source, const tripoint &epicenter )
 {
-    damage_targets( sp, spell_effect_area( sp, epicenter, spell_effect_blast ) );
+    damage_targets( sp, spell_effect_area( sp, source, epicenter, spell_effect_blast ) );
 }
 
-void cone_attack( spell &sp, const tripoint &target )
+void cone_attack( spell &sp, const tripoint &source, const tripoint &target )
 {
-    damage_targets( sp, spell_effect_area( sp, target, spell_effect_cone ) );
+    damage_targets( sp, spell_effect_area( sp, source, target, spell_effect_cone ) );
 }
 
-void line_attack( spell &sp, const tripoint &target )
+void line_attack( spell &sp, const tripoint &source, const tripoint &target )
 {
-    damage_targets( sp, spell_effect_area( sp, target, spell_effect_line ) );
+    damage_targets( sp, spell_effect_area( sp, source, target, spell_effect_line ) );
 }
 
 void spawn_ethereal_item( spell &sp )

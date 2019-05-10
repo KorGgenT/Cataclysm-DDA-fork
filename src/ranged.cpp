@@ -1108,7 +1108,7 @@ std::vector<tripoint> target_handler::target_ui( spell_id sp )
 std::vector<tripoint> target_handler::target_ui( spell &casting )
 {
     player &pc = g->u;
-    if( !casting.can_cast() ) {
+    if( !casting.can_cast( pc ) ) {
         pc.add_msg_if_player( m_bad, _( "You don't have enough %s to cast this spell" ),
                               casting.energy_string() );
     }
@@ -1232,15 +1232,15 @@ std::vector<tripoint> target_handler::target_ui( spell &casting )
                    casting.get_level() );
         if( casting.energy_source() == hp_energy ) {
             line_number += fold_and_print( w_target, line_number, 1, getmaxx( w_target ) - 2, c_light_gray,
-                                           _( "Cost: %s %s" ), casting.energy_cost_string(), casting.energy_string() );
+                                           _( "Cost: %s %s" ), casting.energy_cost_string( pc ), casting.energy_string() );
         } else {
             line_number += fold_and_print( w_target, line_number, 1, getmaxx( w_target ) - 2, c_light_gray,
-                                           _( "Cost: %s %s (Current: %s)" ), casting.energy_cost_string(), casting.energy_string(),
-                                           casting.energy_cur_string() );
+                                           _( "Cost: %s %s (Current: %s)" ), casting.energy_cost_string( pc ), casting.energy_string(),
+                                           casting.energy_cur_string( pc ) );
         }
         nc_color clr = c_light_gray;
         print_colored_text( w_target, line_number++, 1, clr, clr,
-                            casting.colorized_fail_percent() );
+                            casting.colorized_fail_percent( pc ) );
         if( dst != src ) {
             // Only draw those tiles which are on current z-level
             auto ret_this_zlevel = ret;

@@ -1283,7 +1283,7 @@ static void cast_spell()
         spell temp_spell = u.magic.get_spell( sp );
         std::string nm = temp_spell.name();
         uilist_entry entry( nm );
-        if( temp_spell.can_cast() ) {
+        if( temp_spell.can_cast( u ) ) {
             can_cast_spells = true;
         } else {
             entry.enabled = false;
@@ -1313,7 +1313,7 @@ static void cast_spell()
         }
         entry.ctxt = string_format( "%3i (%3s) %3i %3i %% %10s %4s %3i", temp_spell.get_level(),
                                     temp_spell.is_max_level() ? _( "MAX" ) : temp_spell.exp_progress(), temp_spell.range(),
-                                    static_cast<int>( round( 100.0f * temp_spell.spell_fail() ) ), _( turns ), cost,
+                                    static_cast<int>( round( 100.0f * temp_spell.spell_fail( u ) ) ), _( turns ), cost,
                                     temp_spell.damage() );
         spell_names.emplace_back( entry );
     }
@@ -1331,7 +1331,7 @@ static void cast_spell()
 
     spell sp = u.magic.get_spell( spells[action] );
 
-    if( !u.magic.has_enough_energy( sp ) ) {
+    if( !u.magic.has_enough_energy( u, sp ) ) {
         add_msg( m_bad, _( "You don't have enough %s to cast the spell." ), sp.energy_string() );
         return;
     }

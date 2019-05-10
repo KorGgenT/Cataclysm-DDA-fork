@@ -823,13 +823,13 @@ std::pair<nc_color, std::string> mana_stat( const player &u )
 {
     nc_color c_mana = c_red;
     std::string s_mana;
-    if( u.magic.max_mana() <= 0 ) {
+    if( u.magic.max_mana( u ) <= 0 ) {
         s_mana = "--";
         c_mana = c_light_gray;
     } else {
-        if( u.magic.available_mana() >= u.magic.max_mana() / 2 ) {
+        if( u.magic.available_mana() >= u.magic.max_mana( u ) / 2 ) {
             c_mana = c_light_blue;
-        } else if( u.magic.available_mana() >= u.magic.max_mana() / 3 ) {
+        } else if( u.magic.available_mana() >= u.magic.max_mana( u ) / 3 ) {
             c_mana = c_yellow;
         }
         s_mana = to_string( u.magic.available_mana() );

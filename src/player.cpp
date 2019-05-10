@@ -474,7 +474,6 @@ stat_mod player::get_pain_penalty() const
 player::player() : Character()
     , next_climate_control_check( calendar::before_time_starts )
     , cached_time( calendar::before_time_starts )
-    , magic( this )
 {
     id = -1; // -1 is invalid
     str_cur = 8;
@@ -4197,7 +4196,7 @@ void player::update_body( const time_point &from, const time_point &to )
     update_stamina( to_turns<int>( to - from ) );
     update_stomach( from, to );
     if( ticks_between( from, to, 10_turns ) > 0 ) {
-        magic.update_mana( to_turns<float>( 10_turns ) );
+        magic.update_mana( *this, to_turns<float>( 10_turns ) );
     }
     const int five_mins = ticks_between( from, to, 5_minutes );
     if( five_mins > 0 ) {
