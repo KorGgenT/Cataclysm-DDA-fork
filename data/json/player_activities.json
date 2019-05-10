@@ -507,6 +507,7 @@
     "type": "activity_type",
     "stop_phrase": "Stop studying?",
     "suspendable": false,
+    "rooted": true,
     "based_on": "time",
     "no_resume": true
   }

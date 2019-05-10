@@ -248,7 +248,7 @@ class spell
 class known_magic
 {
     private:
-        player *owner;
+        player *const owner;
         // list of spells known by player
         std::map<spell_id, spell> spellbook;
         // the base mana a player would start with
@@ -257,7 +257,10 @@ class known_magic
         int mana;
     public:
         known_magic();
-        known_magic( player *p );
+        known_magic( player *const p );
+        // deleted because player &operator=( const player & ) = delete
+        // see player.h line 188
+        known_magic operator=( known_magic & );
         void learn_spell( const std::string &sp, bool force = false );
         void learn_spell( spell_id sp, bool force = false );
         void learn_spell( const spell_type *sp, bool force = false );

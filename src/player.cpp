@@ -474,6 +474,7 @@ stat_mod player::get_pain_penalty() const
 player::player() : Character()
     , next_climate_control_check( calendar::before_time_starts )
     , cached_time( calendar::before_time_starts )
+    , magic( this )
 {
     id = -1; // -1 is invalid
     str_cur = 8;

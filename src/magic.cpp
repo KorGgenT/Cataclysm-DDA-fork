@@ -610,17 +610,24 @@ int spell::heal( const tripoint &target ) const
 
 // player
 
-known_magic::known_magic()
+known_magic::known_magic() : owner( nullptr )
 {
     mana_base = 1000;
     mana = mana_base;
 }
 
-known_magic::known_magic( player *p )
+known_magic::known_magic( player *const p ) : owner( p )
 {
     mana_base = 1000;
     mana = mana_base;
-    owner = p;
+}
+
+known_magic known_magic::operator=( known_magic &know )
+{
+    known_magic new_magic( know.owner );
+    new_magic.mana = know.mana;
+    new_magic.mana_base = know.mana_base;
+    return new_magic;
 }
 
 void known_magic::serialize( JsonOut &json ) const
@@ -1020,6 +1027,12 @@ static std::set<tripoint> spell_effect_area( spell &sp, const tripoint &target,
 
     const int aoe_radius = sp.aoe();
     targets = aoe_func( sp, target, aoe_radius, ignore_walls );
+
+    for( const tripoint &p : targets ) {
+        if( !sp.is_valid_target( p ) ) {
+            targets.erase( p );
+        }
+    }
 
     // Draw the explosion
     std::map<tripoint, nc_color> explosion_colors;

@@ -3634,7 +3634,7 @@ void activity_handlers::study_spell_do_turn( player_activity *act, player *p )
         act->values[0] += xp;
         studying.gain_exp( xp );
     }
-    p->mod_moves( -100 );
+    act->moves_left -= 100;
 }
 
 void activity_handlers::study_spell_finish( player_activity *act, player *p )
