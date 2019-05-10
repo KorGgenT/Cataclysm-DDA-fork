@@ -622,7 +622,27 @@ known_magic::known_magic( player *const p ) : owner( p )
     mana = mana_base;
 }
 
-known_magic known_magic::operator=( known_magic &know )
+known_magic::known_magic( known_magic &know ) : owner( know.owner )
+{
+    mana_base = know.mana_base;
+    mana = know.mana;
+}
+
+known_magic::known_magic( known_magic &&know ) : owner( know.owner )
+{
+    mana_base = know.mana_base;
+    mana = know.mana;
+}
+
+known_magic known_magic::operator=( known_magic &know ) const
+{
+    known_magic new_magic( know.owner );
+    new_magic.mana = know.mana;
+    new_magic.mana_base = know.mana_base;
+    return new_magic;
+}
+
+known_magic known_magic::operator=( known_magic &&know ) const
 {
     known_magic new_magic( know.owner );
     new_magic.mana = know.mana;

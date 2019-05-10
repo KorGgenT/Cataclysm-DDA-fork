@@ -258,9 +258,12 @@ class known_magic
     public:
         known_magic();
         known_magic( player *const p );
-        // deleted because player &operator=( const player & ) = delete
-        // see player.h line 188
         known_magic operator=( known_magic & );
+        known_magic operator=( known_magic && );
+        known_magic( known_magic & );
+        known_magic( known_magic && );
+        ~known_magic() = default;
+
         void learn_spell( const std::string &sp, bool force = false );
         void learn_spell( spell_id sp, bool force = false );
         void learn_spell( const spell_type *sp, bool force = false );
