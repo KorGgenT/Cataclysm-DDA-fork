@@ -3562,7 +3562,7 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
     bool success = rng_float( 0.0f, 1.0f ) >= casting.spell_fail( *p );
     int exp_gained = casting.casting_exp( *p );
     if( !success ) {
-        add_msg( m_bad, "You lose your concentration!" );
+        p->add_msg_if_player( m_bad, "You lose your concentration!" );
         if( !casting.is_max_level() ) {
             // still get some experience for trying
             casting.gain_exp( exp_gained / 5 );
@@ -3570,7 +3570,7 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
         }
         return;
     }
-    add_msg( _( "You cast %s!" ), casting.name() );
+    p->add_msg_if_player( _( "You cast %s!" ), casting.name() );
 
     // figure out which function is the effect (maybe change this into how iuse or activity_handlers does it)
     const std::string fx = casting.effect();
