@@ -518,7 +518,7 @@ int exp_for_level( int level )
     if( level == 0 ) {
         return 0;
     }
-    return round( exp( ( level - c ) * b ) ) - a;
+    return ceil( exp( ( level - c ) * b ) ) - a;
 }
 
 int spell::exp_to_next_level() const

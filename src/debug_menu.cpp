@@ -1366,9 +1366,13 @@ void debug()
                     return;
                 }
                 int desired_level = 0;
-                query_int( desired_level, _( "Desired Spell Level: (Current %d)" ), spells[action]->get_level() );
-                while( spells[action]->get_level() < std::min( spells[action]->get_max_level(), desired_level ) ) {
+                int cur_level = spells[action]->get_level();
+                query_int( desired_level, _( "Desired Spell Level: (Current %d)" ), cur_level );
+                desired_level = std::min( desired_level, spells[action]->get_max_level() );
+                while( cur_level < desired_level ) {
+                    int xp = spells[action]->xp();
                     spells[action]->gain_level();
+                    cur_level = spells[action]->get_level();
                 }
                 add_msg( m_good, _( "%s is now level %d!" ), spells[action]->name(), spells[action]->get_level() );
                 break;
