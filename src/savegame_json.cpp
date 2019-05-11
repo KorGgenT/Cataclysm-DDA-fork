@@ -921,6 +921,7 @@ void player::deserialize( JsonIn &jsin )
     data.read( "keep_hands_free", keep_hands_free );
 
     data.read( "stamina", stamina );
+    data.read( "magic", magic );
     data.read( "move_mode", move_mode );
 
     set_highest_cat_level();
