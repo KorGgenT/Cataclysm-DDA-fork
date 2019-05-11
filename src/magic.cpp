@@ -195,6 +195,7 @@ bool spell_type::is_valid() const
 {
     return spell_factory.is_valid( this->id );
 }
+<<< <<< < HEAD
 
 // spell
 
@@ -1130,3 +1131,5 @@ void spawn_ethereal_item( spell &sp )
 }
 
 }
+== == == =
+    >>> >>> > upstream / master
