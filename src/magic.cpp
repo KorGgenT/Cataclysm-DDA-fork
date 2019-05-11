@@ -799,7 +799,6 @@ int known_magic::time_to_learn_spell( const player &p, const std::string &str ) 
 
 int known_magic::time_to_learn_spell( const player &p, spell_id sp ) const
 {
-    assert( !knows_spell( sp ) );
     const int base_time = 30000;
     return base_time * ( 1.0 + sp.obj().difficulty / ( 1.0 + ( p.get_int() - 8.0 ) / 8.0 ) +
                          ( p.get_skill_level( skill_id( "SPELLCRAFT" ) ) / 10.0 ) );
