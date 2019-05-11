@@ -930,7 +930,7 @@ static std::set<tripoint> spell_effect_cone( spell &sp, const tripoint &source,
     return targets;
 }
 
-static std::set<tripoint> spell_effect_line( spell &sp, const tripoint &source,
+static std::set<tripoint> spell_effect_line( spell &, const tripoint &source,
         const tripoint &target,
         const int aoe_radius, const bool ignore_walls )
 {
