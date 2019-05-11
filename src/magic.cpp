@@ -503,6 +503,11 @@ int spell::get_level() const
     return std::max( static_cast<int>( floor( log( experience + a ) / b + c ) ), 0 );
 }
 
+int spell::get_max_level() const
+{
+    return type->max_level;
+}
+
 // helper function to calculate xp needed to be at a certain level
 // pulled out as a helper function to make it easier to either be used in the future
 // or easier to tweak the formula
@@ -712,6 +717,15 @@ spell &known_magic::get_spell( spell_id sp )
     }
     spell &temp_spell = spellbook[ sp ];
     return temp_spell;
+}
+
+std::vector<spell *> known_magic::get_spells()
+{
+    std::vector<spell *> spells;
+    for( auto &spell_pair : spellbook ) {
+        spells.emplace_back( &spell_pair.second );
+    }
+    return spells;
 }
 
 int known_magic::available_mana() const

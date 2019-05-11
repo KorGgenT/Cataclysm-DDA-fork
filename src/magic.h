@@ -177,6 +177,8 @@ class spell
         void gain_level();
         // is the spell at max level?
         bool is_max_level() const;
+        // what is the max level of the spell
+        int get_max_level() const;
 
         // how much damage does the spell do
         int damage() const;
@@ -265,6 +267,8 @@ class known_magic
         std::vector<spell_id> spells() const;
         // gets the spell associated with the spell_id to be edited
         spell &get_spell( spell_id sp );
+        // get all known spells
+        std::vector<spell *> get_spells();
         // how much mana is available to use to cast spells
         int available_mana() const;
         // max mana vailable

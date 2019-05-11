@@ -108,7 +108,8 @@ enum debug_menu_index {
     DEBUG_DISPLAY_NPC_PATH,
     DEBUG_QUIT_NOSAVE,
     DEBUG_TEST_WEATHER,
-    DEBUG_LEARN_SPELLS
+    DEBUG_LEARN_SPELLS,
+    DEBUG_LEVEL_SPELLS
 };
 
 class mission_debug
@@ -134,7 +135,8 @@ static int player_uilist()
         { DEBUG_EDIT_PLAYER, true, 'p', _( "Edit player/NPC" ) },
         { DEBUG_DAMAGE_SELF, true, 'd', _( "Damage self" ) },
         { DEBUG_SET_AUTOMOVE, true, 'a', _( "Set automove route" ) },
-        { DEBUG_LEARN_SPELLS, true, 'S', _( "Learn all spells" ) }
+        { DEBUG_LEARN_SPELLS, true, 'S', _( "Learn all spells" ) },
+        { DEBUG_LEVEL_SPELLS, true, 'L', _( "Level a spell" ) }
     };
 
     return uilist( _( "Player..." ), uilist_initializer );
@@ -1337,6 +1339,40 @@ void debug()
                     add_msg( m_good, _( "You have become an Archwizardpriest! What will you do with your newfound power?" ) );
                 }
                 break;
+            case DEBUG_LEVEL_SPELLS: {
+                std::vector<spell *> spells = g->u.magic.get_spells();
+                if( spells.empty() ) {
+                    add_msg( m_bad, _( "Try learning some spells first." ) );
+                    return;
+                }
+                std::vector<uilist_entry> uiles;
+                {
+                    uilist_entry uile( _( "Spell" ) );
+                    uile.ctxt = _( string_format( "%3s %3s", "LVL", "MAX" ) );
+                    uile.enabled = false;
+                    uile.force_color = c_light_blue;
+                    uiles.emplace_back( uile );
+                }
+                int retval = 0;
+                for( spell *sp : spells ) {
+                    uilist_entry uile( sp->name() );
+                    uile.ctxt = string_format( "%3d %3d", sp->get_level(), sp->get_max_level() );
+                    uile.retval = retval++;
+                    uile.enabled = !sp->is_max_level();
+                    uiles.emplace_back( uile );
+                }
+                int action = uilist( _( "Debug level spell:" ), uiles );
+                if( action < 0 ) {
+                    return;
+                }
+                int desired_level = 0;
+                query_int( desired_level, _( "Desired Spell Level: (Current %d)" ), spells[action]->get_level() );
+                while( spells[action]->get_level() < std::min( spells[action]->get_max_level(), desired_level ) ) {
+                    spells[action]->gain_level();
+                }
+                add_msg( m_good, _( "%s is now level %d!" ), spells[action]->name(), spells[action]->get_level() );
+                break;
+            }
         }
         catacurses::erase();
         m.invalidate_map_cache( g->get_levz() );
