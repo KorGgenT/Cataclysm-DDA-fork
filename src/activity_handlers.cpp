@@ -3576,8 +3576,8 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
     const std::string fx = casting.effect();
     if( fx == "pain_split" ) {
         spell_effect::pain_split();
-    } else if( fx == "shallow_pit" ) {
-        spell_effect::shallow_pit( target );
+    } else if( fx == "move_earth" ) {
+        spell_effect::move_earth( target );
     } else if( fx == "target_attack" ) {
         spell_effect::target_attack( casting, p->pos(), target );
     } else if( fx == "projectile_attack" ) {

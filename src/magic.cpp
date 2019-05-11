@@ -860,10 +860,34 @@ void pain_split()
     }
 }
 
-void shallow_pit( const tripoint &target )
+void move_earth( const tripoint &target )
 {
-    g->m.ter_set( target, t_pit_shallow );
-    add_msg( m_info, _( "The earth moves out of the way for you" ) );
+    ter_id ter_here = g->m.ter( target );
+
+    std::set<ter_id> empty_air = { t_hole };
+    std::set<ter_id> deep_pit = { t_pit, t_slope_down };
+    std::set<ter_id> shallow_pit = { t_pit_corpsed, t_pit_covered, t_pit_glass, t_pit_glass_covered, t_pit_shallow, t_pit_spiked, t_pit_spiked, t_pit_spiked_covered, t_rootcellar };
+    std::set<ter_id> soft_dirt = { t_grave, t_dirt, t_sand, t_clay, t_dirtmound, t_grass, t_grass_long, t_grass_tall, t_grass_golf, t_grass_dead, t_grass_white, t_dirtfloor, t_fungus_floor_in, t_fungus_floor_sup, t_fungus_floor_out, t_sandbox };
+    // rock: can still be dug through with patience, converts to sand upon completion
+    std::set<ter_id> hard_dirt = { t_pavement, t_pavement_y, t_sidewalk, t_concrete, t_thconc_floor, t_thconc_floor_olight, t_strconc_floor, t_floor, t_floor_waxed, t_carpet_red, t_carpet_yellow, t_carpet_purple, t_carpet_green, t_linoleum_white, t_linoleum_gray, t_slope_up, t_rock_red, t_rock_green, t_rock_blue, t_floor_red, t_floor_green, t_floor_blue, t_pavement_bg_dp, t_pavement_y_bg_dp, t_sidewalk_bg_dp };
+
+    if( empty_air.count( ter_here ) == 1 ) {
+        add_msg( m_bad, _( "All the dust in the air here falls to the ground." ) );
+    } else if( deep_pit.count( ter_here ) == 1 ) {
+        g->m.ter_set( target, t_hole );
+        add_msg( _( "The pit has deepened further." ) );
+    } else if( shallow_pit.count( ter_here ) == 1 ) {
+        g->m.ter_set( target, t_pit );
+        add_msg( _( "More debris shifts out of the pit." ) );
+    } else if( soft_dirt.count( ter_here ) == 1 ) {
+        g->m.ter_set( target, t_pit_shallow );
+        add_msg( _( "The earth moves out of the way for you" ) );
+    } else if( hard_dirt.count( ter_here ) == 1 ) {
+        g->m.ter_set( target, t_sand );
+        add_msg( _( "The rocks here are ground into sand." ) );
+    } else {
+        add_msg( m_bad, _( "The earth here does not listen to your command to move." ) );
+    }
 }
 
 static bool in_spell_aoe( const tripoint &target, const tripoint &epicenter, const int &radius,
