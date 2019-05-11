@@ -35,9 +35,6 @@ struct furn_t;
 struct itype;
 class item_location;
 
-class spell_type;
-using spell_id = string_id<spell_type>;
-
 /**
  * Transform an item into a specific type.
  * Optionally activate it.
