@@ -203,7 +203,7 @@ class spell
         // can the player cast this spell?
         bool can_cast( const player &p ) const;
         // can the player learn this spell?
-        bool can_learn( const player &p) const;
+        bool can_learn( const player &p ) const;
         // is this spell valid
         bool is_valid() const;
 

@@ -321,7 +321,8 @@ float spell::spell_fail( const player &p ) const
     // effective skill of 0 or less is 100% failure
     // effective skill of 8 (8 int, 0 spellcraft, 0 spell level, spell difficulty 0) is ~50% failure
     // effective skill of 30 is 0% failure
-    const float effective_skill = 2 * ( get_level() - get_difficulty() ) + p.get_int() + p.get_skill_level( skill_id( "SPELLCRAFT" ) );
+    const float effective_skill = 2 * ( get_level() - get_difficulty() ) + p.get_int() +
+                                  p.get_skill_level( skill_id( "SPELLCRAFT" ) );
     // add an if statement in here because sufficiently large numbers will definitely overflow because of exponents
     if( effective_skill > 30.0f ) {
         return 0.0f;
@@ -899,7 +900,8 @@ static std::set<tripoint> spell_effect_blast( spell &, const tripoint &, const t
     return targets;
 }
 
-static std::set<tripoint> spell_effect_cone( spell &sp, const tripoint &source, const tripoint &target,
+static std::set<tripoint> spell_effect_cone( spell &sp, const tripoint &source,
+        const tripoint &target,
         const int aoe_radius, const bool ignore_walls )
 {
     std::set<tripoint> targets;
@@ -928,7 +930,8 @@ static std::set<tripoint> spell_effect_cone( spell &sp, const tripoint &source, 
     return targets;
 }
 
-static std::set<tripoint> spell_effect_line( spell &sp,const tripoint &source, const tripoint &target,
+static std::set<tripoint> spell_effect_line( spell &sp, const tripoint &source,
+        const tripoint &target,
         const int aoe_radius, const bool ignore_walls )
 {
     std::set<tripoint> targets;
@@ -993,7 +996,8 @@ static std::set<tripoint> spell_effect_line( spell &sp,const tripoint &source, c
 
 // spells do not reduce in damage the further away from the epicenter the targets are
 // rather they do their full damage in the entire area of effect
-static std::set<tripoint> spell_effect_area( spell &sp, const tripoint &source, const tripoint &target,
+static std::set<tripoint> spell_effect_area( spell &sp, const tripoint &source,
+        const tripoint &target,
         std::function<std::set<tripoint>( spell &, const tripoint &, const tripoint &, const int, const bool )>
         aoe_func, bool ignore_walls = false )
 {

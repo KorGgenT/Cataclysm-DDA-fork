@@ -1,5 +1,5 @@
 [
-	{
+  {
     "id": "stonefist",
     "type": "GENERIC",
     "name": "pair of magical armored stone gauntlets",
@@ -10,7 +10,7 @@
     "price": 1,
     "to_hit": 2,
     "bashing": 20,
-    "material": [ "superalloy"],
+    "material": [ "superalloy" ],
     "symbol": "[",
     "color": "light_gray",
     "covers": [ "HANDS", "ARMS" ],
@@ -19,14 +19,14 @@
     "warmth": 20,
     "material_thickness": 4,
     "environmental_protection": 10,
-	"qualities": [ [ "HAMMER", 1 ] ],
+    "qualities": [ [ "HAMMER", 1 ] ],
     "flags": [ "VARSIZE", "STURDY", "UNARMED_WEAPON", "DURABLE_MELEE", "NONCONDUCTIVE" ],
-	"techniques": [ "WBLOCK_3" ]
+    "techniques": [ "WBLOCK_3" ]
   },
   {
     "id": "armor_stonefist",
     "type": "ARMOR",
-	"category": "armor",
+    "category": "armor",
     "name": "pair of magical armored stone gauntlets",
     "name_plural": "pairs of armored gauntlets",
     "description": "A magical flexible stonelike substance for protection and attack.",
@@ -35,7 +35,7 @@
     "price": 1,
     "to_hit": 2,
     "bashing": 20,
-    "material": [ "superalloy"],
+    "material": [ "superalloy" ],
     "symbol": "[",
     "color": "light_gray",
     "covers": [ "HANDS", "ARMS" ],
@@ -44,9 +44,9 @@
     "warmth": 20,
     "material_thickness": 4,
     "environmental_protection": 10,
-	"qualities": [ [ "HAMMER", 1 ] ],
+    "qualities": [ [ "HAMMER", 1 ] ],
     "flags": [ "VARSIZE", "STURDY", "UNARMED_WEAPON", "DURABLE_MELEE", "NONCONDUCTIVE" ],
-	"techniques": [ "WBLOCK_3" ]
+    "techniques": [ "WBLOCK_3" ]
   },
   {
     "id": "magic_lamp",
@@ -119,5 +119,4 @@
     "environmental_protection": 2,
     "flags": [ "WATERPROOF", "ROLLER_QUAD", "BELTED" ]
   }
-
 ]
