@@ -3566,7 +3566,8 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
         if( !casting.is_max_level() ) {
             // still get some experience for trying
             casting.gain_exp( exp_gained / 5 );
-            p->add_msg_if_player( m_good, _( "You gain %i experience. New total %i." ), exp_gained / 5, casting.xp() );
+            p->add_msg_if_player( m_good, _( "You gain %i experience. New total %i." ), exp_gained / 5,
+                                  casting.xp() );
         }
         return;
     }
@@ -3616,10 +3617,12 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
         // reap the reward
         if( casting.get_level() == 0 ) {
             casting.gain_level();
-            p->add_msg_if_player( m_good, _( "Something about how this spell works just clicked! You gained a level!" ) );
+            p->add_msg_if_player( m_good,
+                                  _( "Something about how this spell works just clicked! You gained a level!" ) );
         } else {
             casting.gain_exp( exp_gained );
-            p->add_msg_if_player( m_good, _( "You gain %i experience, New total %i." ), exp_gained, casting.xp() );
+            p->add_msg_if_player( m_good, _( "You gain %i experience, New total %i." ), exp_gained,
+                                  casting.xp() );
         }
     }
 }
