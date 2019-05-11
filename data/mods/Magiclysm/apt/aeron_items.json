@@ -1,0 +1,16 @@
+[
+	{
+		"id": "aeron_spellbook",
+		"type": "GENERIC",
+		"name": "Nondescript Spellbook",
+		"description": "A small book, containing spells created by a novice magician.",
+		"weight": 1,
+		"volume": "1 ml",
+		"symbol": "?",
+		"color": "magenta",
+		"use_action": {
+			"type": "learn_spell",
+			"spells": [ "blinding_flash", "ethereal_grasp", "seismic_stomp" ] 
+		}
+	}
+]
