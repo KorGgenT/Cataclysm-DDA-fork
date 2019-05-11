@@ -195,7 +195,6 @@ bool spell_type::is_valid() const
 {
     return spell_factory.is_valid( this->id );
 }
-<<< <<< < HEAD
 
 // spell
 
@@ -1045,7 +1044,7 @@ static std::set<tripoint> spell_effect_area( spell &sp, const tripoint &source,
         explosion_colors[pt] = sp.damage_type_color();
     }
 
-    g->draw_custom_explosion( g->u.pos(), explosion_colors );
+    explosion_handler::draw_custom_explosion( g->u.pos(), explosion_colors );
     return targets;
 }
 
@@ -1131,5 +1130,3 @@ void spawn_ethereal_item( spell &sp )
 }
 
 }
-== == == =
-    >>> >>> > upstream / master
