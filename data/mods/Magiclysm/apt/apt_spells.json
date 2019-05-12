@@ -33,10 +33,10 @@
     "energy_source": "MANA",
     "difficulty": 1,
     "max_level": 20,
-    "base_casting_time": 100,
-    "base_energy_cost": 50,
-    "min_duration": 10000,
-    "max_duration": 100000,
+    "base_casting_time": 1000,
+    "base_energy_cost": 500,
+    "min_duration": 100000,
+    "max_duration": 1000000,
     "duration_increment": 2000
   },
   {
@@ -56,9 +56,9 @@
     "difficulty": 2,
     "max_level": 20,
     "base_casting_time": 200,
-    "base_energy_cost": 100,
-    "min_duration": 10000,
-    "max_duration": 100000,
+    "base_energy_cost": 750,
+    "min_duration": 100000,
+    "max_duration": 1000000,
     "duration_increment": 2000
   },
   {
