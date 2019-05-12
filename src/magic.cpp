@@ -669,7 +669,7 @@ void known_magic::learn_spell( const spell_type *sp, player &p, bool force )
         return;
     }
     if( !force ) {
-        if( can_learn_spell( p, sp->id ) && !p.has_trait( sp->spell_class ) ) {
+        if( sp->spell_class != trait_id( "NONE" ) && ( p, sp->id ) && !p.has_trait( sp->spell_class ) ) {
             if( query_yn(
                     _( "Learning this spell will make you a %s and lock you out of other unique spells.\nContinue?" ),
                     sp->spell_class.obj().name() ) ) {
