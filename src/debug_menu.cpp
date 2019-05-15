@@ -1421,13 +1421,13 @@ void debug()
                                     break;
             case DEBUG_LEARN_SPELLS:
                 if ( spell_type::get_all().empty() ) {
-                    add_msg( m_bad, _( "There are no spells to learn. You must install a mod that adds some." ) );
+                    add_msg( m_bad, _( "There are no spells to learn.  You must install a mod that adds some." ) );
                 }
                 else {
                     for ( const spell_type &learn : spell_type::get_all() ) {
                         g->u.magic.learn_spell( &learn, g->u, true );
                     }
-                    add_msg( m_good, _( "You have become an Archwizardpriest! What will you do with your newfound power?" ) );
+                    add_msg( m_good, _( "You have become an Archwizardpriest!  What will you do with your newfound power?" ) );
                 }
                 break;
             case DEBUG_LEVEL_SPELLS: {
@@ -1439,7 +1439,7 @@ void debug()
                 std::vector<uilist_entry> uiles;
                 {
                     uilist_entry uile( _( "Spell" ) );
-                    uile.ctxt = _( string_format( "%3s %3s", "LVL", "MAX" ) );
+                    uile.ctxt = string_format( "%3s %3s", _( "LVL" ), _( "MAX" ) );
                     uile.enabled = false;
                     uile.force_color = c_light_blue;
                     uiles.emplace_back( uile );

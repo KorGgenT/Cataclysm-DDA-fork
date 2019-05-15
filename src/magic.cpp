@@ -398,7 +398,7 @@ std::string spell::energy_cost_string( const player &p ) const
         auto pair = get_hp_bar( energy_cost(), p.get_stamina_max() );
         return colorize( pair.first, pair.second );
     }
-    debugmsg( _( "ERROR: Spell %s has invalid energy source." ), id().c_str() );
+    debugmsg( "ERROR: Spell %s has invalid energy source.", id().c_str() );
     return _( "error: energy_type" );
 }
 
@@ -420,7 +420,7 @@ std::string spell::energy_cur_string( const player &p ) const
     if( energy_source() == hp_energy ) {
         return "";
     }
-    debugmsg( _( "ERROR: Spell %s has invalid energy source." ), id().c_str() );
+    debugmsg( "ERROR: Spell %s has invalid energy source.", id().c_str() );
     return _( "error: energy_type" );
 }
 
@@ -881,7 +881,7 @@ void move_earth( const tripoint &target )
         add_msg( _( "More debris shifts out of the pit." ) );
     } else if( soft_dirt.count( ter_here ) == 1 ) {
         g->m.ter_set( target, t_pit_shallow );
-        add_msg( _( "The earth moves out of the way for you" ) );
+        add_msg( _( "The earth moves out of the way for you." ) );
     } else if( hard_dirt.count( ter_here ) == 1 ) {
         g->m.ter_set( target, t_sand );
         add_msg( _( "The rocks here are ground into sand." ) );

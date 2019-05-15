@@ -3575,7 +3575,7 @@ void blood_magic( player *p, int cost )
     }
     int action = -1;
     while( action < 0 ) {
-        action = uilist( "Choose part\nto draw blood from.", uile );
+        action = uilist( _( "Choose part\nto draw blood from." ), uile );
     }
     p->hp_cur[action] -= cost;
     p->mod_pain( std::max( ( int )1, cost / 3 ) );
@@ -3602,7 +3602,7 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
                 target_is_valid = false;
             }
             if( !target_is_valid ) {
-                if( query_yn( _( "Stop casting spell? Time spent will be lost." ) ) ) {
+                if( query_yn( _( "Stop casting spell?  Time spent will be lost." ) ) ) {
                     return;
                 }
             }
@@ -3617,7 +3617,7 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
         if( !casting.is_max_level() ) {
             // still get some experience for trying
             casting.gain_exp( exp_gained / 5 );
-            p->add_msg_if_player( m_good, _( "You gain %i experience. New total %i." ), exp_gained / 5,
+            p->add_msg_if_player( m_good, _( "You gain %i experience.  New total %i." ), exp_gained / 5,
                                   casting.xp() );
         }
         return;
@@ -3669,10 +3669,10 @@ void activity_handlers::spellcasting_finish( player_activity *act, player *p )
         if( casting.get_level() == 0 ) {
             casting.gain_level();
             p->add_msg_if_player( m_good,
-                                  _( "Something about how this spell works just clicked! You gained a level!" ) );
+                                  _( "Something about how this spell works just clicked!  You gained a level!" ) );
         } else {
             casting.gain_exp( exp_gained );
-            p->add_msg_if_player( m_good, _( "You gain %i experience, New total %i." ), exp_gained,
+            p->add_msg_if_player( m_good, _( "You gain %i experience.  New total %i." ), exp_gained,
                                   casting.xp() );
         }
     }

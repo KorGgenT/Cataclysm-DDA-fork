@@ -1288,8 +1288,8 @@ static void cast_spell()
         } else {
             entry.enabled = false;
         }
-        std::string turns = temp_spell.casting_time() >= 100 ? string_format( "%i turns",
-                            temp_spell.casting_time() / 100 ) : string_format( "%i moves", temp_spell.casting_time() );
+        std::string turns = temp_spell.casting_time() >= 100 ? string_format( _("%i turns" ),
+                            temp_spell.casting_time() / 100 ) : string_format( _( "%i moves" ), temp_spell.casting_time() );
         std::string cost = string_format( "%4i", temp_spell.energy_cost() );
         switch( temp_spell.energy_source() ) {
             case mana_energy:
@@ -1313,7 +1313,7 @@ static void cast_spell()
         }
         entry.ctxt = string_format( "%3i (%3s) %3i %3i %% %10s %4s %3i", temp_spell.get_level(),
                                     temp_spell.is_max_level() ? _( "MAX" ) : temp_spell.exp_progress(), temp_spell.range(),
-                                    static_cast<int>( round( 100.0f * temp_spell.spell_fail( u ) ) ), _( turns ), cost,
+                                    static_cast<int>( round( 100.0f * temp_spell.spell_fail( u ) ) ), turns, cost,
                                     temp_spell.damage() );
         spell_names.emplace_back( entry );
     }
