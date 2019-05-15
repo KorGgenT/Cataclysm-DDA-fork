@@ -1,6 +1,6 @@
 #include "map.h"
 
-#include <limits.h>
+#include <climits>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -2668,9 +2668,9 @@ bool map::is_flammable( const tripoint &p )
 
 void map::decay_fields_and_scent( const time_duration &amount )
 {
+    // TODO: Make this happen on all z-levels
+
     // Decay scent separately, so that later we can use field count to skip empty submaps
-    tripoint tmp;
-    tmp.z = abs_sub.z; // TODO: Make this happen on all z-levels
     g->scent.decay();
 
     const time_duration amount_fire = amount / 3; // Decay fire by this much
@@ -3106,7 +3106,7 @@ void map::bash_ter_furn( const tripoint &p, bash_params &params )
         if( impassable( p ) ) {
             if( !params.silent ) {
                 sounds::sound( p, 18, sounds::sound_t::combat, _( "thump!" ),
-                               false, "smash_thump", "smash_success" );
+                               false, "smash_fail", "default" );
             }
 
             params.did_bash = true;
@@ -3510,7 +3510,8 @@ void map::shoot( const tripoint &p, projectile &proj, const bool hit_items )
     const auto &ammo_effects = proj.proj_effects;
 
     if( has_flag( "ALARMED", p ) && !g->events.queued( EVENT_WANTED ) ) {
-        sounds::sound( p, 30, sounds::sound_t::alarm, _( "an alarm sound!" ) );
+        sounds::sound( p, 30, sounds::sound_t::alarm, _( "an alarm sound!" ), true, "environment",
+                       "alarm" );
         const tripoint abs = ms_to_sm_copy( getabs( p ) );
         g->events.add( EVENT_WANTED, calendar::turn + 30_minutes, 0, abs );
     }
@@ -3645,7 +3646,7 @@ void map::shoot( const tripoint &p, projectile &proj, const bool hit_items )
     } else if( terrain == t_paper ) {
         dam -= rng( 4, 16 );
         if( dam > 0 ) {
-            sounds::sound( p, 8, sounds::sound_t::combat, _( "rrrrip!" ) );
+            sounds::sound( p, 8, sounds::sound_t::combat, _( "rrrrip!" ), true, "smash", "paper_torn" );
             ter_set( p, t_dirt );
         }
         if( inc ) {
@@ -3666,7 +3667,7 @@ void map::shoot( const tripoint &p, projectile &proj, const bool hit_items )
                         }
                     }
 
-                    sounds::sound( p, 10, sounds::sound_t::combat, _( "smash!" ) );
+                    sounds::sound( p, 10, sounds::sound_t::combat, _( "smash!" ), true, "bullet_hit", "hit_metal" );
                 }
                 ter_set( p, t_gas_pump_smashed );
             }
@@ -3674,7 +3675,7 @@ void map::shoot( const tripoint &p, projectile &proj, const bool hit_items )
         }
     } else if( terrain == t_vat ) {
         if( dam >= 10 ) {
-            sounds::sound( p, 20, sounds::sound_t::combat, _( "ke-rash!" ) );
+            sounds::sound( p, 20, sounds::sound_t::combat, _( "ke-rash!" ), true, "bullet_hit", "hit_metal" );
             ter_set( p, t_floor );
         } else {
             dam = 0;
@@ -4631,7 +4632,7 @@ void map::process_items_in_submap( submap &current_submap, const tripoint &gridp
             loc_temp = AVERAGE_ANNUAL_TEMPERATURE;
             flag = temperature_flag::TEMP_ROOT_CELLAR;
         } else {
-            loc_temp = g->get_temperature( map_location );
+            loc_temp = g->weather.get_temperature( map_location );
         }
         auto items = i_at( map_location );
         processor( items, active_item.item_iterator, map_location, signal, loc_temp, 1, flag );
@@ -4692,7 +4693,7 @@ void map::process_items_in_vehicle( vehicle &cur_veh, submap &current_submap, co
         const vehicle_part &pt = it->part();
         const tripoint item_loc = it->pos();
         auto items = cur_veh.get_items( static_cast<int>( it->part_index() ) );
-        int it_temp = g->get_temperature( item_loc );
+        int it_temp = g->weather.get_temperature( item_loc );
         float it_insulation = 1.0;
         temperature_flag flag = temperature_flag::TEMP_NORMAL;
         if( item_iter->has_temperature() || item_iter->is_food_container() ) {
@@ -5144,7 +5145,7 @@ static bool trigger_radio_item( item_stack &items, std::list<item>::iterator &n,
 {
     bool trigger_item = false;
     if( n->has_flag( "RADIO_ACTIVATION" ) && n->has_flag( signal ) ) {
-        sounds::sound( pos, 6, sounds::sound_t::alarm, _( "beep." ) );
+        sounds::sound( pos, 6, sounds::sound_t::alarm, _( "beep." ), true, "misc", "beep" );
         if( n->has_flag( "RADIO_INVOKE_PROC" ) ) {
             // Invoke twice: first to transform, then later to proc
             // Can't use process_item here - invalidates our iterator
@@ -6735,7 +6736,7 @@ void map::loadn( const int gridx, const int gridy, const int gridz, const bool u
 
 bool map::has_rotten_away( item &itm, const tripoint &pnt ) const
 {
-    int temp = g->get_temperature( pnt );
+    int temp = g->weather.get_temperature( pnt );
     if( itm.has_flag( "ETHEREAL_ITEM" ) ) {
         itm.process_temperature_rot( temp, 1, pnt, nullptr );
         return calendar::turn - itm.birthday() >= itm.get_rot();

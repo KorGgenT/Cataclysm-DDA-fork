@@ -443,6 +443,7 @@ Some armor flags, such as `WATCH` and `ALARMCLOCK` are compatible with other ite
 - ```EATEN_COLD``` Morale bonus for eating cold.
 - ```EATEN_HOT``` Morale bonus for eating hot.
 - ```EDIBLE_FROZEN``` Being frozen doesn't prevent eating it. No morale bonus.
+- ```INEDIBLE``` Inedible by default, enabled to eat when in conjunction with (mutation threshold) flags: BIRD, CATTLE.
 - ```FERTILIZER``` Works as fertilizer for farming, of if this consumed with the PLANTBLECH function penalties will be reversed for plants.
 - ```FREEZERBURN``` First thaw is MUSHY, second is rotten
 - ```HIDDEN_HALLU``` ... Food causes hallucinations, visible only with a certain survival skill level.
@@ -1077,6 +1078,7 @@ These branches are also the valid entries for the categories of `dreams` in `dre
 - ```BLIND_HARD``` Possible to craft with little to no light, but difficult
 - ```UNCRAFT_LIQUIDS_CONTAINED``` Spawn liquid items in its default container.
 - ```UNCRAFT_SINGLE_CHARGE``` Lists returned amounts for one charge of an item that is counted by charges.
+- ```FULL_MAGAZINE``` If this recipe requires magazines, it needs one that is full.  For deconstruction recipes, it will spawn a full magazine when deconstructed.
 
 
 ## Scenarios

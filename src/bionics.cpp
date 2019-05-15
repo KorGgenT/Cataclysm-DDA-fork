@@ -1,8 +1,8 @@
 #include "bionics.h"
 
-#include <limits.h>
-#include <math.h>
-#include <stdlib.h>
+#include <climits>
+#include <cmath>
+#include <cstdlib>
 #include <algorithm> //std::min
 #include <sstream>
 #include <array>
@@ -191,7 +191,7 @@ bool player::activate_bionic( int b, bool eff_only )
     }
 
     item tmp_item;
-    const w_point weatherPoint = *g->weather_precise;
+    const w_point weatherPoint = *g->weather.weather_precise;
 
     // On activation effects go here
     if( bionics[bio.id].gun_bionic ) {
@@ -243,7 +243,8 @@ bool player::activate_bionic( int b, bool eff_only )
         }
     } else if( bio.id == "bio_resonator" ) {
         //~Sound of a bionic sonic-resonator shaking the area
-        sounds::sound( pos(), 30, sounds::sound_t::combat, _( "VRRRRMP!" ) );
+        sounds::sound( pos(), 30, sounds::sound_t::combat, _( "VRRRRMP!" ), false, "bionic",
+                       "bio_resonator" );
         for( const tripoint &bashpoint : g->m.points_in_radius( pos(), 1 ) ) {
             g->m.bash( bashpoint, 110 );
             g->m.bash( bashpoint, 110 ); // Multibash effect, so that doors &c will fall
@@ -432,7 +433,8 @@ bool player::activate_bionic( int b, bool eff_only )
     } else if( bio.id == "bio_hydraulics" ) {
         add_msg( m_good, _( "Your muscles hiss as hydraulic strength fills them!" ) );
         //~ Sound of hissing hydraulic muscle! (not quite as loud as a car horn)
-        sounds::sound( pos(), 19, sounds::sound_t::activity, _( "HISISSS!" ) );
+        sounds::sound( pos(), 19, sounds::sound_t::activity, _( "HISISSS!" ), false, "bionic",
+                       "bio_hydraulics" );
     } else if( bio.id == "bio_water_extractor" ) {
         bool extracted = false;
         for( auto it = g->m.i_at( pos() ).begin();
@@ -520,14 +522,14 @@ bool player::activate_bionic( int b, bool eff_only )
         }
         const oter_id &cur_om_ter = overmap_buffer.ter( global_omt_location() );
         /* cache g->get_temperature( player location ) since it is used twice. No reason to recalc */
-        const auto player_local_temp = g->get_temperature( g->u.pos() );
+        const auto player_local_temp = g->weather.get_temperature( g->u.pos() );
         /* windpower defined in internal velocity units (=.01 mph) */
-        double windpower = 100.0f * get_local_windpower( g->windspeed + vehwindspeed,
-                           cur_om_ter, pos(), g->winddirection, g->is_sheltered( pos() ) );
+        double windpower = 100.0f * get_local_windpower( g->weather.windspeed + vehwindspeed,
+                           cur_om_ter, pos(), g->weather.winddirection, g->is_sheltered( pos() ) );
         add_msg_if_player( m_info, _( "Temperature: %s." ), print_temperature( player_local_temp ) );
         add_msg_if_player( m_info, _( "Relative Humidity: %s." ),
                            print_humidity(
-                               get_local_humidity( weatherPoint.humidity, g->weather,
+                               get_local_humidity( weatherPoint.humidity, g->weather.weather,
                                        g->is_sheltered( g->u.pos() ) ) ) );
         add_msg_if_player( m_info, _( "Pressure: %s." ),
                            print_pressure( static_cast<int>( weatherPoint.pressure ) ) );
@@ -538,7 +540,7 @@ bool player::activate_bionic( int b, bool eff_only )
                            print_temperature(
                                get_local_windchill( weatherPoint.temperature, weatherPoint.humidity,
                                        windpower / 100 ) + player_local_temp ) );
-        std::string dirstring = get_dirstring( g->winddirection );
+        std::string dirstring = get_dirstring( g->weather.winddirection );
         add_msg_if_player( m_info, _( "Wind Direction: From the %s." ), dirstring );
     } else if( bio.id == "bio_remote" ) {
         int choice = uilist( _( "Perform which function:" ), {
@@ -759,7 +761,8 @@ void player::process_bionic( int b )
         }
     } else if( bio.id == "bio_hydraulics" ) {
         // Sound of hissing hydraulic muscle! (not quite as loud as a car horn)
-        sounds::sound( pos(), 19, sounds::sound_t::activity, _( "HISISSS!" ) );
+        sounds::sound( pos(), 19, sounds::sound_t::activity, _( "HISISSS!" ), false, "bionic",
+                       "bio_hydraulics" );
     } else if( bio.id == "bio_nanobots" ) {
         for( int i = 0; i < num_hp_parts; i++ ) {
             if( power_level >= 5 && hp_cur[i] > 0 && hp_cur[i] < hp_max[i] ) {

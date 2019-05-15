@@ -1,7 +1,7 @@
 #include "iexamine.h"
 
-#include <limits.h>
-#include <math.h>
+#include <climits>
+#include <cmath>
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
@@ -596,13 +596,11 @@ void iexamine::vending( player &p, const tripoint &examp )
                         _( "Money left: %s" ), format_money( money ) );
 
         // Keep the item selector centered in the page.
-        int page_beg = 0;
-        int page_end = page_size;
+        int page_beg;
         if( cur_pos < num_items - cur_pos ) {
             page_beg = std::max( 0, cur_pos - lines_above );
-            page_end = std::min( num_items, page_beg + list_lines );
         } else {
-            page_end = std::min( num_items, cur_pos + lines_below );
+            int page_end = std::min( num_items, cur_pos + lines_below );
             page_beg = std::max( 0, page_end - list_lines );
         }
 
@@ -1069,7 +1067,7 @@ void iexamine::safe( player &p, const tripoint &examp )
         return temporary_item.has_flag( "SAFECRACK" );
     } );
 
-    if( !( cracking_tool.size() > 0 || p.has_bionic( bionic_id( "bio_ears" ) ) ) ) {
+    if( !( !cracking_tool.empty() || p.has_bionic( bionic_id( "bio_ears" ) ) ) ) {
         p.moves -= 100;
         // one_in(30^3) chance of guessing
         if( one_in( 27000 ) ) {
@@ -1157,7 +1155,8 @@ void iexamine::gunsafe_el( player &p, const tripoint &examp )
         case HACK_FAIL:
             p.add_memorial_log( pgettext( "memorial_male", "Set off an alarm." ),
                                 pgettext( "memorial_female", "Set off an alarm." ) );
-            sounds::sound( p.pos(), 60, sounds::sound_t::music, _( "an alarm sound!" ) );
+            sounds::sound( p.pos(), 60, sounds::sound_t::music, _( "an alarm sound!" ), true, "environment",
+                           "alarm" );
             if( examp.z > 0 && !g->events.queued( EVENT_WANTED ) ) {
                 g->events.add( EVENT_WANTED, calendar::turn + 30_minutes, 0, p.global_sm_location() );
             }
@@ -1190,7 +1189,7 @@ void iexamine::locked_object( player &p, const tripoint &examp )
         return temporary_item.has_quality( quality_id( "PRY" ), 1 );
     } );
 
-    if( prying_items.size() == 0 ) {
+    if( prying_items.empty() ) {
         add_msg( m_info, _( "If only you had something to pry with..." ) );
         return;
     }
@@ -1273,7 +1272,8 @@ void iexamine::pedestal_wyrm( player &p, const tripoint &examp )
         }
     }
     add_msg( _( "The pedestal sinks into the ground..." ) );
-    sounds::sound( examp, 80, sounds::sound_t::combat, _( "an ominous grinding noise..." ) );
+    sounds::sound( examp, 80, sounds::sound_t::combat, _( "an ominous grinding noise..." ), true,
+                   "misc", "stones_grinding" );
     g->m.ter_set( examp, t_rock_floor );
     g->events.add( EVENT_SPAWN_WYRMS, calendar::turn + rng( 5_turns, 10_turns ) );
 }
@@ -1839,6 +1839,7 @@ std::vector<seed_tuple> iexamine::get_seed_entries( const std::vector<item *> &s
     }
 
     std::vector<seed_tuple> seed_entries;
+    seed_entries.reserve( seed_map.size() );
     for( const auto &pr : seed_map ) {
         seed_entries.emplace_back(
             pr.first, item::nname( pr.first, pr.second ), pr.second );
@@ -3126,7 +3127,7 @@ void iexamine::recycle_compactor( player &, const tripoint &examp )
     // produce outputs
     double recover_factor = rng( 6, 9 ) / 10.0;
     sum_weight = sum_weight * recover_factor;
-    sounds::sound( examp, 80, sounds::sound_t::combat, _( "Ka-klunk!" ) );
+    sounds::sound( examp, 80, sounds::sound_t::combat, _( "Ka-klunk!" ), true, "tool", "compactor" );
     bool out_desired = false;
     bool out_any = false;
     for( auto it = m.compacts_into().begin() + o_idx; it != m.compacts_into().end(); ++it ) {
@@ -3348,6 +3349,7 @@ void iexamine::sign( player &p, const tripoint &examp )
     std::vector<const item *> filter = p.crafting_inventory().items_with( []( const item & it ) {
         return it.has_flag( "WRITE_MESSAGE" ) && it.charges > 0;
     } );
+    tools.reserve( filter.size() );
     for( const item *writing_item : filter ) {
         tools.push_back( tool_comp( writing_item->typeId(), 1 ) );
     }
@@ -3704,7 +3706,8 @@ void iexamine::pay_gas( player &p, const tripoint &examp )
             return;
         }
 
-        sounds::sound( p.pos(), 6, sounds::sound_t::activity, _( "Glug Glug Glug" ) );
+        sounds::sound( p.pos(), 6, sounds::sound_t::activity, _( "Glug Glug Glug" ), true, "tool",
+                       "gaspump" );
 
         long cost = liters * pricePerUnit;
         money -= cost;
@@ -3722,7 +3725,8 @@ void iexamine::pay_gas( player &p, const tripoint &examp )
             case HACK_FAIL:
                 p.add_memorial_log( pgettext( "memorial_male", "Set off an alarm." ),
                                     pgettext( "memorial_female", "Set off an alarm." ) );
-                sounds::sound( p.pos(), 60, sounds::sound_t::music, _( "an alarm sound!" ) );
+                sounds::sound( p.pos(), 60, sounds::sound_t::music, _( "an alarm sound!" ), true, "environment",
+                               "alarm" );
                 if( examp.z > 0 && !g->events.queued( EVENT_WANTED ) ) {
                     g->events.add( EVENT_WANTED, calendar::turn + 30_minutes, 0, p.global_sm_location() );
                 }
@@ -3736,7 +3740,7 @@ void iexamine::pay_gas( player &p, const tripoint &examp )
                 if( pGasPump && toPumpFuel( pTank, *pGasPump, tankGasUnits ) ) {
                     add_msg( _( "You hack the terminal and route all available fuel to your pump!" ) );
                     sounds::sound( p.pos(), 6, sounds::sound_t::activity,
-                                   _( "Glug Glug Glug Glug Glug Glug Glug Glug Glug" ) );
+                                   _( "Glug Glug Glug Glug Glug Glug Glug Glug Glug" ), true, "tool", "gaspump" );
                 } else {
                     add_msg( _( "Nothing happens." ) );
                 }
@@ -3758,7 +3762,8 @@ void iexamine::pay_gas( player &p, const tripoint &examp )
                 uistate.ags_pay_gas_selected_pump );
         long amount = pGasPump ? fromPumpFuel( pTank, *pGasPump ) : 0l;
         if( amount >= 0 ) {
-            sounds::sound( p.pos(), 6, sounds::sound_t::activity, _( "Glug Glug Glug" ) );
+            sounds::sound( p.pos(), 6, sounds::sound_t::activity, _( "Glug Glug Glug" ), true, "tool",
+                           "gaspump" );
             cashcard->charges += amount * pricePerUnit / 1000.0f;
             add_msg( m_info, _( "Your cash cards now hold %s." ), format_money( p.charges_of( "cash_card" ) ) );
             p.moves -= 100;
@@ -4255,7 +4260,7 @@ void mill_activate( player &p, const tripoint &examp )
     for( auto &it : g->m.i_at( examp ) ) {
         if( it.has_flag( "MILLABLE" ) ) {
             // Do one final rot check before milling, then apply the PROCESSING flag to prevent further checks.
-            it.process_temperature_rot( g->get_temperature( examp ), 1, examp, nullptr );
+            it.process_temperature_rot( g->weather.get_temperature( examp ), 1, examp, nullptr );
             it.set_flag( "PROCESSING" );
         }
     }
@@ -4356,7 +4361,7 @@ void smoker_activate( player &p, const tripoint &examp )
     p.use_charges( "fire", 1 );
     for( auto &it : g->m.i_at( examp ) ) {
         if( it.has_flag( "SMOKABLE" ) ) {
-            it.process_temperature_rot( g->get_temperature( examp ), 1, examp, nullptr );
+            it.process_temperature_rot( g->weather.get_temperature( examp ), 1, examp, nullptr );
             it.set_flag( "PROCESSING" );
         }
     }
@@ -4478,11 +4483,10 @@ void smoker_load_food( player &p, const tripoint &examp, const units::volume &re
     uilist smenu;
     smenu.text = _( "Load smoking rack with what kind of food?" );
     // count and ask for item to be placed ...
-    int count = 0;
     std::list<std::string> names;
     std::vector<const item *> entries;
     for( const item *smokable_item : filtered ) {
-
+        int count;
         if( smokable_item->count_by_charges() ) {
             count = inv.charges_of( smokable_item->typeId() );
         } else {
@@ -4497,7 +4501,6 @@ void smoker_load_food( player &p, const tripoint &examp, const units::volume &re
             names.push_back( item::nname( smokable_item->typeId(), 1 ) );
             comps.push_back( item_comp( smokable_item->typeId(), count ) );
         }
-        count = 0;
     }
 
     if( comps.empty() ) {
@@ -4511,7 +4514,7 @@ void smoker_load_food( player &p, const tripoint &examp, const units::volume &re
         add_msg( m_info, _( "Never mind." ) );
         return;
     }
-    count = 0;
+    int count = 0;
     auto what = entries[smenu.ret];
     for( const auto &c : comps ) {
         if( c.type == what->typeId() ) {
@@ -4587,11 +4590,10 @@ void mill_load_food( player &p, const tripoint &examp, const units::volume &rema
     uilist smenu;
     smenu.text = _( "Load mill with what kind of product?" );
     // count and ask for item to be placed ...
-    int count = 0;
     std::list<std::string> names;
     std::vector<const item *> entries;
     for( const item *millable_item : filtered ) {
-
+        int count;
         if( millable_item->count_by_charges() ) {
             count = inv.charges_of( millable_item->typeId() );
         } else {
@@ -4606,7 +4608,6 @@ void mill_load_food( player &p, const tripoint &examp, const units::volume &rema
             names.push_back( item::nname( millable_item->typeId(), 1 ) );
             comps.push_back( item_comp( millable_item->typeId(), count ) );
         }
-        count = 0;
     }
 
     if( comps.empty() ) {
@@ -4620,7 +4621,7 @@ void mill_load_food( player &p, const tripoint &examp, const units::volume &rema
         add_msg( m_info, _( "Never mind." ) );
         return;
     }
-    count = 0;
+    int count = 0;
     auto what = entries[smenu.ret];
     for( const auto &c : comps ) {
         if( c.type == what->typeId() ) {

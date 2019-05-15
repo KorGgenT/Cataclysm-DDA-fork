@@ -2,7 +2,7 @@
 #ifndef OVERMAP_H
 #define OVERMAP_H
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <algorithm>
 #include <array>
 #include <climits>
@@ -43,7 +43,7 @@ struct city {
     int size;
     std::string name;
     city( const point &P = point_zero, const int S = -1 );
-    city( const int X, const int Y, const int S ) : city( point( X, Y ), S ) {};
+    city( const int X, const int Y, const int S ) : city( point( X, Y ), S ) {}
 
     operator bool() const {
         return size >= 0;
@@ -82,7 +82,7 @@ struct radio_tower {
     radio_type type;
     std::string message;
     int frequency;
-    radio_tower( int X = -1, int Y = -1, int S = -1, std::string M = "",
+    radio_tower( int X = -1, int Y = -1, int S = -1, const std::string &M = "",
                  radio_type T = MESSAGE_BROADCAST ) :
         x( X ), y( Y ), strength( S ), type( T ), message( M ) {
         frequency = rng( 0, INT_MAX );
