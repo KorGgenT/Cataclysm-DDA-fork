@@ -1288,7 +1288,7 @@ static void cast_spell()
         } else {
             entry.enabled = false;
         }
-        std::string turns = temp_spell.casting_time() >= 100 ? string_format( _("%i turns" ),
+        std::string turns = temp_spell.casting_time() >= 100 ? string_format( _( "%i turns" ),
                             temp_spell.casting_time() / 100 ) : string_format( _( "%i moves" ), temp_spell.casting_time() );
         std::string cost = string_format( "%4i", temp_spell.energy_cost() );
         switch( temp_spell.energy_source() ) {
