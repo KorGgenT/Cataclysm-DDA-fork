@@ -1167,7 +1167,7 @@ std::vector<tripoint> target_handler::target_ui( spell &casting )
     static const std::vector<tripoint> empty_result{};
     std::vector<tripoint> ret;
 
-    const tripoint src = pc.pos();
+    tripoint src = pc.pos();
     tripoint dst = pc.pos();
 
     std::vector<Creature *> t;
