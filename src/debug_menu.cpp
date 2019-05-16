@@ -115,11 +115,18 @@ enum debug_menu_index {
     DEBUG_QUIT_NOSAVE,
     DEBUG_TEST_WEATHER,
 <<<<<<< HEAD
+<<<<<<< HEAD
     DEBUG_LEARN_SPELLS
 =======
     DEBUG_SAVE_SCREENSHOT,
     DEBUG_GAME_REPORT,
 >>>>>>> upstream/master
+=======
+    DEBUG_SAVE_SCREENSHOT,
+    DEBUG_GAME_REPORT,
+    DEBUG_LEARN_SPELLS,
+    DEBUG_LEVEL_SPELLS
+>>>>>>> pr/6
 };
 
 class mission_debug
@@ -139,6 +146,7 @@ static int player_uilist()
 {
     const std::vector<uilist_entry> uilist_initializer = {
 <<<<<<< HEAD
+<<<<<<< HEAD
         { DEBUG_MUTATE, true, 'M', _( "Mutate" ) },
         { DEBUG_CHANGE_SKILLS, true, 's', _( "Change all skills" ) },
         { DEBUG_LEARN_MA, true, 'l', _( "Learn all melee styles" ) },
@@ -148,6 +156,8 @@ static int player_uilist()
         { DEBUG_SET_AUTOMOVE, true, 'a', _( "Set automove route" ) },
         { DEBUG_LEARN_SPELLS, true, 'S', _( "Learn all spells" ) }
 =======
+=======
+>>>>>>> pr/6
         { uilist_entry( DEBUG_MUTATE, true, 'M', _( "Mutate" ) ) },
         { uilist_entry( DEBUG_CHANGE_SKILLS, true, 's', _( "Change all skills" ) ) },
         { uilist_entry( DEBUG_LEARN_MA, true, 'l', _( "Learn all melee styles" ) ) },
@@ -155,7 +165,12 @@ static int player_uilist()
         { uilist_entry( DEBUG_EDIT_PLAYER, true, 'p', _( "Edit player/NPC" ) ) },
         { uilist_entry( DEBUG_DAMAGE_SELF, true, 'd', _( "Damage self" ) ) },
         { uilist_entry( DEBUG_SET_AUTOMOVE, true, 'a', _( "Set automove route" ) ) },
+<<<<<<< HEAD
 >>>>>>> upstream/master
+=======
+        { uilist_entry( DEBUG_LEARN_SPELLS, true, 'S', _( "Learn all spells" ) ) },
+        { uilist_entry( DEBUG_LEVEL_SPELLS, true, 'L', _( "Level a spell" ) ) }
+>>>>>>> pr/6
     };
 
     return uilist( _( "Player..." ), uilist_initializer );
@@ -1378,6 +1393,7 @@ void debug()
                 }
                 break;
 <<<<<<< HEAD
+<<<<<<< HEAD
             case DEBUG_TEST_WEATHER:
                 test_weather();
                 break;
@@ -1391,6 +1407,8 @@ void debug()
                     add_msg( m_good, _( "You have become an Archwizardpriest! What will you do with your newfound power?" ) );
                 }
 =======
+=======
+>>>>>>> pr/6
             case DEBUG_TEST_WEATHER: {
                 weather_generator weathergen;
                 weathergen.test_weather();
@@ -1443,8 +1461,60 @@ void debug()
 #endif
                 popup( popup_msg );
             }
+<<<<<<< HEAD
 >>>>>>> upstream/master
+=======
+                                    break;
+            case DEBUG_LEARN_SPELLS:
+                if ( spell_type::get_all().empty() ) {
+                    add_msg( m_bad, _( "There are no spells to learn.  You must install a mod that adds some." ) );
+                }
+                else {
+                    for ( const spell_type &learn : spell_type::get_all() ) {
+                        g->u.magic.learn_spell( &learn, g->u, true );
+                    }
+                    add_msg( m_good, _( "You have become an Archwizardpriest!  What will you do with your newfound power?" ) );
+                }
                 break;
+            case DEBUG_LEVEL_SPELLS: {
+                std::vector<spell *> spells = g->u.magic.get_spells();
+                if( spells.empty() ) {
+                    add_msg( m_bad, _( "Try learning some spells first." ) );
+                    return;
+                }
+                std::vector<uilist_entry> uiles;
+                {
+                    uilist_entry uile( _( "Spell" ) );
+                    uile.ctxt = string_format( "%3s %3s", _( "LVL" ), _( "MAX" ) );
+                    uile.enabled = false;
+                    uile.force_color = c_light_blue;
+                    uiles.emplace_back( uile );
+                }
+                int retval = 0;
+                for( spell *sp : spells ) {
+                    uilist_entry uile( sp->name() );
+                    uile.ctxt = string_format( "%3d %3d", sp->get_level(), sp->get_max_level() );
+                    uile.retval = retval++;
+                    uile.enabled = !sp->is_max_level();
+                    uiles.emplace_back( uile );
+                }
+                int action = uilist( _( "Debug level spell:" ), uiles );
+                if( action < 0 ) {
+                    return;
+                }
+                int desired_level = 0;
+                int cur_level = spells[action]->get_level();
+                query_int( desired_level, _( "Desired Spell Level: (Current %d)" ), cur_level );
+                desired_level = std::min( desired_level, spells[action]->get_max_level() );
+                while( cur_level < desired_level ) {
+                    int xp = spells[action]->xp();
+                    spells[action]->gain_level();
+                    cur_level = spells[action]->get_level();
+                }
+                add_msg( m_good, _( "%s is now level %d!" ), spells[action]->name(), spells[action]->get_level() );
+>>>>>>> pr/6
+                break;
+            }
         }
         catacurses::erase();
         m.invalidate_map_cache( g->get_levz() );

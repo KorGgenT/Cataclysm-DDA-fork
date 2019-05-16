@@ -1135,13 +1135,13 @@ void update_targets( player &pc, int range, std::vector<Creature *> &targets, in
 // magic mod
 std::vector<tripoint> target_handler::target_ui( spell_id sp )
 {
-    return target_ui( g->u.get_spell( sp ) );
+    return target_ui( g->u.magic.get_spell( sp ) );
 }
 // does not have a targeting mode because we know this is the spellcasting version of this function
 std::vector<tripoint> target_handler::target_ui( spell &casting )
 {
     player &pc = g->u;
-    if( !casting.can_cast() ) {
+    if( !casting.can_cast( pc ) ) {
         pc.add_msg_if_player( m_bad, _( "You don't have enough %s to cast this spell" ),
                               casting.energy_string() );
     }
@@ -1167,7 +1167,7 @@ std::vector<tripoint> target_handler::target_ui( spell &casting )
     static const std::vector<tripoint> empty_result{};
     std::vector<tripoint> ret;
 
-    const tripoint src = pc.pos();
+    tripoint src = pc.pos();
     tripoint dst = pc.pos();
 
     std::vector<Creature *> t;
@@ -1273,7 +1273,7 @@ std::vector<tripoint> target_handler::target_ui( spell &casting )
         }
         nc_color clr = c_light_gray;
         print_colored_text( w_target, line_number++, 1, clr, clr,
-                            casting.colorized_fail_percent() );
+                            casting.colorized_fail_percent( pc ) );
         if( dst != src ) {
             // Only draw those tiles which are on current z-level
             auto ret_this_zlevel = ret;

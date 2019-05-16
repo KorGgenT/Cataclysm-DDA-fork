@@ -1253,6 +1253,9 @@ static void open_movement_mode_menu()
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> pr/6
 static void cast_spell()
 {
     player &u = g->u;
@@ -1262,7 +1265,7 @@ static void cast_spell()
         return;
     }
 
-    std::vector<spell_id> spells = u.spells();
+    std::vector<spell_id> spells = u.magic.spells();
 
     if( spells.empty() ) {
         add_msg( m_bad, _( "You don't know any spells to cast." ) );
@@ -1281,16 +1284,16 @@ static void cast_spell()
         spell_names.emplace_back( dummy );
     }
     for( spell_id sp : spells ) {
-        spell temp_spell = u.get_spell( sp );
+        spell temp_spell = u.magic.get_spell( sp );
         std::string nm = temp_spell.name();
         uilist_entry entry( nm );
-        if( temp_spell.can_cast() ) {
+        if( temp_spell.can_cast( u ) ) {
             can_cast_spells = true;
         } else {
             entry.enabled = false;
         }
-        std::string turns = temp_spell.casting_time() >= 100 ? string_format( "%i turns",
-                            temp_spell.casting_time() / 100 ) : string_format( "%i moves", temp_spell.casting_time() );
+        std::string turns = temp_spell.casting_time() >= 100 ? string_format( _( "%i turns" ),
+                            temp_spell.casting_time() / 100 ) : string_format( _( "%i moves" ), temp_spell.casting_time() );
         std::string cost = string_format( "%4i", temp_spell.energy_cost() );
         switch( temp_spell.energy_source() ) {
             case mana_energy:
@@ -1314,7 +1317,7 @@ static void cast_spell()
         }
         entry.ctxt = string_format( "%3i (%3s) %3i %3i %% %10s %4s %3i", temp_spell.get_level(),
                                     temp_spell.is_max_level() ? _( "MAX" ) : temp_spell.exp_progress(), temp_spell.range(),
-                                    static_cast<int>( round( 100.0f * temp_spell.spell_fail() ) ), _( turns ), cost,
+                                    static_cast<int>( round( 100.0f * temp_spell.spell_fail( u ) ) ), turns, cost,
                                     temp_spell.damage() );
         spell_names.emplace_back( entry );
     }
@@ -1330,9 +1333,9 @@ static void cast_spell()
         return;
     }
 
-    spell sp = u.get_spell( spells[action] );
+    spell sp = u.magic.get_spell( spells[action] );
 
-    if( !u.has_enough_energy( sp ) ) {
+    if( !u.magic.has_enough_energy( u, sp ) ) {
         add_msg( m_bad, _( "You don't have enough %s to cast the spell." ), sp.energy_string() );
         return;
     }
@@ -1345,7 +1348,12 @@ static void cast_spell()
     player_activity cast_spell( activity_id( "ACT_SPELLCASTING" ), sp.casting_time() );
     cast_spell.name = sp.id().c_str();
     u.assign_activity( cast_spell, false );
+<<<<<<< HEAD
 =======
+=======
+}
+
+>>>>>>> pr/6
 void game::open_consume_item_menu()
 {
     uilist as_m;
@@ -1370,7 +1378,10 @@ void game::open_consume_item_menu()
         default:
             break;
     }
+<<<<<<< HEAD
 >>>>>>> upstream/master
+=======
+>>>>>>> pr/6
 }
 
 bool game::handle_action()

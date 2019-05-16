@@ -10,7 +10,17 @@
     "color": "magenta",
     "use_action": {
       "type": "learn_spell",
-      "spells": [ "debug_hp", "debug_stamina", "example_template", "debug_bionic", "pain_split", "fireball", "gravity_well", "cone_cold", "megablast" ]
+      "spells": [
+        "debug_hp",
+        "debug_stamina",
+        "example_template",
+        "debug_bionic",
+        "pain_split",
+        "fireball",
+        "gravity_well",
+        "cone_cold",
+        "megablast"
+      ]
     }
   },
   {
@@ -27,27 +37,27 @@
   },
   {
     "id": "wizard_utility",
-	"type": "GENERIC",
-	"name": "Wizarding Guide to Backpacking",
-	"description": "This appears to be the spell version of a guide for what things to take with you when backpacking.  It's a little bulky, but will certainly prove useful.",
-	"weight": 1000,
-	"volume": 5,
-	"price": 35000,
-	"symbol": "?",
-	"color": "red",
-	"use_action": { "type": "learn_spell", "spells": [ "create_atomic_light", "phase_door", "burning_hands", "pain_split" ] }
+    "type": "GENERIC",
+    "name": "Wizarding Guide to Backpacking",
+    "description": "This appears to be the spell version of a guide for what things to take with you when backpacking.  It's a little bulky, but will certainly prove useful.",
+    "weight": 1000,
+    "volume": 5,
+    "price": 35000,
+    "symbol": "?",
+    "color": "red",
+    "use_action": { "type": "learn_spell", "spells": [ "phase_door", "burning_hands", "pain_split" ] }
   },
   {
     "id": "pyro",
-	"type": "GENERIC",
-	"name": "Pyromancy for Heretics",
-	"description": "This charred husk of a book still contains many ways to light things aflame.",
-	"weight": 450,
-	"volume": 4,
-	"price": 1904,
-	"symbol": "?",
-	"color": "light_red",
-	"use_action": { "type": "learn_spell", "spells": [ "point_flare", "fireball", "burning_hands" ] }
+    "type": "GENERIC",
+    "name": "Pyromancy for Heretics",
+    "description": "This charred husk of a book still contains many ways to light things aflame.",
+    "weight": 450,
+    "volume": 4,
+    "price": 1904,
+    "symbol": "?",
+    "color": "light_red",
+    "use_action": { "type": "learn_spell", "spells": [ "point_flare", "fireball", "burning_hands" ] }
   },
   {
     "id": "wizard_advanced",
@@ -59,7 +69,7 @@
     "price": 30000,
     "symbol": "?",
     "color": "light_red",
-    "use_action": { "type": "learn_spell", "spells": [ "point_flare", "ice_spike", "gravity_well", "pain_split", "stonefist" ] }
+    "use_action": { "type": "learn_spell", "spells": [ "point_flare", "ice_spike", "gravity_well", "pain_split" ] }
   },
   {
     "id": "priest_beginner",
@@ -71,7 +81,7 @@
     "price": 5000,
     "symbol": "?",
     "color": "light_green",
-    "use_action": { "type": "learn_spell", "spells": [ "light_healing", "spirit_armor", "bless" ] }
+    "use_action": { "type": "learn_spell", "spells": [ "light_healing" ] }
   },
   {
     "id": "priest_advanced",
@@ -83,19 +93,29 @@
     "price": 30000,
     "symbol": "?",
     "color": "green",
+<<<<<<< HEAD
     "use_action": { "type": "learn_spell", "spells": [ "smite", "holy_blade", "protection_aura", "protection_aura_2", "create_atomic_lamp", "faerie_fire", "spiritual_hammer" ] }
+=======
+    "use_action": {
+      "type": "learn_spell",
+      "spells": [ "smite" ]
+    }
+>>>>>>> pr/6
   },
   {
     "id": "winter_grasp",
-	"type": "GENERIC",
-	"name": "Winter's Eternal Grasp",
-	"description": "This slim book almost seems to be made from ice, it's cold to the touch.",
-	"weight": 450,
-	"volume": 4,
-	"price": 1904,
-	"symbol": "?",
-	"color": "light_blue",
-	"use_action": { "type": "learn_spell", "spells": [ "cone_cold", "ice_spike", "hoary_blast", "frost_armor", "ice_shield", "chilling_touch", "frost_spray", "glide_ice" ] }
+    "type": "GENERIC",
+    "name": "Winter's Eternal Grasp",
+    "description": "This slim book almost seems to be made from ice, it's cold to the touch.",
+    "weight": 450,
+    "volume": 4,
+    "price": 1904,
+    "symbol": "?",
+    "color": "light_blue",
+    "use_action": {
+      "type": "learn_spell",
+      "spells": [ "cone_cold", "ice_spike", "hoary_blast", "chilling_touch", "frost_spray" ]
+    }
   },
   {
     "id": "tome_of_storms",
@@ -107,6 +127,17 @@
     "price": 5000,
     "symbol": "?",
     "color": "light_grey",
-    "use_action": { "type": "learn_spell", "spells": [ "storm_hammer", "jolt", "stormfist", "windstrike", "windrun" ] }
+    "use_action": { "type": "learn_spell", "spells": [ "jolt", "windstrike" ] }
+  },
+  {
+    "id": "generic_spellbook",
+    "type": "GENERIC",
+    "name": "Nondescript Spellbook",
+    "description": "A small book, containing spells created by a novice magician.",
+    "weight": 355,
+    "volume": 2,
+    "symbol": "?",
+    "color": "magenta",
+    "use_action": { "type": "learn_spell", "spells": [ "seismic_stomp" ] }
   }
 ]

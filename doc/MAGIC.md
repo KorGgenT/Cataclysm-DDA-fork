@@ -58,7 +58,7 @@ However, experience gain is a little more complicated to calculate.  The formula
 
 "pain_split" - makes all of your limbs' damage even out.
 
-"shallow_pit" - makes the target tile become a shallow pit.
+"move_earth" - "digs" at the target location. some terrain is not diggable this way.
 
 "target_attack" - deals damage to a target (ignores walls).  If "effect_str" is included, it will add that effect (defined elsewhere in json) to the targets if able.  
 Any aoe will manifest as a circular area centered on the target, and will only deal damage to valid_targets. (aoe does not ignore walls)
@@ -72,6 +72,18 @@ Any aoe will manifest as a circular area centered on the target, and will only d
 "spawn_item" - spawns an item that will disappear at the end of its duration.  Default duration is 0.
 
 "teleport_random" - teleports the player randomly range spaces with aoe variation
+
+#####
+For Spells that have an attack type, these are the available damage types:
+"fire"
+"acid"
+"bash"
+"bio" - internal damage such as poison
+"cold"
+"cut"
+"electric"
+"stab"
+"none" - this damage type goes through armor altogether. it is the default.
 
 #### Learning Spells
 

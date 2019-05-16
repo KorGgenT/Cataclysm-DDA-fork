@@ -153,12 +153,19 @@ void haircut_finish( player_activity *act, player *p );
 void unload_mag_finish( player_activity *act, player *p );
 void robot_control_finish( player_activity *act, player *p );
 <<<<<<< HEAD
+<<<<<<< HEAD
 void spellcasting_finish( player_activity *act, player *p );
 void study_spell_finish( player_activity *act, player *p );
 =======
 void hack_door_finish( player_activity *act, player *p );
 void hack_safe_finish( player_activity *act, player *p );
 >>>>>>> upstream/master
+=======
+void spellcasting_finish( player_activity *act, player *p );
+void study_spell_finish( player_activity *act, player *p );
+void hack_door_finish( player_activity *act, player *p );
+void hack_safe_finish( player_activity *act, player *p );
+>>>>>>> pr/6
 
 // defined in activity_handlers.cpp
 extern const std::map< activity_id, std::function<void( player_activity *, player * )> >

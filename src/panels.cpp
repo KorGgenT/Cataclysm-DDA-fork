@@ -822,16 +822,16 @@ std::pair<nc_color, std::string> mana_stat( const player &u )
 {
     nc_color c_mana = c_red;
     std::string s_mana;
-    if( u.max_mana() <= 0 ) {
+    if( u.magic.max_mana( u ) <= 0 ) {
         s_mana = "--";
         c_mana = c_light_gray;
     } else {
-        if( u.available_mana() >= u.max_mana() / 2 ) {
+        if( u.magic.available_mana() >= u.magic.max_mana( u ) / 2 ) {
             c_mana = c_light_blue;
-        } else if( u.available_mana() >= u.max_mana() / 3 ) {
+        } else if( u.magic.available_mana() >= u.magic.max_mana( u ) / 3 ) {
             c_mana = c_yellow;
         }
-        s_mana = to_string( u.available_mana() );
+        s_mana = to_string( u.magic.available_mana() );
     }
     return std::make_pair( c_mana, s_mana );
 }
@@ -1717,6 +1717,7 @@ std::vector<window_panel> initialize_default_classic_panels()
     std::vector<window_panel> ret;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     ret.emplace_back( window_panel( draw_health_classic, "Health", 7, 44, true ) );
     // TODO: let external option allow this to be turned off
     // currently external options are loaded after panels
@@ -1731,6 +1732,12 @@ std::vector<window_panel> initialize_default_classic_panels()
     ret.emplace_back( window_panel( draw_messages_classic, "Log", -2, 44, true ) );
 =======
     ret.emplace_back( window_panel( draw_health_classic, translate_marker( "Health" ), 7, 44, true ) );
+=======
+    ret.emplace_back( window_panel( draw_health_classic, translate_marker( "Health" ), 7, 44, true ) );
+    // TODO: let external option allow this to be turned off
+    // currently external options are loaded after panels
+    ret.emplace_back( window_panel( draw_mana, translate_marker( "Mana" ), 1, 44, true ) );
+>>>>>>> pr/6
     ret.emplace_back( window_panel( draw_location_classic, translate_marker( "Location" ), 1, 44,
                                     true ) );
     ret.emplace_back( window_panel( draw_weather_classic, translate_marker( "Weather" ), 1, 44,
@@ -1743,7 +1750,10 @@ std::vector<window_panel> initialize_default_classic_panels()
     ret.emplace_back( window_panel( draw_compass_padding, translate_marker( "Compass" ), 8, 44,
                                     true ) );
     ret.emplace_back( window_panel( draw_messages_classic, translate_marker( "Log" ), -2, 44, true ) );
+<<<<<<< HEAD
 >>>>>>> upstream/master
+=======
+>>>>>>> pr/6
 #if defined(TILES)
     ret.emplace_back( window_panel( draw_mminimap, translate_marker( "Map" ), -1, 44, true ) );
 #endif // TILES
@@ -1755,6 +1765,7 @@ std::vector<window_panel> initialize_default_compact_panels()
 {
     std::vector<window_panel> ret;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     ret.emplace_back( window_panel( draw_limb2, "Limbs", 3, 32, true ) );
     // TODO: let external option allow this to be turned off
@@ -1771,6 +1782,12 @@ std::vector<window_panel> initialize_default_compact_panels()
     ret.emplace_back( window_panel( draw_compass, "Compass", 8, 32, true ) );
 =======
     ret.emplace_back( window_panel( draw_limb2, translate_marker( "Limbs" ), 3, 32, true ) );
+=======
+    ret.emplace_back( window_panel( draw_limb2, translate_marker( "Limbs" ), 3, 32, true ) );
+    // TODO: let external option allow this to be turned off
+    // currently external options are loaded after panels
+    ret.emplace_back( window_panel( draw_mana, translate_marker( "Mana" ), 1, 32, true ) );
+>>>>>>> pr/6
     ret.emplace_back( window_panel( draw_stealth, translate_marker( "Sound" ), 1, 32, true ) );
     ret.emplace_back( window_panel( draw_stats, translate_marker( "Stats" ), 1, 32, true ) );
     ret.emplace_back( window_panel( draw_time, translate_marker( "Time" ), 1, 32, true ) );
@@ -1780,7 +1797,10 @@ std::vector<window_panel> initialize_default_compact_panels()
     ret.emplace_back( window_panel( draw_armor, translate_marker( "Armor" ), 5, 32, false ) );
     ret.emplace_back( window_panel( draw_messages_classic, translate_marker( "Log" ), -2, 32, true ) );
     ret.emplace_back( window_panel( draw_compass, translate_marker( "Compass" ), 8, 32, true ) );
+<<<<<<< HEAD
 >>>>>>> upstream/master
+=======
+>>>>>>> pr/6
 #if defined(TILES)
     ret.emplace_back( window_panel( draw_mminimap, translate_marker( "Map" ), -1, 32, true ) );
 #endif // TILES
@@ -1792,6 +1812,7 @@ std::vector<window_panel> initialize_default_label_panels()
 {
     std::vector<window_panel> ret;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     ret.emplace_back( window_panel( draw_hint, "Hint", 1, 32, true ) );
     ret.emplace_back( window_panel( draw_limb, "Limbs", 3, 32, true ) );
@@ -1809,8 +1830,13 @@ std::vector<window_panel> initialize_default_label_panels()
     ret.emplace_back( window_panel( draw_mod2, "Armor", 5, 32, false ) );
     ret.emplace_back( window_panel( draw_compass_padding, "Compass", 8, 32, true ) );
 =======
+=======
+>>>>>>> pr/6
     ret.emplace_back( window_panel( draw_hint, translate_marker( "Hint" ), 1, 32, true ) );
     ret.emplace_back( window_panel( draw_limb, translate_marker( "Limbs" ), 3, 32, true ) );
+    // TODO: let external option allow this to be turned off
+    // currently external options are loaded after panels
+    ret.emplace_back( window_panel( draw_mana, translate_marker( "Mana" ), 1, 32, true ) );
     ret.emplace_back( window_panel( draw_char, translate_marker( "Movement" ), 3, 32, true ) );
     ret.emplace_back( window_panel( draw_stat, translate_marker( "Stats" ), 3, 32, true ) );
     ret.emplace_back( window_panel( draw_veh_padding, translate_marker( "Vehicle" ), 1, 32, true ) );
@@ -1822,7 +1848,10 @@ std::vector<window_panel> initialize_default_label_panels()
     ret.emplace_back( window_panel( draw_mod2, translate_marker( "Armor" ), 5, 32, false ) );
     ret.emplace_back( window_panel( draw_compass_padding, translate_marker( "Compass" ), 8, 32,
                                     true ) );
+<<<<<<< HEAD
 >>>>>>> upstream/master
+=======
+>>>>>>> pr/6
 #if defined(TILES)
     ret.emplace_back( window_panel( draw_mminimap, translate_marker( "Map" ), -1, 32, true ) );
 #endif // TILES

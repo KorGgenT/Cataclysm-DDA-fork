@@ -511,6 +511,9 @@
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> pr/6
     "id": "ACT_SPELLCASTING",
     "type": "activity_type",
     "stop_phrase": "Stop casting?",
@@ -522,7 +525,16 @@
     "id": "ACT_STUDY_SPELL",
     "type": "activity_type",
     "stop_phrase": "Stop studying?",
+<<<<<<< HEAD
 =======
+=======
+    "suspendable": false,
+    "rooted": true,
+    "based_on": "time",
+    "no_resume": true
+  },
+  {
+>>>>>>> pr/6
     "id": "ACT_CONSUME_DRINK_MENU",
     "type": "activity_type",
     "stop_phrase": "Stop drinking?",
@@ -550,7 +562,10 @@
     "id": "ACT_HACK_SAFE",
     "type": "activity_type",
     "stop_phrase": "Stop hacking console?",
+<<<<<<< HEAD
 >>>>>>> upstream/master
+=======
+>>>>>>> pr/6
     "suspendable": false,
     "based_on": "time",
     "no_resume": true

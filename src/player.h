@@ -40,6 +40,7 @@
 #include "item_location.h"
 #include "pldata.h"
 #include "type_id.h"
+#include "magic.h"
 
 class effect;
 class map;
@@ -79,6 +80,7 @@ struct w_point;
 struct points_left;
 struct targeting_data;
 <<<<<<< HEAD
+<<<<<<< HEAD
 class morale_type_data;
 
 using morale_type = string_id<morale_type_data>;
@@ -87,6 +89,11 @@ class spell_type;
 using spell_id = string_id<spell_type>;
 =======
 >>>>>>> upstream/master
+=======
+class spell;
+class spell_type;
+using spell_id = string_id<spell_type>;
+>>>>>>> pr/6
 
 namespace debug_menu
 {
@@ -1841,32 +1848,7 @@ class player : public Character
         std::set<tripoint> camps;
 
         // magic mod
-
-        void learn_spell( const std::string &sp, bool force = false );
-        void learn_spell( spell_id sp, bool force = false );
-        void learn_spell( const spell_type *sp, bool force = false );
-        void forget_spell( const std::string &sp );
-        void forget_spell( spell_id sp );
-        // time in moves for the player to memorize the spell
-        int time_to_learn_spell( spell_id sp ) const;
-        int time_to_learn_spell( const std::string &str ) const;
-        bool can_learn_spell( spell_id sp ) const;
-        bool knows_spell( const std::string &sp ) const;
-        bool knows_spell( spell_id sp ) const;
-        // spells known by player
-        std::vector<spell_id> spells() const;
-        // gets the spell associated with the spell_id to be edited
-        spell &get_spell( spell_id sp );
-        // how much mana is available to use to cast spells
-        int available_mana() const;
-        // max mana vailable
-        int max_mana() const;
-        void mod_mana( int add_mana );
-        void set_mana( int new_mana );
-        void update_mana( float turns );
-        // does the player have enough energy to cast this spell?
-        // not specific to mana
-        bool has_enough_energy( spell sp ) const;
+        known_magic magic;
 
     protected:
         // The player's position on the local map.

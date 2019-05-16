@@ -6737,14 +6737,21 @@ void map::loadn( const int gridx, const int gridy, const int gridz, const bool u
 bool map::has_rotten_away( item &itm, const tripoint &pnt ) const
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     int temp = g->get_temperature( pnt );
+=======
+    int temp = g->weather.get_temperature( pnt );
+>>>>>>> pr/6
     if( itm.has_flag( "ETHEREAL_ITEM" ) ) {
         itm.process_temperature_rot( temp, 1, pnt, nullptr );
         return calendar::turn - itm.birthday() >= itm.get_rot();
     }
+<<<<<<< HEAD
 =======
     int temp = g->weather.get_temperature( pnt );
 >>>>>>> upstream/master
+=======
+>>>>>>> pr/6
     if( itm.is_corpse() && itm.goes_bad() ) {
         itm.process_temperature_rot( temp, 1, pnt, nullptr );
         return itm.get_rot() > 10_days && !itm.can_revive();

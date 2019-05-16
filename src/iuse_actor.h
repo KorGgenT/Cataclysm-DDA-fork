@@ -35,6 +35,7 @@ struct furn_t;
 struct itype;
 class item_location;
 <<<<<<< HEAD
+<<<<<<< HEAD
 struct quality;
 
 class spell_type;
@@ -43,6 +44,8 @@ using spell_id = string_id<spell_type>;
 using quality_id = string_id<quality>;
 =======
 >>>>>>> upstream/master
+=======
+>>>>>>> pr/6
 
 /**
  * Transform an item into a specific type.
