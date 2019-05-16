@@ -2,6 +2,7 @@
 #ifndef MAGIC_H
 #define MAGIC_H
 
+<<<<<<< HEAD
 #include "calendar.h"
 #include "generic_factory.h"
 #include "string_id.h"
@@ -12,6 +13,25 @@ class spell_type;
 
 using trait_id = string_id<mutation_branch>;
 using spell_id = string_id<spell_type>;
+=======
+#include <map>
+
+#include "damage.h"
+#include "enum_bitset.h"
+#include "type_id.h"
+
+struct mutation_branch;
+struct tripoint;
+struct dealt_damage_instance;
+struct damage_instance;
+
+class player;
+class JsonObject;
+class JsonOut;
+class JsonIn;
+class time_duration;
+class nc_color;
+>>>>>>> upstream/master
 
 enum energy_type {
     hp_energy,
@@ -26,7 +46,17 @@ enum valid_target {
     target_hostile,
     target_self,
     target_ground,
+<<<<<<< HEAD
     target_none
+=======
+    target_none,
+    _LAST
+};
+
+template<>
+struct enum_traits<valid_target> {
+    static constexpr auto last = valid_target::_LAST;
+>>>>>>> upstream/master
 };
 
 class spell_type
@@ -119,7 +149,11 @@ class spell_type
         damage_type dmg_type;
 
         // list of valid targets enum
+<<<<<<< HEAD
         std::vector<valid_target> valid_targets;
+=======
+        enum_bitset<valid_target> valid_targets;
+>>>>>>> upstream/master
 
         static void load_spell( JsonObject &jo, const std::string &src );
         void load( JsonObject &jo, const std::string & );
@@ -212,9 +246,15 @@ class spell
         // energy source as a string (translated)
         std::string energy_string() const;
         // energy cost returned as a string
+<<<<<<< HEAD
         std::string energy_cost_string( const player &p ) const;
         // current energy the player has available as a string
         std::string energy_cur_string( const player &p ) const;
+=======
+        std::string energy_cost_string() const;
+        // current energy the player has available as a string
+        std::string energy_cur_string() const;
+>>>>>>> upstream/master
         // energy source enum
         energy_type energy_source() const;
         // the color that's representative of the damage type
@@ -232,6 +272,52 @@ class spell
         bool is_valid_target( valid_target t ) const;
 };
 
+<<<<<<< HEAD
+=======
+class known_magic
+{
+    private:
+        player *owner;
+        // list of spells known by player
+        std::map<spell_id, spell> spellbook;
+        // the base mana a player would start with
+        int mana_base;
+        // current mana
+        int mana;
+    public:
+        known_magic();
+        known_magic( player *p );
+        void learn_spell( const std::string &sp, bool force = false );
+        void learn_spell( spell_id sp, bool force = false );
+        void learn_spell( const spell_type *sp, bool force = false );
+        void forget_spell( const std::string &sp );
+        void forget_spell( spell_id sp );
+        // time in moves for the player to memorize the spell
+        int time_to_learn_spell( spell_id sp ) const;
+        int time_to_learn_spell( const std::string &str ) const;
+        bool can_learn_spell( spell_id sp ) const;
+        bool knows_spell( const std::string &sp ) const;
+        bool knows_spell( spell_id sp ) const;
+        // spells known by player
+        std::vector<spell_id> spells() const;
+        // gets the spell associated with the spell_id to be edited
+        spell &get_spell( spell_id sp );
+        // how much mana is available to use to cast spells
+        int available_mana() const;
+        // max mana vailable
+        int max_mana() const;
+        void mod_mana( int add_mana );
+        void set_mana( int new_mana );
+        void update_mana( float turns );
+        // does the player have enough energy to cast this spell?
+        // not specific to mana
+        bool has_enough_energy( spell &sp ) const;
+
+        void serialize( JsonOut &json ) const;
+        void deserialize( JsonIn &jsin );
+};
+
+>>>>>>> upstream/master
 namespace spell_effect
 {
 void teleport( int min_distance, int max_distance );

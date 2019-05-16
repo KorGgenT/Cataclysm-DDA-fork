@@ -4,6 +4,11 @@
 #include "color.h"
 #include "damage.h"
 #include "game.h"
+<<<<<<< HEAD
+=======
+#include "generic_factory.h"
+#include "json.h"
+>>>>>>> upstream/master
 #include "line.h"
 #include "map.h"
 #include "mapdata.h"
@@ -17,6 +22,28 @@
 #include "rng.h"
 #include "translations.h"
 
+<<<<<<< HEAD
+=======
+namespace
+{
+const std::map<std::string, valid_target> target_map = {
+    { "ally", valid_target::target_ally },
+    { "hostile", valid_target::target_hostile },
+    { "self", valid_target::target_self },
+    { "ground", valid_target::target_ground },
+    { "none", valid_target::target_none }
+};
+}
+namespace io
+{
+template<>
+valid_target string_to_enum<valid_target>( const std::string &trigger )
+{
+    return string_to_enum_look_up( target_map, trigger );
+}
+}
+
+>>>>>>> upstream/master
 // LOADING
 // spell_type
 
@@ -42,7 +69,11 @@ void spell_type::load_spell( JsonObject &jo, const std::string &src )
     spell_factory.load( jo, src );
 }
 
+<<<<<<< HEAD
 energy_type energy_source_from_string( std::string str )
+=======
+energy_type energy_source_from_string( const std::string &str )
+>>>>>>> upstream/master
 {
     if( str == "MANA" ) {
         return mana_energy;
@@ -52,12 +83,23 @@ energy_type energy_source_from_string( std::string str )
         return bionic_energy;
     } else if( str == "STAMINA" ) {
         return stamina_energy;
+<<<<<<< HEAD
     } else {
+=======
+    } else if( str == "NONE" ) {
+        return none_energy;
+    } else {
+        debugmsg( _( "ERROR: Invalid energy string.  Defaulting to NONE" ) );
+>>>>>>> upstream/master
         return none_energy;
     }
 }
 
+<<<<<<< HEAD
 damage_type damage_type_from_string( std::string str )
+=======
+damage_type damage_type_from_string( const std::string &str )
+>>>>>>> upstream/master
 {
     if( str == "fire" ) {
         return DT_HEAT;
@@ -75,11 +117,19 @@ damage_type damage_type_from_string( std::string str )
         return DT_ELECTRIC;
     } else if( str == "stab" ) {
         return DT_STAB;
+<<<<<<< HEAD
     } else {
+=======
+    } else if( str == "none" || str == "NONE" ) {
+        return DT_TRUE;
+    } else {
+        debugmsg( _( "ERROR: Invalid damage type string.  Defaulting to none" ) );
+>>>>>>> upstream/master
         return DT_TRUE;
     }
 }
 
+<<<<<<< HEAD
 std::vector<valid_target> strings_to_targets( std::vector<std::string> targets_strings )
 {
     std::vector<valid_target> targets;
@@ -101,15 +151,23 @@ std::vector<valid_target> strings_to_targets( std::vector<std::string> targets_s
     return targets;
 }
 
+=======
+>>>>>>> upstream/master
 void spell_type::load( JsonObject &jo, const std::string & )
 {
     mandatory( jo, was_loaded, "id", id );
     mandatory( jo, was_loaded, "name", name, translated_string_reader );
     mandatory( jo, was_loaded, "description", description, translated_string_reader );
     mandatory( jo, was_loaded, "effect", effect );
+<<<<<<< HEAD
     std::vector<std::string> valid_targets;
     mandatory( jo, was_loaded, "valid_targets", valid_targets );
     this->valid_targets = strings_to_targets( valid_targets );
+=======
+
+    const auto trigger_reader = enum_flags_reader<valid_target> { "valid_targets" };
+    mandatory( jo, was_loaded, "valid_targets", valid_targets, trigger_reader );
+>>>>>>> upstream/master
 
     optional( jo, was_loaded, "effect_str", effect_str, "" );
 
@@ -189,6 +247,7 @@ bool spell_type::is_valid() const
 {
     return spell_factory.is_valid( this->id );
 }
+<<<<<<< HEAD
 
 // spell
 
@@ -1068,3 +1127,5 @@ void spawn_ethereal_item( spell &sp )
 }
 
 }
+=======
+>>>>>>> upstream/master

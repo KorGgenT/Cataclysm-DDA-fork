@@ -1,6 +1,6 @@
 #include "init.h"
 
-#include <stddef.h>
+#include <cstddef>
 #include <cassert>
 #include <fstream>
 #include <sstream> // for throwing errors
@@ -71,6 +71,7 @@
 #include "worldfactory.h"
 #include "bodypart.h"
 #include "translations.h"
+#include "type_id.h"
 
 #if defined(TILES)
 void load_tileset();
