@@ -1053,6 +1053,8 @@ void npc_follower_rules::serialize( JsonOut &json ) const
     json.start_object();
     json.member( "engagement", static_cast<int>( engagement ) );
     json.member( "aim", static_cast<int>( aim ) );
+    json.member( "cbm_reserve", static_cast<int>( cbm_reserve ) );
+    json.member( "cbm_recharge", static_cast<int>( cbm_recharge ) );
 
     // serialize the flags so they can be changed between save games
     for( const auto &rule : ally_rule_strs ) {
@@ -1079,6 +1081,12 @@ void npc_follower_rules::deserialize( JsonIn &jsin )
     int tmpaim = 0;
     data.read( "aim", tmpaim );
     aim = static_cast<aim_rule>( tmpaim );
+    int tmpreserve = 50;
+    data.read( "cbm_reserve", tmpreserve );
+    cbm_reserve = static_cast<cbm_reserve_rule>( tmpreserve );
+    int tmprecharge = 50;
+    data.read( "cbm_recharge", tmprecharge );
+    cbm_recharge = static_cast<cbm_recharge_rule>( tmprecharge );
 
     // deserialize the flags so they can be changed between save games
     for( const auto &rule : ally_rule_strs ) {
@@ -1443,6 +1451,10 @@ void npc::load( JsonObject &data )
         data.read( "misc_rules", rules );
         data.read( "combat_rules", rules );
     }
+    real_weapon = item( "null", 0 );
+    data.read( "real_weapon", real_weapon );
+    cbm_weapon_index = -1;
+    data.read( "cbm_weapon_index", cbm_weapon_index );
 
     if( !data.read( "last_updated", last_updated ) ) {
         last_updated = calendar::turn;
@@ -1508,6 +1520,11 @@ void npc::store( JsonOut &json ) const
     json.member( "op_of_u", op_of_u );
     json.member( "chatbin", chatbin );
     json.member( "rules", rules );
+
+    if( !real_weapon.is_null() ) {
+        json.member( "real_weapon", real_weapon ); // also saves contents
+    }
+    json.member( "cbm_weapon_index", cbm_weapon_index );
 
     json.member( "comp_mission_id", comp_mission.mission_id );
     json.member( "comp_mission_pt", comp_mission.position );

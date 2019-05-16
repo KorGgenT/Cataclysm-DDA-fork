@@ -6857,33 +6857,32 @@ void map::grow_plant( const tripoint &p )
         return;
     }
     const time_duration plantEpoch = seed.get_plant_epoch();
-    furn_id cur_furn = this->furn( p ).id();
-    if( seed.age() >= plantEpoch && cur_furn != furn_str_id( "f_plant_harvest" ) ) {
+    if( seed.age() >= plantEpoch && !furn.has_flag( "GROWTH_HARVEST" ) ) {
         if( seed.age() < plantEpoch * 2 ) {
-            if( cur_furn == furn_str_id( "f_plant_seedling" ) ) {
+            if( has_flag_furn( "GROWTH_SEEDLING", p ) ) {
                 return;
             }
             i_rem( p, 1 );
             rotten_item_spawn( seed, p );
-            furn_set( p, furn_str_id( "f_plant_seedling" ) );
+            furn_set( p, furn_str_id( furn.plant_transform ) );
         } else if( seed.age() < plantEpoch * 3 ) {
-            if( cur_furn == furn_str_id( "f_plant_mature" ) ) {
+            if( has_flag_furn( "GROWTH_MATURE", p ) ) {
                 return;
             }
             i_rem( p, 1 );
             rotten_item_spawn( seed, p );
             //You've skipped the seedling stage so roll monsters twice
-            if( cur_furn != furn_str_id( "f_plant_seedling" ) ) {
+            if( !has_flag_furn( "GROWTH_SEEDLING", p ) ) {
                 rotten_item_spawn( seed, p );
             }
-            furn_set( p, furn_str_id( "f_plant_mature" ) );
+            furn_set( p, furn_str_id( furn.plant_transform ) );
         } else {
             //You've skipped two stages so roll monsters two times
-            if( cur_furn == furn_str_id( "f_plant_seedling" ) ) {
+            if( has_flag_furn( "GROWTH_SEEDLING", p ) ) {
                 rotten_item_spawn( seed, p );
                 rotten_item_spawn( seed, p );
                 //One stage change
-            } else if( cur_furn == furn_str_id( "f_plant_mature" ) ) {
+            } else if( has_flag_furn( "GROWTH_MATURE", p ) ) {
                 rotten_item_spawn( seed, p );
                 //Goes from seed to harvest in one check
             } else {
@@ -6891,7 +6890,7 @@ void map::grow_plant( const tripoint &p )
                 rotten_item_spawn( seed, p );
                 rotten_item_spawn( seed, p );
             }
-            furn_set( p, furn_str_id( "f_plant_harvest" ) );
+            furn_set( p, furn_str_id( furn.plant_transform ) );
         }
     }
 }
@@ -8266,6 +8265,33 @@ std::list<item_location> map::get_active_items_in_radius( const tripoint &center
     }
 
     return result;
+}
+
+std::list<tripoint> map::find_furnitures_in_radius( const tripoint &center, size_t radius,
+        furn_id target,
+        size_t radiusz )
+{
+    std::list<tripoint> furn_locs;
+    for( const auto &furn_loc : g->m.points_in_radius( center, radius, radiusz ) ) {
+        if( g->m.furn( furn_loc ) == target ) {
+            furn_locs.push_back( furn_loc );
+        }
+    }
+    return furn_locs;
+}
+
+std::list<Creature *> map::get_creatures_in_radius( const tripoint &center, size_t radius,
+        size_t radiusz )
+{
+    std::list<Creature *> creatures;
+    for( const auto &loc : points_in_radius( center, radius, radiusz ) ) {
+        Creature *tmp_critter = g->critter_at( loc );
+        if( tmp_critter != nullptr ) {
+            creatures.push_back( tmp_critter );
+        }
+
+    }
+    return creatures;
 }
 
 level_cache &map::access_cache( int zlev )

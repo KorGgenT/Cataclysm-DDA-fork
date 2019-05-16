@@ -185,6 +185,7 @@ const species_id PLANT( "PLANT" );
 const efftype_id effect_adrenaline_mycus( "adrenaline_mycus" );
 const efftype_id effect_alarm_clock( "alarm_clock" );
 const efftype_id effect_amigara( "amigara" );
+const efftype_id effect_assisted( "assisted" );
 const efftype_id effect_blind( "blind" );
 const efftype_id effect_boomered( "boomered" );
 const efftype_id effect_bouldering( "bouldering" );
@@ -4836,6 +4837,8 @@ bool game::revive_corpse( const tripoint &p, item &it )
 
 void game::save_cyborg( item *cyborg, const tripoint couch_pos, player &installer )
 {
+    int assist_bonus = installer.get_effect_int( effect_assisted );
+
     float adjusted_skill = installer.bionics_adjusted_skill( skill_firstaid,
                            skill_computer,
                            skill_electronics,
@@ -4854,7 +4857,7 @@ void game::save_cyborg( item *cyborg, const tripoint couch_pos, player &installe
         difficulty += dmg_lvl;
     }
 
-    int chance_of_success = bionic_manip_cos( adjusted_skill, true, difficulty );
+    int chance_of_success = bionic_manip_cos( adjusted_skill + assist_bonus, true, difficulty );
     int success = chance_of_success - rng( 1, 100 ) ;
 
     if( !g->u.query_yn(
@@ -6441,7 +6444,7 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
     wrefresh( w_terrain );
     draw_panels();
 
-    int soffset = get_option<int>( "MOVE_VIEW_OFFSET" );
+    int soffset = get_option<int>( "FAST_SCROLL_OFFSET" );
     bool fast_scroll = false;
 
     bool bNewWindow = false;
@@ -6518,13 +6521,15 @@ look_around_result game::look_around( catacurses::window w_info, tripoint &cente
                 wprintz( w_info, c_green, title );
                 wprintz( w_info, c_white, title_suffix );
 
+                std::string fast_scroll_text = string_format( _( "%s - %s" ),
+                                               ctxt.get_desc( "TOGGLE_FAST_SCROLL" ),
+                                               ctxt.get_action_name( "TOGGLE_FAST_SCROLL" ) );
+                center_print( w_info, getmaxy( w_info ) - 1, fast_scroll ? c_light_green : c_green,
+                              fast_scroll_text );
+
                 int first_line = 1;
                 const int last_line = getmaxy( w_info ) - 2;
                 pre_print_all_tile_info( lp, w_info, first_line, last_line, cache );
-                if( fast_scroll ) {
-                    //~ "Fast Scroll" mark below the top right corner of the info window
-                    right_print( w_info, 1, 0, c_light_green, _( "F" ) );
-                }
             }
 
             draw_ter( center, true );
