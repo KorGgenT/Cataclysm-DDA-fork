@@ -154,6 +154,7 @@
     "apply_message": "You are bolstered and pushed along by the power of the wind",
     "remove_message": "The wind at your back dies down.",
     "rating": "good",
+	"covers": "FEET",
     "base_mods": { "speed_mod": [ 20 ], "stamina_min": [ 10 ] }
 	  
   }

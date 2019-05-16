@@ -1,0 +1,83 @@
+[
+	{
+    "id": "spiritual_hammer",
+    "type": "SPELL",
+    "name": "Spiritual Hammer",
+    "description": "Creates a magical warhammer for you to battle the forces of evil.",
+	"base_casting_time": 125,
+	"base_energy_cost": 100,
+	"energy_source": "MANA",
+	"difficulty": 3,
+	"effect": "spawn_item",
+	"effect_str": "warhammer_spiritual",
+    "valid_targets": [ "self" ],
+	"max_level": 10,
+	"min_duration": 2000,
+	"max_duration": 10000,
+	"duration_increment": 1000,
+    "min_range": 0,
+	"max_range": 0,
+	"range_increment": 0
+  },
+  {
+    "type": "GENERIC",
+    "id": "warhammer_spiritual",
+    "name": "Spiritual Hammer",
+    "description": "A medieval hammer made for battle.  Its odd shape and balance make it an excellent weapon, but an ineffective tool.",
+    "weight": 1337,
+    "to_hit": 1,
+    "color": "brown",
+    "symbol": "/",
+    "//": "Craftable from steel, shouldn't be silver.  A warhammer is essentially one end of a pickaxe with balancing weight on the other and crushes/pierces the armor.",
+    "material": [ "iron", "wood" ],
+    "techniques": [ "WBLOCK_1", "BRUTAL", "SWEEP" ],
+    "flags": [ "DURABLE_MELEE", "SPEAR", "NONCONDUCTIVE", "BELT_CLIP" ],
+    "volume": 5,
+    "bashing": 20,
+    "cutting": 20,
+    "price": 0,
+    "qualities": [ [ "HAMMER", 1 ] ]
+  },
+  {
+    "id": "faerie_fire",
+	"type": "SPELL",
+	"name": "Faerie Fire",
+	"description": "Lights up the forces of evil with a glowing radiance.",
+	"effect": "target_attack",
+	"effect_str": "enchant_faerie_fire",
+	"valid_targets": [ "hostile" ],
+	"max_level": 20,
+	"min_damage": 0,
+	"max_damage": 0,
+	"damage_increment": 0,
+	"min_aoe": 10,
+	"max_aoe": 50,
+	"aoe_increment": 5,
+	"min_range": 5,
+	"max_range": 20,
+	"range_increment": 1,
+	"spell_class": "WIZARD",
+	"base_casting_time": 200,
+	"base_energy_cost": 350,
+	"energy_source": "MANA",
+	"difficulty": 4,
+	"damage_type": "fire"
+  },
+  {
+    "type": "effect_type",
+    "id": "enchant_faerie_fire",
+    "name": [ "Faerie Fire" ],
+    "desc": [ "Lit up by Faerie Fire." ],
+    "apply_message": "Your are lit up.",
+    "remove_message": "Your enemies light fades.",
+    "rating": "bad",
+	"show_in_info": true,
+    "flags": [ "LIGHT_5" ]
+	
+  }
+
+
+
+
+
+]

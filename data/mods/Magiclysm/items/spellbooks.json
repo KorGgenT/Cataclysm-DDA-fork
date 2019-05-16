@@ -83,7 +83,7 @@
     "price": 30000,
     "symbol": "?",
     "color": "green",
-    "use_action": { "type": "learn_spell", "spells": [ "smite", "holy_blade", "protection_aura", "protection_aura_2", "create_atomic_lamp" ] }
+    "use_action": { "type": "learn_spell", "spells": [ "smite", "holy_blade", "protection_aura", "protection_aura_2", "create_atomic_lamp", "faerie_fire", "spiritual_hammer" ] }
   },
   {
     "id": "winter_grasp",
