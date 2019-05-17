@@ -1,0 +1,32 @@
+[
+  {
+    "id": "duster_leather_enchanted",
+    "type": "ARMOR",
+    "name": "enchanted leather duster",
+    "description": "A thick leather full-length duster.  Has many pockets for storage. Enchanted to be extra strong and keep you safe.",
+    "looks_like": "duster_leather",
+	"weight": 2655,
+    "volume": 28,
+    "price": 245000,
+    "to_hit": -1,
+    "material": [ "leather_enchanted" ],
+    "symbol": "[",
+    "color": "brown",
+    "covers": [ "TORSO", "ARMS", "LEGS" ],
+    "coverage": 90,
+    "encumbrance": 17,
+    "storage": 24,
+    "warmth": 30,
+    "material_thickness": 3,
+    "environmental_protection": 1,
+    "flags": [ "VARSIZE", "POCKETS", "OUTER", "WATERPROOF", "RAINPROOF" ]
+  }
+
+
+
+
+
+
+
+
+]

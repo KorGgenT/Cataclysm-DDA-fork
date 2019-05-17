@@ -1,0 +1,101 @@
+[
+  {
+    "id": "filament_enchanted",
+    "type": "requirement",
+    "//": "Materials for use when sewing magic items",
+    "components": [ [ [ "thread_enchanted", 1 ] ] ]
+  },
+  {
+    "id": "fabric_enchanted",
+    "type": "requirement",
+    "//": "Materials used for crafting or repairing clothing or sheeting",
+    "components": [ [ [ "cloth_enchanted", 1 ], [ "leather_enchanted", 1 ] ] ]
+  },
+  {
+    "id": "cloth_enchanted",
+    "type": "TOOL",
+    "category": "spare_parts",
+    "name": "enchanted cloth",
+    "description": "This is a largish piece of cloth, cleaned and infused with magical energies. Useful in crafting and possibly for staunching bleeding.",
+    "weight": 80,
+    "volume": 1,
+    "price": 0,
+    "material": "cotton_enchanted",
+    "symbol": ",",
+    "color": "white",
+    "use_action": { "type": "heal", "move_cost": 200, "used_up_item": "rag_bloody", "bleed": 0.5, "limb_power": 0 },
+    "flags": [ "NO_SALVAGE" ]
+  },
+  {
+    "type": "GENERIC",
+    "id": "leather_enchanted",
+    "symbol": ",",
+    "color": "brown",
+    "name": "enchanted leather patch",
+    "name_plural": "enchanted leather patches",
+    "description": "A smallish patch of enchanted leather, could be used to make tough enchanted clothing.",
+    "price": 2000,
+    "material": [ "leather_enchanted" ],
+    "flags": [ "NO_SALVAGE" ],
+    "weight": 100,
+    "volume": 1,
+    "category": "spare_parts",
+    "to_hit": -1
+  },
+  {
+    "result": "tunic_enchanted",
+    "type": "recipe",
+    "category": "CC_ENCHANTED",
+    "subcategory": "CSC_ENCHANTED_ARMOR",
+    "skill_used": "tailor",
+    "difficulty": 3,
+    "skills_required": [ "spellcraft", 2 ],
+	"time": 90000,
+    "autolearn": true,
+    "using": [ [ "sewing_standard", 10 ] ],
+    "components": [ [ [ "cloth_enchanted", 10 ] ] ]
+  },
+  {
+    "id": "tunic_enchanted",
+    "type": "ARMOR",
+    "name": "enchanted tunic",
+    "description": "A simple garment long enough to cover down to the knees. It has been woven together from magically infused threads and cloth to be stronger and more duarable.",
+    "weight": 250,
+    "volume": 5,
+    "price": 4200,
+    "to_hit": -5,
+    "material": "cotton_enchanted",
+    "symbol": "[",
+    "color": "dark_gray",
+    "covers": [ "LEGS", "TORSO", "ARMS" ],
+    "coverage": 75,
+    "encumbrance": 3,
+    "warmth": 5,
+    "material_thickness": 1,
+    "flags": [ "VARSIZE" ]
+  },
+  {
+    "id": "manastone_charger_basic",
+    "type": "TOOL",
+    "category": "tools",
+    "name": "basic manastone charger",
+    "description": "This is a self-powered manastone charger.  It has an adjustable receptacle designed to accept a wide variety of manastones. Use it to focus your own magic power back into manastones.",
+    "weight": 2000,
+    "volume": 2,
+    "price": 1000,
+    "material": "plastic",
+    "symbol": ":",
+    "color": "light_gray",
+    "ammo": "mana",
+    "use_action": "HAND_CRANK",
+    "magazines": [
+      [
+        "mana",
+        [
+          "light_manastone"
+        ]
+      ]
+    ]
+  }
+  
+]

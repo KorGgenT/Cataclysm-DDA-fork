@@ -1,0 +1,100 @@
+[
+  {
+    "type": "recipe",
+    "result": "thread_enchanted_copper",
+    "category": "CC_ENCHANTED",
+    "subcategory": "CSC_ENCHANTED_MATERIALS",
+    "skill_used": "spellcraft",
+    "difficulty": 1,
+    "skills_required": [ "spellcraft", 1 ],
+    "time": 9000,
+    "autolearn": true,
+	"charges": 1,
+    "components": [
+      [ [ "thread_enchanted", 1 ] ],
+      [ [ "copper", 1 ] ]
+    ]
+  },
+  {
+    "type": "recipe",
+    "result": "thread_enchanted",
+    "category": "CC_ENCHANTED",
+    "subcategory": "CSC_ENCHANTED_MATERIALS",
+    "difficulty": 1,
+    "skill_used": "spellcraft",
+    "time": 9000,
+    "autolearn": true,
+	"charges": 1,
+    "components": [ [ [ "thread", 1 ] ] ]
+  },
+  {
+    "type": "recipe",
+    "result": "thread_enchanted_silver",
+    "category": "CC_ENCHANTED",
+    "subcategory": "CSC_ENCHANTED_MATERIALS",
+    "skill_used": "spellcraft",
+    "difficulty": 2,
+    "skills_required": [ "spellcraft", 2 ],
+    "time": 9000,
+    "autolearn": true,
+	"charges": 1,
+    "components": [
+      [ [ "thread_enchanted", 1 ] ],
+      [ [ "silver_small", 1 ] ]
+    ]
+  },
+  {
+    "type": "recipe",
+    "result": "thread_enchanted_gold",
+    "category": "CC_ENCHANTED",
+    "subcategory": "CSC_ENCHANTED_MATERIALS",
+    "skill_used": "spellcraft",
+    "difficulty": 3,
+    "skills_required": [ "spellcraft", 3 ],
+    "time": 9000,
+    "autolearn": true,
+	"charges": 1,
+    "components": [
+      [ [ "thread_enchanted", 1 ] ],
+      [ [ "gold_small", 1 ] ]
+    ]
+  },
+  {
+    "type": "recipe",
+    "result": "cloth_enchanted",
+    "id_suffix": "knitting",
+    "category": "CC_ENCHANTED",
+    "subcategory": "CSC_ENCHANTED_MATERIALS",
+    "skill_used": "tailor",
+    "difficulty": 2,
+	"skills_required": [ "spellcraft", 1 ],
+    "time": 6000,
+    "autolearn": true,
+    "using": [ [ "filament_enchanted", 80 ] ],
+    "qualities": [ { "id": "KNIT", "level": 1 } ]
+  },
+  {
+    "result": "duster_leather_enchanted",
+    "type": "recipe",
+    "category": "CC_ENCHANTED_ARMOR",
+    "skill_used": "tailor",
+    "difficulty": 6,
+    "time": 400000,
+    "autolearn": true,
+    "book_learn": [ [ "textbook_tailor", 4 ], [ "tailor_portfolio", 4 ] ],
+    "using": [ [ "sewing_standard", 60 ] ],
+    "components": [ [ [ "leather_enchanted", 29 ] ] ]
+  },
+  {
+    "result": "duster_leather_enchanted",
+    "type": "recipe",
+    "category": "CC_ENCHANTED_ARMOR",
+    "skill_used": "tailor",
+    "difficulty": 3,
+    "time": 400000,
+    "autolearn": true,
+    "using": [ [ "filament_enchanted", 60 ] ],
+    "components": [ [ [ "duster_leather", 1 ] ] ]
+  }
+  
+]

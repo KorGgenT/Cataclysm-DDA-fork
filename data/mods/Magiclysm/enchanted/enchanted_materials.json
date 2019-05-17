@@ -1,0 +1,56 @@
+[
+  {
+    "type": "material",
+    "ident": "cotton_enchanted",
+    "name": "Enchanted Cotton",
+    "density": 3,
+    "specific_heat_liquid": 0.02,
+    "specific_heat_solid": 0.02,
+    "latent_heat": 205,
+    "soft": true,
+    "reinforces": true,
+    "bash_resist": 2,
+    "cut_resist": 2,
+    "acid_resist": 3,
+    "fire_resist": 2,
+    "elec_resist": 3,
+    "chip_resist": 8,
+    "repaired_with": "cloth_enchanted",
+    "salvaged_into": "cloth_enchanted",
+    "dmg_adj": [ "ripped", "torn", "shredded", "tattered" ],
+    "bash_dmg_verb": "ripped",
+    "cut_dmg_verb": "cut",
+    "burn_data": [
+      { "fuel": 1, "smoke": 1, "burn": 1, "volume_per_turn": "1250_ml" },
+      { "fuel": 1, "smoke": 1, "burn": 1 },
+      { "fuel": 1, "smoke": 1, "burn": 2 }
+    ]
+  },
+  {
+    "type": "material",
+    "ident": "leather_enchanted",
+    "name": "Enchanted Leather",
+    "density": 8,
+    "specific_heat_liquid": 1.5,
+    "specific_heat_solid": 1.5,
+    "latent_heat": 273,
+    "soft": true,
+    "reinforces": true,
+    "bash_resist": 3,
+    "cut_resist": 3,
+    "acid_resist": 5,
+    "fire_resist": 3,
+    "elec_resist": 3,
+    "chip_resist": 14,
+    "repaired_with": "leather_enchanted",
+    "salvaged_into": "leather_enchanted",
+    "dmg_adj": [ "scratched", "cut", "shredded", "tattered" ],
+    "bash_dmg_verb": "ripped",
+    "cut_dmg_verb": "sliced",
+    "burn_data": [
+      { "fuel": 0, "smoke": 0, "burn": 0 },
+      { "fuel": 1, "smoke": 3, "burn": 2, "volume_per_turn": "500_ml" },
+      { "fuel": 1, "smoke": 3, "burn": 2 }
+    ]
+  }
+]

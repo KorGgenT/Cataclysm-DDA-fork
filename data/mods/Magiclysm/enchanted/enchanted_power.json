@@ -1,0 +1,48 @@
+[
+  {
+    "type": "ammunition_type",
+    "id": "mana",
+    "name": "mana",
+    "default": "mana"
+  },
+  {
+    "type": "AMMO",
+    "id": "mana",
+    "category": "spare_parts",
+    "price": 12000,
+    "name": "mana",
+    "symbol": "=",
+    "color": "yellow",
+    "description": "Some free-floating mana energy.",
+    "flags": "TRADER_AVOID",
+    "material": "iron",
+    "volume": 1,
+    "weight": 1,
+    "ammo_type": "mana",
+    "reload_time": 1,
+    "count": 100,
+    "//": "1 battery is 1 kJ of energy. 40 batteries is an alkaline C-cell.",
+    "fuel": { "energy": 1 }
+  },
+  {
+    "id": "light_manastone",
+    "type": "MAGAZINE",
+    "category": "spare_parts",
+    "name": "small manastone",
+    "description": "This is a small hand crafted manastone, it stores your magical energy to help power devices you attach it to. You have to recharge it yourself.",
+    "weight": 5,
+    "volume": 0,
+    "price": 1500,
+    "material": [ "stone" ],
+    "symbol": "=",
+    "color": "yellow",
+    "ammo_type": "mana",
+    "capacity": 10,
+    "looks_like": "battery",
+    "flags": [ "NO_SALVAGE", "NO_UNLOAD", "RECHARGE" ]
+  }
+
+
+
+
+]
