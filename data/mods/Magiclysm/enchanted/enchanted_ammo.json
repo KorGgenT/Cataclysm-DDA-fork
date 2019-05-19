@@ -66,6 +66,36 @@
     "ammo_type": "thread",
     "count": 50,
     "stack_size": 200
+  },
+  {
+    "type": "AMMO",
+    "id": "bearing_enchanted",
+    "price": 1000,
+    "name": "enchanted bearing",
+	"copy-from": "bearing",
+    "symbol": "=",
+    "color": "dark_gray",
+    "description": "A box of ball bearings, useful as ammunition for slings or slingshots. Enchanted to hit harder and go further.",
+    "relative": { "damage": 4, "pierce": 2, "range": 4 }
+  },
+  {
+    "type": "AMMO",
+    "id": "bearing_enchanted_slam",
+    "price": 1000,
+    "name": "slammer bearing",
+	"copy-from": "bearing",
+    "description": "A box of ball bearings, useful as ammunition for slings or slingshots. Enchanted to go further and hit harder, this one also hits like a brick and can knock enemies down.",
+    "relative": { "damage": 8, "range": 4 },
+	"extend": { "effects": [ "BEANBAG", "NOGIB" ] }
+  },
+  {
+    "type": "AMMO",
+    "id": "bearing_enchanted_shot",
+    "price": 1000,
+    "name": "shot bearing",
+	"copy-from": "bearing",
+    "description": "A box of ball bearings, useful as ammunition for slings or slingshots. Enchanted to go further and hit harder, this one also shatters into pieces like a shotgun blast.",
+    "relative": { "damage": 10, "range": 2 },
+	"extend": { "effects": [ "SHOT" ] }
   }
-  
 ]
