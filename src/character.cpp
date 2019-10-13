@@ -14,6 +14,7 @@
 #include "avatar.h"
 #include "bionics.h"
 #include "cata_utility.h"
+#include "character_mutations.h"
 #include "construction.h"
 #include "debug.h"
 #include "effect.h"
@@ -3322,7 +3323,7 @@ bool Character::pour_into( vehicle &veh, item &liquid )
     return true;
 }
 
-resistances Character::mutation_armor( body_part bp ) const
+resistances character_mutations::mutation_armor( body_part bp ) const
 {
     resistances res;
     for( auto &iter : my_mutations ) {
@@ -3332,12 +3333,12 @@ resistances Character::mutation_armor( body_part bp ) const
     return res;
 }
 
-float Character::mutation_armor( body_part bp, damage_type dt ) const
+float character_mutations::mutation_armor( body_part bp, damage_type dt ) const
 {
     return mutation_armor( bp ).type_resist( dt );
 }
 
-float Character::mutation_armor( body_part bp, const damage_unit &du ) const
+float character_mutations::mutation_armor( body_part bp, const damage_unit &du ) const
 {
     return mutation_armor( bp ).get_effective_resist( du );
 }
@@ -3533,7 +3534,7 @@ std::string Character::extended_description() const
     return replace_colors( ss.str() );
 }
 
-social_modifiers Character::get_mutation_social_mods() const
+social_modifiers character_mutations::get_mutation_social_mods() const
 {
     social_modifiers mods;
     for( const mutation_branch *mut : cached_mutations ) {
@@ -3611,7 +3612,7 @@ mutation_value_map = {
     { "skill_rust_multiplier", calc_mutation_value_multiplicative<&mutation_branch::skill_rust_multiplier> }
 };
 
-float Character::mutation_value( const std::string &val ) const
+float character_mutations::mutation_value( const std::string &val ) const
 {
     // Syntax similar to tuple get<n>()
     const auto found = mutation_value_map.find( val );
@@ -4135,7 +4136,7 @@ std::string get_stat_name( Character::stat Stat )
     return pgettext( "fake stat there's an error", "ERR" );
 }
 
-void Character::build_mut_dependency_map( const trait_id &mut,
+void character_mutations::build_mut_dependency_map( const trait_id &mut,
         std::unordered_map<trait_id, int> &dependency_map, int distance )
 {
     // Skip base traits and traits we've seen with a lower distance
@@ -4157,7 +4158,7 @@ void Character::build_mut_dependency_map( const trait_id &mut,
     }
 }
 
-void Character::set_highest_cat_level()
+void character_mutations::set_highest_cat_level()
 {
     mutation_category_level.clear();
 
@@ -4180,7 +4181,7 @@ void Character::set_highest_cat_level()
     }
 }
 
-void Character::drench_mut_calc()
+void character_mutations::drench_mut_calc()
 {
     for( const body_part bp : all_body_parts ) {
         int ignored = 0;
@@ -4204,7 +4205,7 @@ void Character::drench_mut_calc()
 }
 
 /// Returns the mutation category with the highest strength
-std::string Character::get_highest_category() const
+std::string character_mutations::get_highest_category() const
 {
     int iLevel = 0;
     std::string sMaxCat;
