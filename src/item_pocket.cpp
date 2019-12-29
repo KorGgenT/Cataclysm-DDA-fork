@@ -227,6 +227,27 @@ bool item_pocket::detonate( const tripoint &pos, std::vector<item> &drops )
     return false;
 }
 
+bool item_pocket::process( const itype &type, player *carrier, const tripoint &pos, bool activate,
+                           float insulation, const temperature_flag flag )
+{
+    const bool preserves = type.container && type.container->preserves;
+    bool processed = false;
+    for( auto it = contents.begin(); it != contents.end(); ) {
+        if( preserves ) {
+            // Simulate that the item has already "rotten" up to last_rot_check, but as item::rot
+            // is not changed, the item is still fresh.
+            it->set_last_rot_check( calendar::turn );
+        }
+        if( it->process( carrier, pos, activate, type.insulation_factor * insulation, flag ) ) {
+            it = contents.erase( it );
+            processed = true;
+        } else {
+            ++it;
+        }
+    }
+    return processed;
+}
+
 bool item_pocket::legacy_unload( player *guy, bool &changed )
 {
     contents.erase( std::remove_if( contents.begin(), contents.end(),
@@ -485,6 +506,17 @@ item *item_pocket::get_item_with( const std::function<bool( const item & )> &fil
 void item_pocket::remove_items_if( const std::function<bool( item & )> &filter )
 {
     contents.remove_if( filter );
+}
+
+void item_pocket::has_rotten_away( const tripoint &pnt )
+{
+    for( auto it = contents.begin(); it != contents.end(); ) {
+        if( g->m.has_rotten_away( *it, pnt ) ) {
+            it = contents.erase( it );
+        } else {
+            ++it;
+        }
+    }
 }
 
 bool item_pocket::empty() const
