@@ -17,6 +17,7 @@
 #include "catacharset.h"
 #include "debug.h"
 #include "enums.h"
+#include "generic_factory.h"
 #include "init.h"
 #include "item.h"
 #include "item_category.h"

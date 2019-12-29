@@ -135,6 +135,58 @@ std::list<const item *> item_pocket::all_items_ptr( item_pocket::pocket_type pk_
     return all_items_top;
 }
 
+std::list<item> item_pocket::all_items()
+{
+    std::list<item> all_items;
+    for( item &it : contents ) {
+        all_items.emplace_back( it );
+    }
+    for( item &it : all_items ) {
+        std::list<item> all_items_internal{ it.contents.all_items() };
+        all_items.insert( all_items.end(), all_items_internal.begin(), all_items_internal.end() );
+    }
+    return all_items;
+}
+
+std::list<item> item_pocket::all_items() const
+{
+    std::list<item> all_items;
+    for( const item &it : contents ) {
+        all_items.emplace_back( it );
+    }
+    for( const item &it : all_items ) {
+        std::list<item> all_items_internal{ it.contents.all_items() };
+        all_items.insert( all_items.end(), all_items_internal.begin(), all_items_internal.end() );
+    }
+    return all_items;
+}
+
+std::list<item *> item_pocket::all_items_ptr( item_pocket::pocket_type pk_type )
+{
+    std::list<item *> all_items_top;
+    for( item &it : contents ) {
+        all_items_top.push_back( &it );
+    }
+    for( item *it : all_items_top ) {
+        std::list<item *> all_items_internal{ it->contents.all_items_ptr( pk_type ) };
+        all_items_top.insert( all_items_top.end(), all_items_internal.begin(), all_items_internal.end() );
+    }
+    return all_items_top;
+}
+
+std::list<const item *> item_pocket::all_items_ptr( item_pocket::pocket_type pk_type ) const
+{
+    std::list<const item *> all_items_top;
+    for( const item &it : contents ) {
+        all_items_top.push_back( &it );
+    }
+    for( const item *it : all_items_top ) {
+        std::list<const item *> all_items_internal{ it->contents.all_items_ptr( pk_type ) };
+        all_items_top.insert( all_items_top.end(), all_items_internal.begin(), all_items_internal.end() );
+    }
+    return all_items_top;
+}
+
 item &item_pocket::back()
 {
     return contents.back();
