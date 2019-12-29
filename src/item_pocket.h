@@ -67,6 +67,7 @@ class item_pocket
 
         std::list<item> all_items();
         std::list<item> all_items() const;
+        std::list<const item *> all_items_ptr( pocket_type pl_type ) const;
         std::list<item *> all_items_ptr( pocket_type pk_type );
 
         item &back();

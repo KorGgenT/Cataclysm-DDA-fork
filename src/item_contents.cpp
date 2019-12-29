@@ -253,6 +253,39 @@ std::list<item> item_contents::all_items() const
     return item_list;
 }
 
+std::list<const item *> item_contents::all_items_ptr() const
+{
+    std::list<const item *> items;
+    for( int i = 0; i < item_pocket::pocket_type::LAST; i++ ) {
+        std::list<const item *> internal_ptrs = all_items_ptr( static_cast<item_pocket::pocket_type>( i ) );
+        items.insert( items.begin(), internal_ptrs.begin(), internal_ptrs.end() );
+    }
+    return items;
+}
+
+std::list<item *> item_contents::all_items_ptr()
+{
+    std::list<item *> items;
+    for( int i = 0; i < item_pocket::pocket_type::LAST; i++ ) {
+        std::list<item *> internal_ptrs = all_items_ptr( static_cast<item_pocket::pocket_type>( i ) );
+        items.insert( items.begin(), internal_ptrs.begin(), internal_ptrs.end() );
+    }
+    return items;
+}
+
+std::list<const item *> item_contents::all_items_ptr( item_pocket::pocket_type pk_type ) const
+{
+    std::list<const item *> all_items_internal;
+    for( const item_pocket &pocket : contents ) {
+        if( pocket.is_type( pk_type ) ) {
+            std::list<const item *> contained_items = pocket.all_items_ptr( pk_type );
+            all_items_internal.insert( all_items_internal.end(), contained_items.begin(),
+                                       contained_items.end() );
+        }
+    }
+    return all_items_internal;
+}
+
 std::list<item *> item_contents::all_items_ptr( item_pocket::pocket_type pk_type )
 {
     std::list<item *> all_items_internal;

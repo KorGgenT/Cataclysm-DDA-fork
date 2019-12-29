@@ -1188,16 +1188,17 @@ item_location game_menus::inv::wield( avatar &you )
 class holster_inventory_preset: public weapon_inventory_preset
 {
     public:
-        holster_inventory_preset( const player &p, const holster_actor &actor ) :
-            weapon_inventory_preset( p ), actor( actor ) {
+        holster_inventory_preset( const player &p, const holster_actor &actor, const item &holster ) :
+            weapon_inventory_preset( p ), actor( actor ), holster( holster ) {
         }
 
         bool is_shown( const item_location &loc ) const override {
-            return actor.can_holster( *loc );
+            return actor.can_holster( holster, *loc );
         }
 
     private:
         const holster_actor &actor;
+        const item &holster;
 };
 
 item_location game_menus::inv::holster( player &p, item &holster )
@@ -1219,7 +1220,7 @@ item_location game_menus::inv::holster( player &p, item &holster )
     const std::string hint = string_format( _( "Choose an item to put into your %s" ),
                                             holster_name );
 
-    return inv_internal( p, holster_inventory_preset( p, *actor ), title, 1,
+    return inv_internal( p, holster_inventory_preset( p, *actor, holster ), title, 1,
                          string_format( _( "You have no items you could put into your %s." ),
                                         holster_name ),
                          hint );

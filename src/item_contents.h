@@ -39,9 +39,12 @@ class item_contents
         // all the items contained in each pocket combined into one list
         std::list<item> all_items();
         std::list<item> all_items() const;
+        std::list<item *> all_items_ptr();
+        std::list<const item *> all_items_ptr() const;
         // all item pointers in a specific pocket type
         // used for inventory screen
         std::list<item *> all_items_ptr( item_pocket::pocket_type pk_type );
+        std::list<const item *> all_items_ptr( item_pocket::pocket_type pk_type ) const;
 
         // total size the parent item needs to be modified based on rigidity of pockets
         units::volume item_size_modifier() const;
