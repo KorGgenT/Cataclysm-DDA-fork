@@ -2415,13 +2415,27 @@ void item::deserialize( JsonIn &jsin )
     if( data.has_array( "contents" ) ) {
         std::list<item> item_list;
         data.read( "contents", item_list );
-        for( const item &it : item_list ) {
-            contents.insert_legacy( it );
+        if( type->get_use( "holster" ) ) {
+            for( const item &it : item_list ) {
+                if( !contents.insert_item( it, item_pocket::pocket_type::CONTAINER ).success() ) {
+                    contents.force_insert_item( it, item_pocket::pocket_type::CONTAINER );
+                }
+            }
+        } else {
+            for( const item &it : item_list ) {
+                contents.insert_legacy( it );
+            }
         }
     } else {
+        // savegame is most recent
         item_contents temp_contents;
         data.read( "contents", temp_contents );
         contents.combine( temp_contents );
+        if( savegame_loading_version == 27 ) {
+            if( type->get_use( "holster" ) ) {
+                contents.move_legacy_to_pocket_type( item_pocket::pocket_type::CONTAINER );
+            }
+        }
     }
 }
 

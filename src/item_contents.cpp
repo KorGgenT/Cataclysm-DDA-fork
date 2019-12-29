@@ -37,6 +37,18 @@ bool item_contents::stacks_with( const item_contents &rhs ) const
     } );
 }
 
+bool item_contents::same_contents( const item_contents &rhs ) const
+{
+    if( contents.size() != rhs.contents.size() ) {
+        return false;
+    }
+    return std::equal( contents.begin(), contents.end(),
+                       rhs.contents.begin(), rhs.contents.end(),
+    []( const item_pocket & a, const item_pocket & b ) {
+        return a.same_contents( b );
+    } );
+}
+
 void item_contents::combine( const item_contents &rhs )
 {
     for( const item_pocket &pocket : rhs.contents ) {
@@ -54,6 +66,16 @@ void item_contents::combine( const item_contents &rhs )
             }
         }
     }
+}
+
+void item_contents::move_legacy_to_pocket_type( const item_pocket::pocket_type pk_type )
+{
+    for( const item &it : legacy_pocket().all_items() ) {
+        if( !insert_item( it, pk_type ).success() ) {
+            force_insert_item( it, pk_type );
+        }
+    }
+    legacy_pocket().clear_items();
 }
 
 ret_val<bool> item_contents::can_contain( const item &it ) const
@@ -117,7 +139,8 @@ bool item_contents::detonate( const tripoint &p, std::vector<item> &drops )
     return detonated;
 }
 
-bool item_contents::process( const itype &type, player *carrier, const tripoint &pos, bool activate,
+bool item_contents::process( const itype &type, player *carrier, const tripoint &pos,
+                             bool activate,
                              float insulation, const temperature_flag flag )
 {
     for( item_pocket &pocket : contents ) {
@@ -347,6 +370,13 @@ units::mass item_contents::item_weight_modifier() const
     return total_mass;
 }
 
+void item_contents::overflow( const tripoint &pos )
+{
+    for( item_pocket &pocket : contents ) {
+        pocket.overflow( pos );
+    }
+}
+
 bool item_contents::spill_contents( const tripoint &pos )
 {
     for( item_pocket &pocket : contents ) {
@@ -426,22 +456,58 @@ void item_contents::has_rotten_away( const tripoint &pnt )
     }
 }
 
-ret_val<bool> item_contents::insert_item( const item &it, item_pocket::pocket_type pk_type )
+ret_val<item_pocket *> item_contents::find_pocket_for( const item &it,
+        item_pocket::pocket_type pk_type )
 {
-    ret_val<bool> ret = ret_val<bool>::make_failure( _( "is not a container" ) );
+    static item_pocket *null_pocket = nullptr;
+    ret_val<item_pocket *> ret = ret_val<item_pocket *>::make_failure( null_pocket,
+                                 _( "is not a container" ) );
     for( item_pocket &pocket : contents ) {
         if( !pocket.is_type( pk_type ) ) {
             continue;
         }
-        const ret_val<item_pocket::contain_code> pocket_contain_code = pocket.insert_item( it );
-        if( pocket_contain_code.success() ) {
-            return ret_val<bool>::make_success();
-        }
-        if( pocket_contain_code.value() != item_pocket::contain_code::ERR_LEGACY_CONTAINER ) {
-            ret = ret_val<bool>::make_failure( pocket_contain_code.str() );
+        ret_val<item_pocket::contain_code> ret_contain = pocket.can_contain( it );
+        if( ret_contain.success() ) {
+            return ret_val<item_pocket *>::make_success( &pocket, ret_contain.str() );
         }
     }
     return ret;
+}
+
+int item_contents::insert_cost( const item &it, item_pocket::pocket_type pk_type )
+{
+    ret_val<item_pocket *> pocket = find_pocket_for( it, pk_type );
+    if( pocket.success() ) {
+        return pocket.value()->moves();
+    } else {
+        return -1;
+    }
+}
+
+void item_contents::force_insert_item( const item &it, item_pocket::pocket_type pk_type )
+{
+    for( item_pocket &pocket : contents ) {
+        if( pocket.is_type( pk_type ) ) {
+            pocket.add( it );
+            return;
+        }
+    }
+    debugmsg( "ERROR: Could not insert item %s as contents does not have pocket type", it.tname() );
+}
+
+ret_val<bool> item_contents::insert_item( const item &it, item_pocket::pocket_type pk_type )
+{
+    ret_val<item_pocket *> pocket = find_pocket_for( it, pk_type );
+    if( !pocket.success() ) {
+        return ret_val<bool>::make_failure( pocket.str() );
+    }
+    ret_val<item_pocket::contain_code> pocket_contain_code = pocket.value()->insert_item( it );
+    if( pocket_contain_code.success() ) {
+        return ret_val<bool>::make_success();
+    }
+    if( pocket_contain_code.value() != item_pocket::contain_code::ERR_LEGACY_CONTAINER ) {
+        return ret_val<bool>::make_failure( pocket_contain_code.str() );
+    }
 }
 
 int item_contents::obtain_cost( const item &it ) const

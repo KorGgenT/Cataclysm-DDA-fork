@@ -78,10 +78,15 @@ class item_contents
         // copies the content items
         // used to help with loading
         void combine( const item_contents &rhs );
+        // moves all items from the legacy pocket to new pocket types using can_contain
+        void move_legacy_to_pocket_type( const item_pocket::pocket_type pk_type );
+        void force_insert_item( const item &it, item_pocket::pocket_type pk_type );
         // tries to put an item in a pocket. returns false on failure
         // has similar code to can_contain in order to avoid running it twice
         ret_val<bool> insert_item( const item &it,
                                    item_pocket::pocket_type pk_type = item_pocket::pocket_type::CONTAINER );
+        int insert_cost( const item &it,
+                         item_pocket::pocket_type pk_type = item_pocket::pocket_type::CONTAINER );
         // finds or makes a fake pocket and puts this item into it
         void insert_legacy( const item &it );
         // equivalent to contents.back() when item::contents was a std::list<item>
@@ -95,6 +100,8 @@ class item_contents
         size_t size() const;
         void legacy_pop_back();
         size_t num_item_stacks() const;
+        // spills items that can't fit in the pockets anymore
+        void overflow( const tripoint &pos );
         bool spill_contents( const tripoint &pos );
         void clear_items();
         bool has_item( const item &it ) const;
@@ -113,9 +120,16 @@ class item_contents
 
         void info( std::vector<iteminfo> &info ) const;
 
+        bool same_contents( const item_contents &rhs ) const;
+
         void serialize( JsonOut &json ) const;
         void deserialize( JsonIn &jsin );
     private:
+        // finds the pocket the item will fit in, given the pocket type.
+        // this will be where the algorithm picks the best pocket in the contents
+        // returns nullptr if none is found
+        ret_val<item_pocket *> find_pocket_for( const item &it,
+                                                item_pocket::pocket_type pk_type = item_pocket::pocket_type::CONTAINER );
         // gets the pocket described as legacy, or creates one
         item_pocket &legacy_pocket();
         const item_pocket &legacy_pocket() const;

@@ -2464,14 +2464,6 @@ void holster_actor::load( const JsonObject &obj )
 {
     holster_prompt = obj.get_string( "holster_prompt", "" );
     holster_msg = obj.get_string( "holster_msg", "" );
-    assign( obj, "max_volume", max_volume );
-    if( !assign( obj, "min_volume", min_volume ) ) {
-        min_volume = max_volume / 3;
-    }
-
-    assign( obj, "max_weight", max_weight );
-    multi      = obj.get_int( "multi",      multi );
-    draw_cost  = obj.get_int( "draw_cost",  draw_cost );
 
     auto tmp = obj.get_string_array( "skills" );
     std::transform( tmp.begin(), tmp.end(), std::back_inserter( skills ),
@@ -2482,12 +2474,9 @@ void holster_actor::load( const JsonObject &obj )
     flags = obj.get_string_array( "flags" );
 }
 
-bool holster_actor::can_holster( const item &obj ) const
+bool holster_actor::can_holster( const item &holster, const item &obj ) const
 {
-    if( obj.volume() > max_volume || obj.volume() < min_volume ) {
-        return false;
-    }
-    if( max_weight > 0_gram && obj.weight() > max_weight ) {
+    if( !holster.contents.can_contain( obj ).success() ) {
         return false;
     }
     if( obj.active ) {
@@ -2506,45 +2495,21 @@ bool holster_actor::store( player &p, item &holster, item &obj ) const
         return false;
     }
 
-    // if selected item is unsuitable inform the player why not
-    if( obj.volume() > max_volume ) {
-        p.add_msg_if_player( m_info, _( "Your %1$s is too big to fit in your %2$s" ),
-                             obj.tname(), holster.tname() );
-        return false;
+    const ret_val<bool> contain = holster.contents.can_contain( obj );
+    if( !contain.success() ) {
+        p.add_msg_if_player( m_bad, contain.str(), holster.tname(), obj.tname() );
     }
-
-    if( obj.volume() < min_volume ) {
-        p.add_msg_if_player( m_info, _( "Your %1$s is too small to fit in your %2$s" ),
-                             obj.tname(), holster.tname() );
-        return false;
-    }
-
-    if( max_weight > 0_gram && obj.weight() > max_weight ) {
-        p.add_msg_if_player( m_info, _( "Your %1$s is too heavy to fit in your %2$s" ),
-                             obj.tname(), holster.tname() );
-        return false;
-    }
-
     if( obj.active ) {
         p.add_msg_if_player( m_info, _( "You don't think putting your %1$s in your %2$s is a good idea" ),
                              obj.tname(), holster.tname() );
         return false;
     }
-
-    if( std::none_of( flags.begin(), flags.end(), [&]( const std::string & f ) {
-    return obj.has_flag( f );
-    } ) &&
-    std::find( skills.begin(), skills.end(), obj.gun_skill() ) == skills.end() ) {
-        p.add_msg_if_player( m_info, _( "You can't put your %1$s in your %2$s" ),
-                             obj.tname(), holster.tname() );
-        return false;
-    }
-
     p.add_msg_if_player( holster_msg.empty() ? _( "You holster your %s" ) : _( holster_msg ),
                          obj.tname(), holster.tname() );
 
     // holsters ignore penalty effects (e.g. GRABBED) when determining number of moves to consume
-    p.store( holster, obj, false, draw_cost );
+    p.store( holster, obj, false, holster.contents.obtain_cost( obj ),
+             item_pocket::pocket_type::CONTAINER );
     return true;
 }
 
@@ -2558,11 +2523,9 @@ int holster_actor::use( player &p, item &it, bool, const tripoint & ) const
     int pos = 0;
     std::vector<std::string> opts;
 
-    if( static_cast<int>( it.contents.num_item_stacks() ) < multi ) {
-        std::string prompt = holster_prompt.empty() ? _( "Holster item" ) : _( holster_prompt );
-        opts.push_back( prompt );
-        pos = -1;
-    }
+    std::string prompt = holster_prompt.empty() ? _( "Holster item" ) : _( holster_prompt );
+    opts.push_back( prompt );
+    pos = -1;
     std::list<item *> all_items = it.contents.all_items_top(
                                       item_pocket::pocket_type::LEGACY_CONTAINER );
     std::transform( all_items.begin(), all_items.end(), std::back_inserter( opts ),
@@ -2595,7 +2558,7 @@ int holster_actor::use( player &p, item &it, bool, const tripoint & ) const
     if( pos >= 0 ) {
         // worn holsters ignore penalty effects (e.g. GRABBED) when determining number of moves to consume
         if( p.is_worn( it ) ) {
-            p.wield_contents( it, internal_item, false, draw_cost );
+            p.wield_contents( it, internal_item, false, it.contents.obtain_cost( *internal_item ) );
         } else {
             p.wield_contents( it, internal_item );
         }
@@ -2616,30 +2579,8 @@ int holster_actor::use( player &p, item &it, bool, const tripoint & ) const
 
 void holster_actor::info( const item &, std::vector<iteminfo> &dump ) const
 {
-    std::string message = ngettext( "Can be activated to store a suitable item.",
-                                    "Can be activated to store suitable items.", multi );
+    std::string message = _( "Can be activated to store suitable items." );
     dump.emplace_back( "DESCRIPTION", message );
-    dump.emplace_back( "TOOL", _( "Num items: " ), "<num>", iteminfo::no_flags, multi );
-    dump.emplace_back( "TOOL", _( "Item volume: Min: " ),
-                       string_format( "<num> %s", volume_units_abbr() ),
-                       iteminfo::is_decimal | iteminfo::no_newline | iteminfo::lower_is_better,
-                       convert_volume( min_volume.value() ) );
-    dump.emplace_back( "TOOL", _( "  Max: " ),
-                       string_format( "<num> %s", volume_units_abbr() ),
-                       iteminfo::is_decimal,
-                       convert_volume( max_volume.value() ) );
-
-    if( max_weight > 0_gram ) {
-        dump.emplace_back( "TOOL", "Max item weight: ",
-                           string_format( _( "<num> %s" ), weight_units() ),
-                           iteminfo::is_decimal,
-                           convert_weight( max_weight ) );
-    }
-}
-
-units::volume holster_actor::max_stored_volume() const
-{
-    return max_volume * multi;
 }
 
 std::unique_ptr<iuse_actor> bandolier_actor::clone() const

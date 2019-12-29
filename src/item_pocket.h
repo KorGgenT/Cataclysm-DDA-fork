@@ -95,6 +95,8 @@ class item_pocket
         units::volume item_size_modifier() const;
         units::mass item_weight_modifier() const;
 
+        int moves() const;
+
         item *magazine_current();
         void casings_handle( const std::function<bool( item & )> &func );
         bool use_amount( const itype_id &it, int &quantity, std::list<item> &used );
@@ -109,6 +111,8 @@ class item_pocket
         // removes and returns the item from the pocket.
         cata::optional<item> remove_item( const item &it );
         cata::optional<item> remove_item( const item_location &it );
+        // spills any contents that can't fit into the pocket, largest items first
+        void overflow( const tripoint &pos );
         bool spill_contents( const tripoint &pos );
         void clear_items();
         bool has_item( const item &it ) const;
@@ -143,6 +147,7 @@ class item_pocket
         void serialize( JsonOut &json ) const;
         void deserialize( JsonIn &jsin );
 
+        bool same_contents( const item_pocket &rhs ) const;
         bool operator==( const item_pocket &rhs ) const;
     private:
         // the type of pocket, saved to json

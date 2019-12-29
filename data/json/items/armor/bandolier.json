@@ -253,15 +253,13 @@
     "covers": [ "TORSO" ],
     "coverage": 15,
     "material_thickness": 2,
-    "use_action": {
-      "type": "holster",
-      "holster_prompt": "Stash grenades",
-      "holster_msg": "You stash your %s.",
-      "multi": 4,
-      "max_volume": "750 ml",
-      "draw_cost": 30,
-      "flags": [ "GRENADE" ]
-    },
+    "pocket_data": [
+        { "pocket_type": "CONTAINER", "max_contains_volume": "750 ml", "max_contains_weight": "2 kg", "moves": 30 },
+        { "pocket_type": "CONTAINER", "max_contains_volume": "750 ml", "max_contains_weight": "2 kg", "moves": 30 },
+        { "pocket_type": "CONTAINER", "max_contains_volume": "750 ml", "max_contains_weight": "2 kg", "moves": 30 },
+        { "pocket_type": "CONTAINER", "max_contains_volume": "750 ml", "max_contains_weight": "2 kg", "moves": 30 }
+      ],
+    "use_action": { "type": "holster", "holster_prompt": "Stash grenades", "holster_msg": "You stash your %s.", "flags": [ "GRENADE" ] },
     "flags": [ "WATER_FRIENDLY", "BELTED" ]
   }
 ]
