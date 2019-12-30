@@ -1601,14 +1601,22 @@
     "coverage": 15,
     "encumbrance": 4,
     "material_thickness": 2,
+    "pocket_data": {
+      "contents": [
+        {
+          "pocket_type": "CONTAINER",
+          "min_contains_volume": "250 ml",
+          "max_contains_volume": "1 L",
+          "max_contains_weight": "1 kg",
+          "moves": 3
+        }
+      ]
+    },
     "use_action": [
       {
         "type": "holster",
         "holster_prompt": "Sheath blade",
         "holster_msg": "You sheath your %s",
-        "draw_cost": 3,
-        "min_volume": "250 ml",
-        "max_volume": "1 L",
         "flags": [ "SHEATH_KNIFE", "SHEATH_SWORD" ]
       },
       "CROWBAR",

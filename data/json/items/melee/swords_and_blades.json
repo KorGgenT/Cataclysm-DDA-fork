@@ -1226,12 +1226,13 @@
     "bashing": 3,
     "to_hit": 2,
     "looks_like": "cane",
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "1531 ml", "max_contains_weight": "2 kg", "moves": 80 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath sword",
       "holster_msg": "You sheath your %s",
-      "max_volume": "1531 ml",
-      "draw_cost": 80,
       "flags": [ "SHEATH_SWORD" ]
     },
     "techniques": [ "PRECISE", "RAPID", "WBLOCK_2" ]
