@@ -43,14 +43,28 @@
     "storage": "55 L",
     "warmth": 10,
     "material_thickness": 2,
+    "pocket_data": {
+      "contents": [
+        {
+          "pocket_type": "CONTAINER",
+          "min_item_volume": "250 ml",
+          "max_contains_volume": "250 ml",
+          "max_contains_weight": "2 kg",
+          "moves": 3
+        },
+        {
+          "pocket_type": "CONTAINER",
+          "min_item_volume": "250 ml",
+          "max_contains_volume": "250 ml",
+          "max_contains_weight": "2 kg",
+          "moves": 3
+        }
+      ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath blade",
       "holster_msg": "You sheath your %s",
-      "min_volume": "250ml",
-      "max_volume": "2500ml",
-      "multi": 2,
-      "draw_cost": 3,
       "flags": [ "SHEATH_KNIFE", "SHEATH_SWORD" ]
     },
     "flags": [ "BELTED", "WATERPROOF", "ONLY_ONE", "OVERSIZE" ]
@@ -538,13 +552,13 @@
     "storage": "18 L",
     "warmth": 5,
     "material_thickness": 3,
-    "flags": [ "BELTED", "OVERSIZE" ],
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "2 kg", "moves": 40 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath golf club",
       "holster_msg": "You awkwardly sheath your %s",
-      "max_volume": "1 L",
-      "draw_cost": 40,
       "flags": [ "SHEATH_GOLF" ]
     }
   },

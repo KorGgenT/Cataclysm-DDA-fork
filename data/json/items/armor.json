@@ -761,14 +761,10 @@
     "coverage": 5,
     "encumbrance": 2,
     "material_thickness": 1,
-    "use_action": {
-      "type": "holster",
-      "holster_prompt": "Sheath axe",
-      "holster_msg": "You sheath your %s",
-      "max_volume": "3250 ml",
-      "draw_cost": 10,
-      "flags": [ "SHEATH_AXE" ]
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3250 ml", "max_contains_weight": "10 kg", "moves": 10 } ]
     },
+    "use_action": { "type": "holster", "holster_prompt": "Sheath axe", "holster_msg": "You sheath your %s", "flags": [ "SHEATH_AXE" ] },
     "flags": [ "NONCONDUCTIVE", "WAIST", "OVERSIZE", "WATER_FRIENDLY" ]
   },
   {
@@ -828,12 +824,13 @@
     "coverage": 10,
     "encumbrance": 3,
     "material_thickness": 1,
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3 L", "max_contains_weight": "5 kg", "moves": 10 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath sword",
       "holster_msg": "You sheath your %s",
-      "max_volume": "3 L",
-      "draw_cost": 10,
       "flags": [ "SHEATH_SWORD" ]
     },
     "flags": [ "WAIST", "OVERSIZE", "WATER_FRIENDLY" ]
@@ -1227,12 +1224,13 @@
     "coverage": 5,
     "encumbrance": 3,
     "material_thickness": 1,
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "500 ml", "max_contains_weight": "1 kg", "moves": 30 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath knife",
       "holster_msg": "You sheath your %s",
-      "max_volume": "500 ml",
-      "draw_cost": 30,
       "flags": [ "SHEATH_KNIFE" ]
     },
     "flags": [ "BELTED", "OVERSIZE", "ALLOWS_NATURAL_ATTACKS", "WATER_FRIENDLY" ]
@@ -1255,12 +1253,13 @@
     "encumbrance": 4,
     "material_thickness": 1,
     "rigid": false,
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3500 ml", "max_contains_weight": "5 kg", "moves": 50 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Holster spear",
       "holster_msg": "You holster your %s.",
-      "max_volume": "3500 ml",
-      "draw_cost": 50,
       "flags": [ "SHEATH_SPEAR" ]
     },
     "flags": [ "BELTED", "OVERSIZE", "ALLOWS_NATURAL_ATTACKS", "WATER_FRIENDLY" ]
@@ -1449,12 +1448,13 @@
     "coverage": 10,
     "encumbrance": 3,
     "material_thickness": 1,
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3750 ml", "max_contains_weight": "5 kg", "moves": 20 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath sword",
       "holster_msg": "You sheath your %s",
-      "max_volume": "3750 ml",
-      "draw_cost": 20,
       "flags": [ "SHEATH_SWORD" ]
     },
     "flags": [ "BELTED", "OVERSIZE", "WATER_FRIENDLY" ]
@@ -2837,13 +2837,13 @@
     "covers": [ "TORSO" ],
     "encumbrance": 4,
     "storage": "1 L",
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "2 L", "max_contains_weight": "3600 g", "moves": 50 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Attach what to belt loop?",
       "holster_msg": "You clip your %s to your %s",
-      "max_volume": "2 L",
-      "max_weight": 3600,
-      "draw_cost": 50,
       "flags": [ "BELT_CLIP" ]
     },
     "flags": [ "FANCY", "WAIST", "NO_QUICKDRAW", "WATER_FRIENDLY" ]
@@ -4720,13 +4720,13 @@
     "covers": [ "TORSO" ],
     "coverage": 5,
     "material_thickness": 1,
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "500 ml", "max_contains_weight": "400 g", "moves": 60 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Stick what into your belt",
       "holster_msg": "You tuck your %s into your %s",
-      "max_volume": "500 ml",
-      "max_weight": 400,
-      "draw_cost": 60,
       "flags": [ "BELT_CLIP" ]
     },
     "flags": [ "WAIST", "WATER_FRIENDLY" ]
@@ -5937,13 +5937,13 @@
     "covers": [ "TORSO" ],
     "encumbrance": 6,
     "storage": "2 L",
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "2250 ml", "max_contains_weight": "3600 g", "moves": 50 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Attach what to holder?",
       "holster_msg": "You attach your %s to your %s.",
-      "max_volume": "2250 ml",
-      "max_weight": 3600,
-      "draw_cost": 50,
       "flags": [ "BELT_CLIP" ]
     },
     "flags": [ "WAIST", "WATER_FRIENDLY" ]
@@ -6208,11 +6208,13 @@
     "coverage": 15,
     "encumbrance": 3,
     "material_thickness": 1,
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "2 L", "max_contains_weight": "2 kg", "moves": 50 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath sword",
       "holster_msg": "You sheath your %s",
-      "max_volume": "2 L",
       "flags": [ "SHEATH_SWORD" ]
     },
     "flags": [ "WAIST", "OVERSIZE", "WATER_FRIENDLY" ]
@@ -6233,12 +6235,13 @@
     "covers": [ "LEG_EITHER" ],
     "coverage": 5,
     "material_thickness": 1,
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "750 ml", "max_contains_weight": "5 kg", "moves": 3 } ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath knife",
       "holster_msg": "You sheath your %s",
-      "max_volume": "750 ml",
-      "draw_cost": 3,
       "flags": [ "SHEATH_KNIFE" ]
     },
     "flags": [ "WAIST", "OVERSIZE", "WATER_FRIENDLY" ]
@@ -7049,13 +7052,21 @@
     "encumbrance": 4,
     "storage": "3 L",
     "material_thickness": 2,
+    "pocket_data": {
+      "contents": [
+        {
+          "pocket_type": "CONTAINER",
+          "min_item_volume": "250 ml",
+          "max_contains_volume": "1 L",
+          "max_contains_weight": "5 kg",
+          "moves": 3
+        }
+      ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath blade",
       "holster_msg": "You sheath your %s",
-      "min_volume": "250 ml",
-      "max_volume": "1 L",
-      "draw_cost": 3,
       "flags": [ "SHEATH_KNIFE", "SHEATH_SWORD" ]
     },
     "flags": [ "VARSIZE", "WATER_FRIENDLY", "STURDY", "WAIST", "OVERSIZE" ]
@@ -7376,14 +7387,18 @@
     "storage": "1 L",
     "encumbrance": 10,
     "material_thickness": 2,
+    "pocket_data": {
+      "contents": [
+        { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "1 kg", "moves": 50 },
+        { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "1 kg", "moves": 50 },
+        { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "1 kg", "moves": 50 },
+        { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "1 kg", "moves": 50 }
+      ]
+    },
     "use_action": {
       "type": "holster",
       "holster_prompt": "Attach what to belt loop?",
       "holster_msg": "You clip your %s to your %s",
-      "multi": 4,
-      "max_volume": "1 L",
-      "max_weight": 1000,
-      "draw_cost": 50,
       "flags": [ "BELT_CLIP" ]
     },
     "flags": [ "WAIST", "NO_QUICKDRAW", "WATER_FRIENDLY" ]
@@ -8287,15 +8302,10 @@
     "coverage": 30,
     "encumbrance": 10,
     "material_thickness": 4,
-    "use_action": {
-      "type": "holster",
-      "holster_prompt": "Stash javelins",
-      "holster_msg": "You stash your %s.",
-      "multi": 5,
-      "max_volume": "1250 ml",
-      "draw_cost": 30,
-      "flags": [ "JAVELIN" ]
+    "pocket_data": {
+      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "6250 ml", "max_contains_weight": "20 kg", "moves": 30 } ]
     },
+    "use_action": { "type": "holster", "holster_prompt": "Stash javelins", "holster_msg": "You stash your %s.", "flags": [ "JAVELIN" ] },
     "flags": [ "WATER_FRIENDLY", "OVERSIZE", "BELTED" ]
   },
   {
