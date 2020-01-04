@@ -7938,9 +7938,9 @@ int iuse::foodperson( player *p, item *it, bool t, const tripoint &pos )
 int iuse::radiocar( player *p, item *it, bool, const tripoint & )
 {
     int choice = -1;
-    std::list<item> all_items{ it->contents.all_items() };
-    auto bomb_it = std::find_if( all_items.begin(), all_items.end(), []( const item & c ) {
-        return c.has_flag( "RADIOCARITEM" );
+    std::list<item *> all_items{ it->contents.all_items_ptr() };
+    auto bomb_it = std::find_if( all_items.begin(), all_items.end(), []( const item * c ) {
+        return c->has_flag( "RADIOCARITEM" );
     } );
     if( bomb_it == all_items.end() ) {
         choice = uilist( _( "Using RC car:" ), {
@@ -7948,7 +7948,7 @@ int iuse::radiocar( player *p, item *it, bool, const tripoint & )
         } );
     } else {
         choice = uilist( _( "Using RC car:" ), {
-            _( "Turn on" ), bomb_it->tname()
+            _( "Turn on" ), ( *bomb_it )->tname()
         } );
     }
     if( choice < 0 ) {
@@ -8002,9 +8002,9 @@ int iuse::radiocar( player *p, item *it, bool, const tripoint & )
         } else { // Disarm the car
             p->moves -= to_moves<int>( 2_seconds );
 
-            p->inv.assign_empty_invlet( *bomb_it, *p, true ); // force getting an invlet.
-            p->i_add( *bomb_it );
-            it->contents.remove_item( *bomb_it );
+            p->inv.assign_empty_invlet( **bomb_it, *p, true ); // force getting an invlet.
+            p->i_add( **bomb_it );
+            it->contents.remove_item( **bomb_it );
 
             p->add_msg_if_player( _( "You disarmed your RC car." ) );
         }
@@ -8434,9 +8434,9 @@ int iuse::autoclave( player *p, item *it, bool t, const tripoint &pos )
 
         bool empty = true;
         item *clean_cbm = nullptr;
-        for( item &bio : it->contents.all_items() ) {
-            if( bio.is_bionic() ) {
-                clean_cbm = &bio;
+        for( item *bio : it->contents.all_items_ptr() ) {
+            if( bio->is_bionic() ) {
+                clean_cbm = bio;
             }
         }
         if( clean_cbm ) {
