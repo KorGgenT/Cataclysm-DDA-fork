@@ -4545,7 +4545,7 @@ bool player::unload( item &it )
         }
 
         bool changed = false;
-        it.contents.legacy_unload( this, changed );
+        it.contents.legacy_unload( *this, changed );
         if( changed ) {
             it.on_contents_changed();
         }
