@@ -1123,6 +1123,9 @@ void inventory_selector::add_item( inventory_column &target_column,
     add_entry( target_column,
                std::vector<item_location>( 1, location ),
                custom_category );
+    for( item *it : location->contents.all_items_ptr() ) {
+        add_item( target_column, item_location( location, it ), custom_category );
+    }
 }
 
 void inventory_selector::add_items( inventory_column &target_column,
