@@ -1123,7 +1123,7 @@ void inventory_selector::add_item( inventory_column &target_column,
     add_entry( target_column,
                std::vector<item_location>( 1, location ),
                custom_category );
-    for( item *it : location->contents.all_items_ptr() ) {
+    for( item *it : location->contents.all_items_ptr( item_pocket::pocket_type::CONTAINER ) ) {
         add_item( target_column, item_location( location, it ), custom_category );
     }
 }
@@ -1163,10 +1163,15 @@ void inventory_selector::add_character_items( Character &character )
         return VisitResponse::NEXT;
     } );
     // Visitable interface does not support stacks so it has to be here
-    for( const auto &elem : character.inv.slice() ) {
+    for( std::list<item> *elem : character.inv.slice() ) {
         add_items( own_inv_column, [&character]( item * it ) {
             return item_location( character, it );
         }, restack_items( ( *elem ).begin(), ( *elem ).end(), preset.get_checking_components() ) );
+        for ( item &it_elem : *elem ) {
+            for ( item *it : it_elem.contents.all_items_ptr( item_pocket::pocket_type::CONTAINER ) ) {
+                add_item( own_inv_column, item_location( item_location( character, &it_elem ), it ), &it->get_category() );
+            }
+        }
     }
 }
 

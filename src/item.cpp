@@ -3163,25 +3163,6 @@ void item::final_info( std::vector<iteminfo> &info, const iteminfo_query *parts,
         }
     }
 
-    // does the item fit in any holsters?
-    std::vector<const itype *> holsters = Item_factory::find( []( const itype & e ) {
-        if( !e.can_use( "holster" ) ) {
-            return false;
-        }
-        const holster_actor *ptr = dynamic_cast<const holster_actor *>
-                                   ( e.get_use( "holster" )->get_actor_ptr() );
-        return ptr->can_holster( item( &e ) );
-    } );
-
-    if( !holsters.empty() && parts->test( iteminfo_parts::DESCRIPTION_HOLSTERS ) ) {
-        insert_separation_line( info );
-        info.emplace_back( "DESCRIPTION", _( "<bold>Can be stored in:</bold> " ) +
-                           enumerate_as_string( holsters.begin(), holsters.end(),
-        []( const itype * e ) {
-            return e->nname( 1 );
-        } ) );
-    }
-
     if( parts->test( iteminfo_parts::DESCRIPTION_ACTIVATABLE_TRANSFORMATION ) ) {
         for( auto &u : type->use_methods ) {
             const delayed_transform_iuse *tt = dynamic_cast<const delayed_transform_iuse *>
@@ -8102,7 +8083,7 @@ bool item::can_holster( const item &obj, bool ) const
 
     const holster_actor *ptr = dynamic_cast<const holster_actor *>
                                ( type->get_use( "holster" )->get_actor_ptr() );
-    return ptr->can_holster( obj );
+    return ptr->can_holster( *this, obj );
 }
 
 std::string item::components_to_string() const

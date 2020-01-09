@@ -16,9 +16,7 @@
     "coverage": 5,
     "encumbrance": 5,
     "material_thickness": 1,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3750 ml", "max_contains_weight": "10 kg", "moves": 150 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3750 ml", "max_contains_weight": "10 kg", "moves": 150 } ],
     "use_action": { "type": "holster", "skills": [ "smg", "shotgun", "rifle", "launcher" ] },
     "flags": [ "BELTED", "OVERSIZE", "NO_QUICKDRAW" ]
   },
@@ -40,9 +38,7 @@
     "encumbrance": 4,
     "material_thickness": 1,
     "flags": [ "BELTED", "OVERSIZE", "ALLOWS_NATURAL_ATTACKS" ],
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "500 ml", "max_contains_weight": "1 kg", "moves": 150 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "500 ml", "max_contains_weight": "1 kg", "moves": 150 } ],
     "use_action": { "type": "holster", "skills": [ "pistol" ] }
   },
   {
@@ -64,8 +60,7 @@
     "encumbrance": 7,
     "material_thickness": 1,
     "flags": [ "OVERSIZE", "WAIST" ],
-    "pocket_data": {
-      "contents": [
+    "pocket_data": [
         {
           "pocket_type": "CONTAINER",
           "min_item_volume": "500 ml",
@@ -73,8 +68,7 @@
           "max_contains_weight": "5 kg",
           "moves": 50
         }
-      ]
-    },
+      ],
     "use_action": { "type": "holster", "skills": [ "archery" ] }
   },
   {
@@ -94,8 +88,7 @@
     "coverage": 5,
     "encumbrance": 5,
     "material_thickness": 1,
-    "pocket_data": {
-      "contents": [
+    "pocket_data": [
         {
           "pocket_type": "CONTAINER",
           "min_item_volume": "500 ml",
@@ -103,8 +96,7 @@
           "max_contains_weight": "2 kg",
           "moves": 50
         }
-      ]
-    },
+      ],
     "use_action": { "type": "holster", "skills": [ "pistol", "smg", "shotgun" ] },
     "flags": [ "WAIST", "OVERSIZE" ]
   },
@@ -115,9 +107,7 @@
     "name": "fast draw holster",
     "description": "A comfortable quick draw holster for small guns.  Activate to holster/draw a gun.",
     "encumbrance": 2,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "2 kg", "moves": 80 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "2 kg", "moves": 80 } ],
     "use_action": { "type": "holster", "skills": [ "pistol", "shotgun" ] }
   },
   {
@@ -133,9 +123,7 @@
     "material": "lycra",
     "covers": [ "LEGS" ],
     "encumbrance": 1,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "500 ml", "max_contains_weight": "1 kg", "moves": 210 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "500 ml", "max_contains_weight": "1 kg", "moves": 210 } ],
     "use_action": { "type": "holster", "skills": [ "pistol" ] },
     "flags": [ "SKINTIGHT", "WATER_FRIENDLY" ]
   },
@@ -158,8 +146,7 @@
     "encumbrance": 2,
     "storage": "3 L",
     "material_thickness": 2,
-    "pocket_data": {
-      "contents": [
+    "pocket_data": [
         {
           "pocket_type": "CONTAINER",
           "min_item_volume": "1250 ml",
@@ -167,8 +154,7 @@
           "max_contains_weight": "2 kg",
           "moves": 50
         }
-      ]
-    },
+      ],
     "use_action": { "type": "holster", "skills": [ "smg", "shotgun", "rifle" ] },
     "flags": [ "WATER_FRIENDLY", "STURDY", "WAIST" ]
   },
@@ -190,8 +176,7 @@
     "coverage": 10,
     "encumbrance": 2,
     "material_thickness": 1,
-    "pocket_data": {
-      "contents": [
+    "pocket_data": [
         {
           "pocket_type": "CONTAINER",
           "min_item_volume": "1250 ml",
@@ -199,8 +184,7 @@
           "max_contains_weight": "5 kg",
           "moves": 50
         }
-      ]
-    },
+      ],
     "use_action": { "type": "holster", "skills": [ "pistol", "smg", "shotgun", "rifle" ] },
     "flags": [ "WAIST", "OVERSIZE" ]
   }

@@ -761,9 +761,7 @@
     "coverage": 5,
     "encumbrance": 2,
     "material_thickness": 1,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3250 ml", "max_contains_weight": "10 kg", "moves": 10 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3250 ml", "max_contains_weight": "10 kg", "moves": 10 } ],
     "use_action": { "type": "holster", "holster_prompt": "Sheath axe", "holster_msg": "You sheath your %s", "flags": [ "SHEATH_AXE" ] },
     "flags": [ "NONCONDUCTIVE", "WAIST", "OVERSIZE", "WATER_FRIENDLY" ]
   },
@@ -824,9 +822,7 @@
     "coverage": 10,
     "encumbrance": 3,
     "material_thickness": 1,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3 L", "max_contains_weight": "5 kg", "moves": 10 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3 L", "max_contains_weight": "5 kg", "moves": 10 } ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath sword",
@@ -1224,9 +1220,7 @@
     "coverage": 5,
     "encumbrance": 3,
     "material_thickness": 1,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "500 ml", "max_contains_weight": "1 kg", "moves": 30 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "500 ml", "max_contains_weight": "1 kg", "moves": 30 } ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath knife",
@@ -1253,9 +1247,7 @@
     "encumbrance": 4,
     "material_thickness": 1,
     "rigid": false,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3500 ml", "max_contains_weight": "5 kg", "moves": 50 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3500 ml", "max_contains_weight": "5 kg", "moves": 50 } ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Holster spear",
@@ -1448,9 +1440,7 @@
     "coverage": 10,
     "encumbrance": 3,
     "material_thickness": 1,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3750 ml", "max_contains_weight": "5 kg", "moves": 20 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "3750 ml", "max_contains_weight": "5 kg", "moves": 20 } ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath sword",
@@ -2837,9 +2827,7 @@
     "covers": [ "TORSO" ],
     "encumbrance": 4,
     "storage": "1 L",
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "2 L", "max_contains_weight": "3600 g", "moves": 50 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "2 L", "max_contains_weight": "3600 g", "moves": 50 } ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Attach what to belt loop?",
@@ -4720,9 +4708,7 @@
     "covers": [ "TORSO" ],
     "coverage": 5,
     "material_thickness": 1,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "500 ml", "max_contains_weight": "400 g", "moves": 60 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "500 ml", "max_contains_weight": "400 g", "moves": 60 } ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Stick what into your belt",
@@ -5937,9 +5923,7 @@
     "covers": [ "TORSO" ],
     "encumbrance": 6,
     "storage": "2 L",
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "2250 ml", "max_contains_weight": "3600 g", "moves": 50 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "2250 ml", "max_contains_weight": "3600 g", "moves": 50 } ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Attach what to holder?",
@@ -6208,9 +6192,7 @@
     "coverage": 15,
     "encumbrance": 3,
     "material_thickness": 1,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "2 L", "max_contains_weight": "2 kg", "moves": 50 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "2 L", "max_contains_weight": "2 kg", "moves": 50 } ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath sword",
@@ -6235,9 +6217,7 @@
     "covers": [ "LEG_EITHER" ],
     "coverage": 5,
     "material_thickness": 1,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "750 ml", "max_contains_weight": "5 kg", "moves": 3 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "750 ml", "max_contains_weight": "5 kg", "moves": 3 } ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath knife",
@@ -7052,8 +7032,7 @@
     "encumbrance": 4,
     "storage": "3 L",
     "material_thickness": 2,
-    "pocket_data": {
-      "contents": [
+    "pocket_data": [
         {
           "pocket_type": "CONTAINER",
           "min_item_volume": "250 ml",
@@ -7061,8 +7040,7 @@
           "max_contains_weight": "5 kg",
           "moves": 3
         }
-      ]
-    },
+      ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath blade",
@@ -7387,14 +7365,12 @@
     "storage": "1 L",
     "encumbrance": 10,
     "material_thickness": 2,
-    "pocket_data": {
-      "contents": [
+    "pocket_data": [
         { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "1 kg", "moves": 50 },
         { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "1 kg", "moves": 50 },
         { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "1 kg", "moves": 50 },
         { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "1 kg", "moves": 50 }
-      ]
-    },
+      ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Attach what to belt loop?",
@@ -8302,9 +8278,7 @@
     "coverage": 30,
     "encumbrance": 10,
     "material_thickness": 4,
-    "pocket_data": {
-      "contents": [ { "pocket_type": "CONTAINER", "max_contains_volume": "6250 ml", "max_contains_weight": "20 kg", "moves": 30 } ]
-    },
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "6250 ml", "max_contains_weight": "20 kg", "moves": 30 } ],
     "use_action": { "type": "holster", "holster_prompt": "Stash javelins", "holster_msg": "You stash your %s.", "flags": [ "JAVELIN" ] },
     "flags": [ "WATER_FRIENDLY", "OVERSIZE", "BELTED" ]
   },
