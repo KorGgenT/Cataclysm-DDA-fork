@@ -2400,7 +2400,7 @@ void item::deserialize( JsonIn &jsin )
     io::JsonObjectInputArchive archive( data );
     io( archive );
     // made for fast forwarding time from 0.D to 0.E
-    if ( savegame_loading_version < 27 ) {
+    if( savegame_loading_version < 27 ) {
         legacy_fast_forward_time();
     }
     // migration code, used to be std::list<item>
