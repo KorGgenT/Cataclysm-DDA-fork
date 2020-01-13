@@ -261,7 +261,7 @@ item::item( const itype *type, time_point turn, int qty ) : type( type ), bday( 
     if( type->relic_data ) {
         relic_data = *type->relic_data;
     }
-    contents = type->pocket_data;
+    contents = type->pockets;
 }
 
 item::item( const itype_id &id, time_point turn, int qty )

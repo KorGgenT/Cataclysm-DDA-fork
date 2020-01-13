@@ -200,6 +200,15 @@ units::mass item_pocket::item_weight_modifier() const
     return total_mass;
 }
 
+int item_pocket::moves() const
+{
+    if( data ) {
+        return data->moves;
+    } else {
+        return -1;
+    }
+}
+
 item *item_pocket::magazine_current()
 {
     auto iter = std::find_if( contents.begin(), contents.end(), []( const item & it ) {

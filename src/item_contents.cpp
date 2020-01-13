@@ -413,22 +413,47 @@ void item_contents::has_rotten_away( const tripoint &pnt )
     }
 }
 
-ret_val<bool> item_contents::insert_item( const item &it, item_pocket::pocket_type pk_type )
+ret_val<item_pocket *> item_contents::find_pocket_for( const item &it,
+        item_pocket::pocket_type pk_type )
 {
-    ret_val<bool> ret = ret_val<bool>::make_failure( _( "is not a container" ) );
+    static item_pocket *null_pocket = nullptr;
+    ret_val<item_pocket *> ret = ret_val<item_pocket *>::make_failure( null_pocket,
+                                 _( "is not a container" ) );
     for( item_pocket &pocket : contents ) {
         if( !pocket.is_type( pk_type ) ) {
             continue;
         }
-        const ret_val<item_pocket::contain_code> pocket_contain_code = pocket.insert_item( it );
-        if( pocket_contain_code.success() ) {
-            return ret_val<bool>::make_success();
-        }
-        if( pocket_contain_code.value() != item_pocket::contain_code::ERR_LEGACY_CONTAINER ) {
-            ret = ret_val<bool>::make_failure( pocket_contain_code.str() );
+        ret_val<item_pocket::contain_code> ret_contain = pocket.can_contain( it );
+        if( ret_contain.success() ) {
+            return ret_val<item_pocket *>::make_success( &pocket, ret_contain.str() );
         }
     }
     return ret;
+}
+
+int item_contents::insert_cost( const item &it, item_pocket::pocket_type pk_type )
+{
+    ret_val<item_pocket *> pocket = find_pocket_for( it, pk_type );
+    if( pocket.success() ) {
+        return pocket.value()->moves();
+    } else {
+        return -1;
+    }
+}
+
+ret_val<bool> item_contents::insert_item( const item &it, item_pocket::pocket_type pk_type )
+{
+    ret_val<item_pocket *> pocket = find_pocket_for( it, pk_type );
+    if( !pocket.success() ) {
+        return ret_val<bool>::make_failure( pocket.str() );
+    }
+    ret_val<item_pocket::contain_code> pocket_contain_code = pocket.value()->insert_item( it );
+    if( pocket_contain_code.success() ) {
+        return ret_val<bool>::make_success();
+    }
+    if( pocket_contain_code.value() != item_pocket::contain_code::ERR_LEGACY_CONTAINER ) {
+        return ret_val<bool>::make_failure( pocket_contain_code.str() );
+    }
 }
 
 int item_contents::obtain_cost( const item &it ) const

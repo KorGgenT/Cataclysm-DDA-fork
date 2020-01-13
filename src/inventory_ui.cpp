@@ -1167,9 +1167,10 @@ void inventory_selector::add_character_items( Character &character )
         add_items( own_inv_column, [&character]( item * it ) {
             return item_location( character, it );
         }, restack_items( ( *elem ).begin(), ( *elem ).end(), preset.get_checking_components() ) );
-        for ( item &it_elem : *elem ) {
-            for ( item *it : it_elem.contents.all_items_ptr( item_pocket::pocket_type::CONTAINER ) ) {
-                add_item( own_inv_column, item_location( item_location( character, &it_elem ), it ), &it->get_category() );
+        for( item &it_elem : *elem ) {
+            for( item *it : it_elem.contents.all_items_ptr( item_pocket::pocket_type::CONTAINER ) ) {
+                add_item( own_inv_column, item_location( item_location( character, &it_elem ), it ),
+                          &it->get_category() );
             }
         }
     }

@@ -92,6 +92,8 @@ class item_pocket
         units::volume item_size_modifier() const;
         units::mass item_weight_modifier() const;
 
+        int moves() const;
+
         item *magazine_current();
         void casings_handle( const std::function<bool( item & )> &func );
         bool use_amount( const itype_id &it, int &quantity, std::list<item> &used );
