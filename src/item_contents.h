@@ -97,6 +97,8 @@ class item_contents
         size_t size() const;
         void legacy_pop_back();
         size_t num_item_stacks() const;
+        // spills items that can't fit in the pockets anymore
+        void overflow( const tripoint &pos );
         bool spill_contents( const tripoint &pos );
         void clear_items();
         bool has_item( const item &it ) const;
@@ -114,6 +116,8 @@ class item_contents
                                       item *parent = nullptr );
 
         void info( std::vector<iteminfo> &info ) const;
+
+        bool same_contents( const item_contents &rhs ) const;
 
         void serialize( JsonOut &json ) const;
         void deserialize( JsonIn &jsin );

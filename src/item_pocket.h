@@ -108,6 +108,8 @@ class item_pocket
         // removes and returns the item from the pocket.
         cata::optional<item> remove_item( const item &it );
         cata::optional<item> remove_item( const item_location &it );
+        // spills any contents that can't fit into the pocket, largest items first
+        void overflow( const tripoint &pos );
         bool spill_contents( const tripoint &pos );
         void clear_items();
         bool has_item( const item &it ) const;
@@ -142,6 +144,7 @@ class item_pocket
         void serialize( JsonOut &json ) const;
         void deserialize( JsonIn &jsin );
 
+        bool same_contents( const pocket_data &rhs ) const;
         bool operator==( const item_pocket &rhs ) const;
     private:
         // the type of pocket, saved to json

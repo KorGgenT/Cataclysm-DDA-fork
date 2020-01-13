@@ -37,6 +37,18 @@ bool item_contents::stacks_with( const item_contents &rhs ) const
     } );
 }
 
+bool item_contents::same_contents( const item_contents &rhs ) const
+{
+    if( contents.size() != rhs.contents.size() ) {
+        return false;
+    }
+    return std::equal( contents.begin(), contents.end(),
+                       rhs.contents.begin(),
+    []( const item_pocket & a, const item_pocket & b ) {
+        return a.same_contents( b );
+    } );
+}
+
 void item_contents::combine( const item_contents &rhs )
 {
     for( const item_pocket &pocket : rhs.contents ) {
@@ -46,7 +58,7 @@ void item_contents::combine( const item_contents &rhs )
             }
         } else {
             for( const item it : pocket.all_items() ) {
-                if ( !insert_item( it, pocket.saved_type() ) ) {
+                if( !insert_item( it, pocket.saved_type() ) ) {
                     force_insert_item( it, pocket.saved_type() );
                 }
             }
@@ -340,6 +352,13 @@ units::mass item_contents::item_weight_modifier() const
         total_mass += pocket.item_weight_modifier();
     }
     return total_mass;
+}
+
+void item_contents::overflow( const tripoint &pos )
+{
+    for( item_pocket &pocket : contents ) {
+        pocket.overflow( pos );
+    }
 }
 
 bool item_contents::spill_contents( const tripoint &pos )

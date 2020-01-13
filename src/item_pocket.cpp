@@ -70,6 +70,19 @@ bool pocket_data::operator==( const pocket_data &rhs ) const
            moves == rhs.moves;
 }
 
+bool item_pocket::same_contents( const item_pocket &rhs ) const
+{
+    if( contents.size() != rhs.contents.size() ) {
+        return false;
+    }
+    return std::equal( contents.begin(), contents.end(),
+                       rhs.contents.begin(),
+    []( const item & a, const item & b ) {
+        return a.typeId() == b.typeId() &&
+               a.charges == b.charges;
+    } );
+}
+
 bool item_pocket::stacks_with( const item_pocket &rhs ) const
 {
     return std::equal( contents.begin(), contents.end(),
@@ -518,6 +531,48 @@ cata::optional<item> item_pocket::remove_item( const item_location &it )
         return cata::nullopt;
     }
     return remove_item( *it );
+}
+
+void item_pocket::overflow( const tripoint &pos )
+{
+    if( is_type( item_pocket:: pocket_type::LEGACY_CONTAINER ) ) {
+        // legacy containers can't overflow
+        return;
+    }
+    if( empty() ) {
+        // no items to overflow
+        return;
+    }
+    // first remove items that shouldn't be in there anyway
+    for( auto iter = contents.begin(); iter != contents.end(); ) {
+        const ret_val<bool> ret_contain = can_contain( it );
+        if( !ret_contain.success() && ret_contain.value() !=
+            contain_code::ERR_NO_SPACE && ret_contain.value() !=
+            contain_code::ERR_CANNOT_SUPPORT ) {
+            g->m.add_item_or_charges( pos, *it );
+            iter = contents.erase( iter );
+        } else {
+            ++iter;
+        }
+    }
+    if( remaining_volume() < 0_ml ) {
+        contents.sort( []( const item & left, const item & right ) {
+            return left.volume() > right.volume();
+        } );
+        while( remaining_volume() < 0_ml && !contents.empty() ) {
+            g->m.add_item_or_charges( contents.front() );
+            contents.pop_front();
+        }
+    }
+    if( remaining_weight() < 0_gram ) {
+        contents.sort( []( const item & left, const item & right ) {
+            return left.weight() > right.weight();
+        } );
+        while( remaining_weight() < 0_gram && !contents.empty() ) {
+            g->m.add_item_or_charges( contents.front() );
+            contents.pop_front();
+        }
+    }
 }
 
 bool item_pocket::spill_contents( const tripoint &pos )
