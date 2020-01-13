@@ -43,7 +43,7 @@ bool item_contents::same_contents( const item_contents &rhs ) const
         return false;
     }
     return std::equal( contents.begin(), contents.end(),
-                       rhs.contents.begin(),
+                       rhs.contents.begin(), rhs.contents.end(),
     []( const item_pocket & a, const item_pocket & b ) {
         return a.same_contents( b );
     } );
@@ -58,7 +58,7 @@ void item_contents::combine( const item_contents &rhs )
             }
         } else {
             for( const item it : pocket.all_items() ) {
-                if( !insert_item( it, pocket.saved_type() ) ) {
+                if( !insert_item( it, pocket.saved_type() ).success() ) {
                     force_insert_item( it, pocket.saved_type() );
                 }
             }
@@ -68,9 +68,9 @@ void item_contents::combine( const item_contents &rhs )
 
 void item_contents::move_legacy_to_pocket_type( const item_pocket::pocket_type pk_type )
 {
-    for( const item *it : legacy_pocket().all_items_ptr() ) {
-        if( !insert_item( *it, pk_type ) ) {
-            force_insert_item( *it, pk_type );
+    for( const item &it : legacy_pocket().all_items() ) {
+        if( !insert_item( it, pk_type ).success() ) {
+            force_insert_item( it, pk_type );
         }
     }
     legacy_pocket().clear_items();

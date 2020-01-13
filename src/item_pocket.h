@@ -144,7 +144,7 @@ class item_pocket
         void serialize( JsonOut &json ) const;
         void deserialize( JsonIn &jsin );
 
-        bool same_contents( const pocket_data &rhs ) const;
+        bool same_contents( const item_pocket &rhs ) const;
         bool operator==( const item_pocket &rhs ) const;
     private:
         // the type of pocket, saved to json

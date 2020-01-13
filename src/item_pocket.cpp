@@ -76,7 +76,7 @@ bool item_pocket::same_contents( const item_pocket &rhs ) const
         return false;
     }
     return std::equal( contents.begin(), contents.end(),
-                       rhs.contents.begin(),
+                       rhs.contents.begin(), rhs.contents.end(),
     []( const item & a, const item & b ) {
         return a.typeId() == b.typeId() &&
                a.charges == b.charges;
@@ -545,11 +545,11 @@ void item_pocket::overflow( const tripoint &pos )
     }
     // first remove items that shouldn't be in there anyway
     for( auto iter = contents.begin(); iter != contents.end(); ) {
-        const ret_val<bool> ret_contain = can_contain( it );
-        if( !ret_contain.success() && ret_contain.value() !=
-            contain_code::ERR_NO_SPACE && ret_contain.value() !=
-            contain_code::ERR_CANNOT_SUPPORT ) {
-            g->m.add_item_or_charges( pos, *it );
+        ret_val<item_pocket::contain_code> ret_contain = can_contain( *iter );
+        if( !ret_contain.success() &&
+            ret_contain.value() != contain_code::ERR_NO_SPACE &&
+            ret_contain.value() != contain_code::ERR_CANNOT_SUPPORT ) {
+            g->m.add_item_or_charges( pos, *iter );
             iter = contents.erase( iter );
         } else {
             ++iter;
@@ -560,7 +560,7 @@ void item_pocket::overflow( const tripoint &pos )
             return left.volume() > right.volume();
         } );
         while( remaining_volume() < 0_ml && !contents.empty() ) {
-            g->m.add_item_or_charges( contents.front() );
+            g->m.add_item_or_charges( pos, contents.front() );
             contents.pop_front();
         }
     }
@@ -569,7 +569,7 @@ void item_pocket::overflow( const tripoint &pos )
             return left.weight() > right.weight();
         } );
         while( remaining_weight() < 0_gram && !contents.empty() ) {
-            g->m.add_item_or_charges( contents.front() );
+            g->m.add_item_or_charges( pos, contents.front() );
             contents.pop_front();
         }
     }
