@@ -75,6 +75,9 @@ class item_contents
         // copies the content items
         // used to help with loading
         void combine( const item_contents &rhs );
+        // moves all items from the legacy pocket to new pocket types using can_contain
+        void move_legacy_to_pocket_type( const item_pocket::pocket_type pk_type );
+        void force_insert_item( const item &it, item_pocket::pocket_type pk_type );
         // tries to put an item in a pocket. returns false on failure
         // has similar code to can_contain in order to avoid running it twice
         ret_val<bool> insert_item( const item &it,

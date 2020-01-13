@@ -46,14 +46,22 @@ void item_contents::combine( const item_contents &rhs )
             }
         } else {
             for( const item it : pocket.all_items() ) {
-                const ret_val<bool> inserted = insert_item( it, pocket.saved_type() );
-                if( !inserted.success() ) {
-                    debugmsg( "error: tried to put an item into a pocket that can't fit it while loading. err: %s",
-                              inserted.str() );
+                if ( !insert_item( it, pocket.saved_type() ) ) {
+                    force_insert_item( it, pocket.saved_type() );
                 }
             }
         }
     }
+}
+
+void item_contents::move_legacy_to_pocket_type( const item_pocket::pocket_type pk_type )
+{
+    for( const item *it : legacy_pocket().all_items_ptr() ) {
+        if( !insert_item( *it, pk_type ) ) {
+            force_insert_item( *it, pk_type );
+        }
+    }
+    legacy_pocket().clear_items();
 }
 
 ret_val<bool> item_contents::can_contain( const item &it ) const
@@ -439,6 +447,17 @@ int item_contents::insert_cost( const item &it, item_pocket::pocket_type pk_type
     } else {
         return -1;
     }
+}
+
+void item_contents::force_insert_item( const item &it, item_pocket::pocket_type pk_type )
+{
+    for( item_pocket &pocket : contents ) {
+        if( pocket.is_type( pk_type ) ) {
+            pocket.add( it );
+            return;
+        }
+    }
+    debugmsg( "ERROR: Could not insert item %s as contents does not have pocket type", it.tname() );
 }
 
 ret_val<bool> item_contents::insert_item( const item &it, item_pocket::pocket_type pk_type )
