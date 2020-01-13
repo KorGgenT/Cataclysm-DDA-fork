@@ -46,9 +46,21 @@ TEST_CASE( "item_contents" )
     // check to see if the items are in the same pockets as they were
     CHECK( tool_belt.contents.same_contents( read_val.contents ) );
 
+    tool_belt.contents.force_insert_item( crowbar, item_pocket::pocket_type::CONTAINER );
+    CHECK( tool_belt.contents.num_item_stacks() == 5 );
+    tool_belt.contents.overflow( tripoint_zero );
+    CHECK( tool_belt.contents.num_item_stacks() == 4 );
+    // the item that dropped should have been the crowbar
+    CHECK( tool_belt.contents.same_contents( read_val.contents ) );
+    tool_belt.contents.overflow( tripoint_zero );
+    // overflow should only spill items if they can't fit
+    CHECK( tool_belt.contents.num_item_stacks() == 4 );
+
     tool_belt.contents.remove_items_if( []( item & it ) {
         return it.typeId() == "hammer";
     } );
     // check to see that removing an item works
     CHECK( tool_belt.contents.num_item_stacks() == 3 );
+    tool_belt.spill_contents( tripoint_zero );
+    CHECK( tool_belt.contents.empty() );
 }
