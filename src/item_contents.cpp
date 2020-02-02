@@ -508,6 +508,7 @@ ret_val<bool> item_contents::insert_item( const item &it, item_pocket::pocket_ty
     if( pocket_contain_code.value() != item_pocket::contain_code::ERR_LEGACY_CONTAINER ) {
         return ret_val<bool>::make_failure( pocket_contain_code.str() );
     }
+    return ret_val<bool>::make_failure( "No success" );
 }
 
 int item_contents::obtain_cost( const item &it ) const
@@ -560,7 +561,7 @@ void item_contents::info( std::vector<iteminfo> &info ) const
                                                  pocket_num[idx] ) ) );
         }
         idx++;
-        pocket.general_info( info, 0, false );
+        pocket.general_info( info, idx, false );
     }
     info.insert( info.end(), contents_info.begin(), contents_info.end() );
 }
