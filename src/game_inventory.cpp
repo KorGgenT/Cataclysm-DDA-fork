@@ -215,6 +215,44 @@ void game_menus::inv::common( avatar &you )
     } while( loop_options.count( res ) != 0 );
 }
 
+void game_menus::inv::common( item_location loc, avatar &you )
+{
+    // Return to inventory menu on those inputs
+    static const std::set<int> loop_options = { { '\0', '=', 'f' } };
+
+    inventory_pick_selector inv_s( you );
+
+    inv_s.set_title( string_format( _( "Inventory of %s" ), loc->tname() ) );
+    inv_s.set_hint( string_format(
+                        _( "Item hotkeys assigned: <color_light_gray>%d</color>/<color_light_gray>%d</color>" ),
+                        you.allocated_invlets().count(), inv_chars.size() ) );
+
+    int res = 0;
+
+    bool need_refresh = true;
+    do {
+        inv_s.clear_items();
+        inv_s.add_contained_items( loc );
+        inv_s.update( need_refresh );
+
+        const item_location &location = inv_s.execute();
+
+        if( location == item_location::nowhere ) {
+            if( inv_s.keep_open ) {
+                inv_s.keep_open = false;
+                continue;
+            } else {
+                break;
+            }
+        }
+
+        g->refresh_all();
+        res = g->inventory_item_menu( location );
+        g->refresh_all();
+
+    } while( loop_options.count( res ) != 0 );
+}
+
 item_location game_menus::inv::titled_filter_menu( item_filter filter, avatar &you,
         const std::string &title, const std::string &none_message )
 {
@@ -1229,10 +1267,12 @@ item_location game_menus::inv::holster( player &p, item &holster )
     const std::string hint = string_format( _( "Choose an item to put into your %s" ),
                                             holster_name );
 
-    return inv_internal( p, holster_inventory_preset( p, *actor, holster ), title, 1,
-                         string_format( _( "You have no items you could put into your %s." ),
-                                        holster_name ),
-                         hint );
+    item_filter holster_filter = [holster]( const item & it ) {
+        return holster.can_contain( it );
+    };
+    return game_menus::inv::titled_filter_menu( holster_filter, *p.as_avatar(), title,
+            string_format( _( "You have no items you could put into your %s." ),
+                           holster_name ) );
 }
 
 class saw_barrel_inventory_preset: public weapon_inventory_preset

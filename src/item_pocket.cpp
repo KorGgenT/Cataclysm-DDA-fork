@@ -35,9 +35,14 @@ std::string enum_to_string<item_pocket::pocket_type>( item_pocket::pocket_type d
 void pocket_data::load( const JsonObject &jo )
 {
     optional( jo, was_loaded, "pocket_type", type, item_pocket::pocket_type::CONTAINER );
-    optional( jo, was_loaded, "min_item_volume", min_item_volume, volume_reader(), 0_ml );
-    mandatory( jo, was_loaded, "max_contains_volume", max_contains_volume, volume_reader() );
-    mandatory( jo, was_loaded, "max_contains_weight", max_contains_weight, mass_reader() );
+    optional( jo, was_loaded, "ammo_restriction", ammo_restriction );
+    // ammo_restriction is a type of override, making the mandatory members not mandatory and superfluous
+    // putting it in an if statement like this should allow for report_unvisited_member to work here
+    if( ammo_restriction.empty() ) {
+        optional( jo, was_loaded, "min_item_volume", min_item_volume, volume_reader(), 0_ml );
+        mandatory( jo, was_loaded, "max_contains_volume", max_contains_volume, volume_reader() );
+        mandatory( jo, was_loaded, "max_contains_weight", max_contains_weight, mass_reader() );
+    }
     optional( jo, was_loaded, "spoil_multiplier", spoil_multiplier, 1.0f );
     optional( jo, was_loaded, "weight_multiplier", weight_multiplier, 1.0f );
     optional( jo, was_loaded, "moves", moves, 100 );
@@ -47,6 +52,16 @@ void pocket_data::load( const JsonObject &jo )
     optional( jo, was_loaded, "open_container", open_container, false );
     optional( jo, was_loaded, "flag_restriction", flag_restriction );
     optional( jo, was_loaded, "rigid", rigid, false );
+    optional( jo, was_loaded, "item_number_override", _item_number_overrides );
+}
+
+void item_number_overrides::load( const JsonObject &jo )
+{
+    optional( jo, was_loaded, "num_items", num_items );
+    optional( jo, was_loaded, "item_stacks", item_stacks );
+    if( num_items > 0 ) {
+        has_override = true;
+    }
 }
 
 bool item_pocket::operator==( const item_pocket &rhs ) const
@@ -81,6 +96,50 @@ bool item_pocket::same_contents( const item_pocket &rhs ) const
         return a.typeId() == b.typeId() &&
                a.charges == b.charges;
     } );
+}
+
+bool item_pocket::has_item_stacks_with( const item &it ) const
+{
+    for( const item &inside : contents ) {
+        if( it.stacks_with( inside ) ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool item_pocket::better_pocket( const item_pocket &rhs ) const
+{
+    const bool rhs_it_stack = rhs.has_item_stacks_with( it );
+    if( has_item_stacks_with( it ) != rhs_it_stack ) {
+        return rhs_it_stack;
+    }
+    if( data->ammo_restriction.empty() != rhs.data->ammo_restriction.empty() ) {
+        // pockets restricted by ammo should try to get filled first
+        return !rhs.data->ammo_restriction.empty();
+    }
+    if( data->flag_restriction.empty() != rhs.data->flag_restriction.empty() ) {
+        // pockets restricted by flag should try to get filled first
+        return !rhs.data->flag_restriction.empty();
+    }
+    if( it.is_comestible() && it.get_comestible()->spoils != 0 ) {
+        // a lower spoil multiplier is better
+        return rhs.data->spoil_multiplier < data->spoil_multiplier;
+    }
+    if( data->rigid != rhs.data->rigid ) {
+        return rhs.data->rigid;
+    }
+    if( it.made_of( SOLID ) ) {
+        if( data->watertight != rhs.data->watertight ) {
+            return rhs.data->watertight;
+        }
+    }
+    if( remaining_volume() == it.volume() ) {
+        // if it fits perfectly, we're done
+        return false;
+    }
+    // we want the least amount of remaining volume
+    return rhs.remaining_volume() < remaining_volume();
 }
 
 bool item_pocket::stacks_with( const item_pocket &rhs ) const
@@ -485,6 +544,20 @@ ret_val<item_pocket::contain_code> item_pocket::can_contain( const item &it ) co
         return ret_val<item_pocket::contain_code>::make_failure(
                    contain_code::ERR_GAS, _( "can't contain gas" ) );
     }
+    if( !data->flag_restriction.empty() && !it.has_any_flag( data->flag_restriction ) ) {
+        return ret_val<item_pocket::contain_code>::make_failure(
+                   contain_code::ERR_FLAG, _( "item does not have correct flag" ) );
+    }
+
+    // ammo restriction overrides item volume and weight data
+    if( !data->ammo_restriction.empty() && it.is_ammo()
+        && data->ammo_restriction.count( it.ammo_type() ) ) {
+        return ret_val<item_pocket::contain_code>::make_failure(
+                   contain_code::ERR_AMMO, _( "item is not the correct ammo type" ) );
+    } else if( !data->ammo_restriction.empty() && it.is_ammo() ) {
+        return ret_val<item_pocket::contain_code>::make_success();
+    }
+
     if( it.volume() < data->min_item_volume ) {
         return ret_val<item_pocket::contain_code>::make_failure(
                    contain_code::ERR_TOO_SMALL, _( "item is too small" ) );
@@ -496,10 +569,6 @@ ret_val<item_pocket::contain_code> item_pocket::can_contain( const item &it ) co
     if( it.weight() > remaining_weight() ) {
         return ret_val<item_pocket::contain_code>::make_failure(
                    contain_code::ERR_CANNOT_SUPPORT, _( "pocket is holding too much weight" ) );
-    }
-    if( !data->flag_restriction.empty() && !it.has_any_flag( data->flag_restriction ) ) {
-        return ret_val<item_pocket::contain_code>::make_failure(
-                   contain_code::ERR_FLAG, _( "item does not have correct flag" ) );
     }
     if( it.volume() > data->max_contains_volume ) {
         return ret_val<item_pocket::contain_code>::make_failure(

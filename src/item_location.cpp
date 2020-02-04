@@ -348,11 +348,6 @@ class item_location::impl::item_on_person : public item_location::impl
                     mv += who->as_player()->item_handling_cost( obj, false,
                             parents.back()->contents.obtain_cost( obj ) );
 
-                } else if( parents.back()->is_bandolier() ) {
-                    auto ptr = dynamic_cast<const bandolier_actor *>
-                               ( parents.back()->type->get_use( "bandolier" )->get_actor_ptr() );
-                    mv += dynamic_cast<player *>( who )->item_handling_cost( obj, false, ptr->draw_cost );
-
                 } else {
                     mv += dynamic_cast<player *>( who )->item_handling_cost( obj, false,
                             INVENTORY_HANDLING_PENALTY / 2 );

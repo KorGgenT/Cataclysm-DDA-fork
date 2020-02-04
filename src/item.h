@@ -678,6 +678,11 @@ class item : public visitable<item>
          * ammo, magazines, weapons, etc.
          */
         units::volume get_total_capacity() const;
+        // checks if the item can have things placed in it
+        bool has_pockets() const {
+            // what has it gots in them, precious
+            return contents.size() > 0;
+        }
         /**
          * Puts the given item into this one, no checks are performed.
          */

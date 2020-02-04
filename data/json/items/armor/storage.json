@@ -17,7 +17,13 @@
     "coverage": 30,
     "encumbrance": 2,
     "max_encumbrance": 15,
-    "storage": "15 L",
+    "pocket_data": [
+      {
+        "max_contains_volume": "15 L",
+        "max_contains_weight": "30 kg",
+        "moves": 300
+      }
+    ],
     "warmth": 6,
     "material_thickness": 2,
     "flags": [ "BELTED" ]
@@ -40,30 +46,36 @@
     "coverage": 50,
     "encumbrance": 10,
     "max_encumbrance": 40,
-    "storage": "55 L",
     "warmth": 10,
     "material_thickness": 2,
     "pocket_data": [
         {
           "pocket_type": "CONTAINER",
-          "min_item_volume": "250 ml",
-          "max_contains_volume": "250 ml",
-          "max_contains_weight": "2 kg",
-          "moves": 3
+          "max_contains_volume": "55 L",
+          "max_contains_weight": "50 kg",
+          "moves": 450
         },
         {
           "pocket_type": "CONTAINER",
           "min_item_volume": "250 ml",
           "max_contains_volume": "250 ml",
           "max_contains_weight": "2 kg",
-          "moves": 3
+          "moves": 3,
+          "flag_restriction": [ "SHEATH_KNIFE", "SHEATH_SWORD" ]
+        },
+        {
+          "pocket_type": "CONTAINER",
+          "min_item_volume": "250 ml",
+          "max_contains_volume": "250 ml",
+          "max_contains_weight": "2 kg",
+          "moves": 3,
+          "flag_restriction": [ "SHEATH_KNIFE", "SHEATH_SWORD" ]
         }
       ],
     "use_action": {
       "type": "holster",
       "holster_prompt": "Sheath blade",
-      "holster_msg": "You sheath your %s",
-      "flags": [ "SHEATH_KNIFE", "SHEATH_SWORD" ]
+      "holster_msg": "You sheath your %s"
     },
     "flags": [ "BELTED", "WATERPROOF", "ONLY_ONE", "OVERSIZE" ]
   },

@@ -3252,8 +3252,11 @@ void item::final_info( std::vector<iteminfo> &info, const iteminfo_query *parts,
     itype_id tid;
     if( contents.empty() ) { // use this item
         tid = typeId();
-    } else { // use the contained item
-        tid = contents.legacy_front().typeId();
+    } else if( contents.num_item_stacks() == 1 ) { // use the contained item
+        tid = contents.all_items().front().typeId();
+    } else {
+        // multiple items contained make showing recipes you can craft incoherent
+        return;
     }
     const std::set<const recipe *> &known_recipes = g->u.get_learned_recipes().of_component( tid );
     if( !known_recipes.empty() && parts->test( iteminfo_parts::DESCRIPTION_APPLICABLE_RECIPES ) ) {
@@ -6152,23 +6155,12 @@ double item::calculate_by_enchantment_wield( double modify, enchantment::mod val
 
 bool item::can_contain( const item &it ) const
 {
-    // TODO: Volume check
-    return can_contain( *it.type );
+    return contents.can_contain( it ).success();
 }
 
 bool item::can_contain( const itype &tp ) const
 {
-    if( !type->container ) {
-        // TODO: Tools etc.
-        return false;
-    }
-
-    if( tp.phase == LIQUID && !type->container->watertight ) {
-        return false;
-    }
-
-    // TODO: Acid in waterskins
-    return true;
+    return can_contain( item( &tp ) );
 }
 
 const item &item::get_contained() const
@@ -6544,7 +6536,7 @@ int item::ammo_remaining() const
         return charges;
     }
 
-    if( is_magazine() || is_bandolier() ) {
+    if( is_magazine() ) {
         int res = 0;
         for( const item &e : contents.all_items() ) {
             res += e.charges;
@@ -6588,11 +6580,6 @@ int item::ammo_capacity( bool potential_capacity ) const
 
     if( is_magazine() ) {
         res = type->magazine->capacity;
-    }
-
-    if( is_bandolier() ) {
-        return dynamic_cast<const bandolier_actor *>
-               ( type->get_use( "bandolier" )->get_actor_ptr() )->capacity;
     }
 
     return res;
@@ -7533,18 +7520,7 @@ units::volume item::get_total_capacity() const
 {
     units::volume result = get_storage() + get_container_capacity();
 
-    // Consider various iuse_actors which add containing capability
-    // Treating these two as special cases for now; if more appear in the
-    // future then this probably warrants a new method on use_function to
-    // access this information generically.
-    if( is_bandolier() ) {
-        result += dynamic_cast<const bandolier_actor *>
-                  ( type->get_use( "bandolier" )->get_actor_ptr() )->max_stored_volume();
-    }
-
-    if( is_holster() ) {
-        result += contents.total_container_capacity();
-    }
+    result += contents.total_container_capacity();
 
     return result;
 }

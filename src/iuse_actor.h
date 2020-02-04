@@ -776,10 +776,6 @@ class holster_actor : public iuse_actor
         std::string holster_prompt;
         /** Message to show when holstering an item */
         std::string holster_msg;
-        /** Guns using any of these skills can be holstered */
-        std::vector<skill_id> skills;
-        /** Items with any of these flags set can be holstered */
-        std::vector<std::string> flags;
 
         /** Check if obj could be stored in the holster */
         bool can_holster( const item &holster, const item &obj ) const;
@@ -794,41 +790,6 @@ class holster_actor : public iuse_actor
         int use( player &, item &, bool, const tripoint & ) const override;
         std::unique_ptr<iuse_actor> clone() const override;
         void info( const item &, std::vector<iteminfo> & ) const override;
-};
-
-/**
- * Store ammo and later reload using it
- */
-class bandolier_actor : public iuse_actor
-{
-    public:
-        /** Total number of rounds that can be stored **/
-        int capacity = 1;
-
-        /** What types of ammo can be stored? */
-        std::set<ammotype> ammo;
-
-        /** Base cost of accessing/storing an item. Scales down to half of that with skills. */
-        int draw_cost = INVENTORY_HANDLING_PENALTY;
-
-        /** Can this type of ammo ever be stored */
-        bool is_valid_ammo_type( const itype & ) const;
-
-        /** Check if obj could be stored in the bandolier */
-        bool can_store( const item &bandolier, const item &obj ) const;
-
-        /** Store ammo in the bandolier */
-        bool reload( player &p, item &obj ) const;
-
-        bandolier_actor( const std::string &type = "bandolier" ) : iuse_actor( type ) {}
-
-        ~bandolier_actor() override = default;
-        void load( const JsonObject &obj ) override;
-        int use( player &, item &, bool, const tripoint & ) const override;
-        std::unique_ptr<iuse_actor> clone() const override;
-        void info( const item &, std::vector<iteminfo> & ) const override;
-
-        units::volume max_stored_volume() const;
 };
 
 class ammobelt_actor : public iuse_actor

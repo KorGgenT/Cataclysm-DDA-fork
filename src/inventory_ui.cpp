@@ -1159,6 +1159,14 @@ void inventory_selector::add_items( inventory_column &target_column,
     }
 }
 
+void inventory_selector::add_contained_items( item_location container )
+{
+    for( item *it : container->contents.all_items_top() ) {
+        add_item( own_inv_column, item_location( container, it ),
+                  &it->get_category() );
+    }
+}
+
 void inventory_selector::add_character_items( Character &character )
 {
     character.visit_items( [ this, &character ]( item * it ) {

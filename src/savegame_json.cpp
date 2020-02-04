@@ -193,6 +193,12 @@ void pocket_data::deserialize( JsonIn &jsin )
     load( data );
 }
 
+void item_number_overrides::deserialize( JsonIn &jsin )
+{
+    JsonObject data = jsin.get_object();
+    load( data );
+}
+
 std::vector<item> item::magazine_convert()
 {
     std::vector<item> res;

@@ -1995,6 +1995,12 @@ int game::inventory_item_menu( item_location locThisItem, int iStartX, int iWidt
         addentry( 'p', pgettext( "action", "part reload" ), u.rate_action_reload( oThisItem ) );
         addentry( 'm', pgettext( "action", "mend" ), u.rate_action_mend( oThisItem ) );
         addentry( 'D', pgettext( "action", "disassemble" ), u.rate_action_disassemble( oThisItem ) );
+        if( oThisItem.has_pockets() ) {
+            addentry( 'i', pgettext( "action", "insert" ), HINT_GOOD );
+            if( oThisItem.contents.num_item_stacks() > 0 ) {
+                addentry( 'o', pgettext( "action", "open" ), HINT_GOOD );
+            }
+        }
 
         if( oThisItem.is_favorite ) {
             addentry( 'f', pgettext( "action", "unfavorite" ), HINT_GOOD );
@@ -2111,6 +2117,23 @@ int game::inventory_item_menu( item_location locThisItem, int iStartX, int iWidt
                     break;
                 case 'f':
                     oThisItem.is_favorite = !oThisItem.is_favorite;
+                    break;
+                case 'i':
+                    if( oThisItem.has_pockets() ) {
+                        item_location loc = game_menus::inv::holster( u, oThisItem );
+                        if( loc ) {
+                            if( oThisItem.can_contain( *loc ) ) {
+                                oThisItem.put_in( *loc );
+                            } else {
+                                debugmsg( "Item cannot fit into container. It should be excluded from the inventory menu." );
+                            }
+                        }
+                    }
+                    break;
+                case 'o':
+                    if( oThisItem.has_pockets() && oThisItem.contents.num_item_stacks() > 0 ) {
+                        game_menus::inv::common( locThisItem, u );
+                    }
                     break;
                 case '=':
                     game_menus::inv::reassign_letter( u, oThisItem );
@@ -8328,14 +8351,6 @@ void game::reload( item_location &loc, bool prompt, bool empty )
     // for holsters and ammo pouches try to reload any contained item
     if( it->type->can_use( "holster" ) && !it->contents.empty() ) {
         it = &it->contents.legacy_front();
-    }
-
-    // for bandoliers we currently defer to iuse_actor methods
-    if( it->is_bandolier() ) {
-        auto ptr = dynamic_cast<const bandolier_actor *>
-                   ( it->type->get_use( "bandolier" )->get_actor_ptr() );
-        ptr->reload( u, *it );
-        return;
     }
 
     item::reload_option opt = u.ammo_location && it->can_reload_with( u.ammo_location->typeId() ) ?
