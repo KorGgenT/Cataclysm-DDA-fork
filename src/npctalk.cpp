@@ -3284,7 +3284,7 @@ std::string give_item_to( npc &p, bool allow_use, bool allow_carry )
     }
     if( allow_carry ) {
         if( !p.can_pickVolume( given ) ) {
-            const units::volume free_space = p.volume_capacity() - p.volume_carried();
+            const units::volume free_space = p.free_space();
             reason += "\n" + std::string( _( "I have no space to store it." ) ) + "\n";
             if( free_space > 0_ml ) {
                 reason += string_format( _( "I can only store %s %s more." ),

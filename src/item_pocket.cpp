@@ -108,7 +108,7 @@ bool item_pocket::has_item_stacks_with( const item &it ) const
     return false;
 }
 
-bool item_pocket::better_pocket( const item_pocket &rhs ) const
+bool item_pocket::better_pocket( const item_pocket &rhs, const item &it ) const
 {
     const bool rhs_it_stack = rhs.has_item_stacks_with( it );
     if( has_item_stacks_with( it ) != rhs_it_stack ) {
@@ -122,7 +122,7 @@ bool item_pocket::better_pocket( const item_pocket &rhs ) const
         // pockets restricted by flag should try to get filled first
         return !rhs.data->flag_restriction.empty();
     }
-    if( it.is_comestible() && it.get_comestible()->spoils != 0 ) {
+    if( it.is_comestible() && it.get_comestible()->spoils != 0_seconds ) {
         // a lower spoil multiplier is better
         return rhs.data->spoil_multiplier < data->spoil_multiplier;
     }
@@ -536,13 +536,31 @@ ret_val<item_pocket::contain_code> item_pocket::can_contain( const item &it ) co
     if( data->type == pocket_type::LEGACY_CONTAINER ) {
         return ret_val<item_pocket::contain_code>::make_failure( contain_code::ERR_LEGACY_CONTAINER );
     }
-    if( it.made_of( phase_id::LIQUID ) && !data->watertight ) {
+    if( it.made_of( phase_id::LIQUID ) ) {
+        if( !data->watertight ) {
+            return ret_val<item_pocket::contain_code>::make_failure(
+                       contain_code::ERR_LIQUID, _( "can't contain liquid" ) );
+        }
+        if( size() != 0 && !has_item_stacks_with( it ) ) {
+            return ret_val<item_pocket::contain_code>::make_failure(
+                       contain_code::ERR_LIQUID, _( "can't mix liquid with contained item" ) );
+        }
+    } else if( size() == 1 && contents.front().made_of( phase_id::LIQUID ) ) {
         return ret_val<item_pocket::contain_code>::make_failure(
-                   contain_code::ERR_LIQUID, _( "can't contain liquid" ) );
+                   contain_code::ERR_LIQUID, _( "can't put non liquid into pocket with liquid" ) );
     }
-    if( it.made_of( phase_id::GAS ) && !data->gastight ) {
+    if( it.made_of( phase_id::GAS ) ) {
+        if( !data->gastight ) {
+            return ret_val<item_pocket::contain_code>::make_failure(
+                       contain_code::ERR_GAS, _( "can't contain gas" ) );
+        }
+        if( size() != 0 && !has_item_stacks_with( it ) ) {
+            return ret_val<item_pocket::contain_code>::make_failure(
+                       contain_code::ERR_GAS, _( "can't mix gas with contained item" ) );
+        }
+    } else if( size() == 1 && contents.front().made_of( phase_id::GAS ) ) {
         return ret_val<item_pocket::contain_code>::make_failure(
-                   contain_code::ERR_GAS, _( "can't contain gas" ) );
+                   contain_code::ERR_LIQUID, _( "can't put non gas into pocket with gas" ) );
     }
     if( !data->flag_restriction.empty() && !it.has_any_flag( data->flag_restriction ) ) {
         return ret_val<item_pocket::contain_code>::make_failure(
@@ -714,6 +732,16 @@ void item_pocket::has_rotten_away( const tripoint &pnt )
 bool item_pocket::empty() const
 {
     return contents.empty();
+}
+
+bool item_pocket::rigid() const
+{
+    return data->rigid;
+}
+
+bool item_pocket::watertight() const
+{
+    return data->watertight;
 }
 
 void item_pocket::add( const item &it )

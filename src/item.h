@@ -1168,6 +1168,7 @@ class item : public visitable<item>
         bool can_contain( const item &it ) const;
         bool can_contain( const itype &tp ) const;
         /*@}*/
+        item_pocket *best_pocket( const item &it );
 
         /**
          * Is it ever possible to reload this item?

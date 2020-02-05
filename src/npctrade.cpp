@@ -415,7 +415,6 @@ bool trading_window::perform_trade( npc &np, const std::string &deal )
 {
     size_t ch;
 
-    volume_left = np.volume_capacity() - np.volume_carried();
     weight_left = np.weight_capacity() - np.weight_carried();
 
     // Shopkeeps are happy to have large inventories.

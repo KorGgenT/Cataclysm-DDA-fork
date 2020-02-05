@@ -1192,11 +1192,6 @@ void item::basic_info( std::vector<iteminfo> &info, const iteminfo_query *parts,
                                   convert_weight( weight() ) * batch ) );
     }
 
-    if( !type->rigid && parts->test( iteminfo_parts::BASE_RIGIDITY ) ) {
-        info.emplace_back( "BASE", _( "<bold>Rigid</bold>: " ),
-                           _( "No (contents increase volume)" ) );
-    }
-
     int dmg_bash = damage_melee( DT_BASH );
     int dmg_cut  = damage_melee( DT_CUT );
     int dmg_stab = damage_melee( DT_STAB );
@@ -2168,13 +2163,6 @@ void item::armor_info( std::vector<iteminfo> &info, const iteminfo_query *parts,
         info.push_back( iteminfo( "ARMOR", _( "<bold>Encumbrance</bold>: " ), format,
                                   iteminfo::no_newline | iteminfo::lower_is_better,
                                   encumbrance ) );
-        if( !type->rigid ) {
-            const int encumbrance_when_full =
-                get_encumber_when_containing( g->u, get_total_capacity() );
-            info.push_back( iteminfo( "ARMOR", space + _( "Encumbrance when full: " ), "",
-                                      iteminfo::no_newline | iteminfo::lower_is_better,
-                                      encumbrance_when_full ) );
-        }
     }
 
     int converted_storage_scale = 0;
@@ -4880,15 +4868,7 @@ void item::calc_rot_while_processing( time_duration processing_duration )
 
 units::volume item::get_storage() const
 {
-    const islot_armor *t = find_armor_data();
-    if( t == nullptr ) {
-        return is_pet_armor() ? type->pet_armor->storage : 0_ml;
-    }
-    units::volume storage = t->storage;
-    float mod = get_clothing_mod_val( clothing_mod_type_storage );
-    storage += lround( mod ) * units::legacy_volume_factor;
-
-    return storage;
+    return is_pet_armor() ? type->pet_armor->storage : 0_ml;
 }
 
 float item::get_weight_capacity_modifier() const
@@ -4943,27 +4923,7 @@ bool item::is_power_armor() const
 
 int item::get_encumber( const Character &p ) const
 {
-    units::volume contents_volume( contents.item_size_modifier() );
-
-    if( p.is_worn( *this ) ) {
-        const islot_armor *t = find_armor_data();
-
-        if( t != nullptr && t->max_encumber != 0 ) {
-            units::volume char_storage( 0_ml );
-
-            for( const item &e : p.worn ) {
-                char_storage += e.get_storage();
-            }
-
-            if( char_storage != 0_ml ) {
-                // Cast up to 64 to prevent overflow. Dividing before would prevent this but lose data.
-                contents_volume += units::from_milliliter( static_cast<int64_t>( t->storage.value() ) *
-                                   p.inv.volume().value() / char_storage.value() );
-            }
-        }
-    }
-
-    return get_encumber_when_containing( p, contents_volume );
+    return get_encumber_when_containing( p, contents.item_size_modifier() );
 }
 
 int item::get_encumber_when_containing(
@@ -4975,24 +4935,6 @@ int item::get_encumber_when_containing(
         return is_gun() ? volume() / 750_ml : 0;
     }
     int encumber = t->encumber;
-
-    // Non-rigid items add additional encumbrance proportional to their volume
-    if( !type->rigid ) {
-        const int capacity = get_total_capacity().value();
-
-        if( t->max_encumber != 0 ) {
-
-            if( capacity > 0 ) {
-                // Cast up to 64 to prevent overflow. Dividing before would prevent this but lose data.
-                encumber += static_cast<int64_t>( t->max_encumber - t->encumber ) * contents_volume.value() /
-                            capacity;
-            } else {
-                debugmsg( "Non-rigid item (%s) without storage capacity.", tname() );
-            }
-        } else {
-            encumber += contents_volume / 250_ml;
-        }
-    }
 
     // Fit checked before changes, fitting shouldn't reduce penalties from patching.
     if( has_flag( "FIT" ) && has_flag( "VARSIZE" ) ) {
@@ -6155,12 +6097,23 @@ double item::calculate_by_enchantment_wield( double modify, enchantment::mod val
 
 bool item::can_contain( const item &it ) const
 {
+    for( const item &it : contents.all_items() ) {
+        if( it.contents.can_contain_rigid( it ).success() ) {
+            return true;
+        }
+    }
+
     return contents.can_contain( it ).success();
 }
 
 bool item::can_contain( const itype &tp ) const
 {
     return can_contain( item( &tp ) );
+}
+
+item_pocket *item::best_pocket( const item &it )
+{
+    return contents.best_pocket( it );
 }
 
 const item &item::get_contained() const
@@ -7577,9 +7530,8 @@ int item::get_remaining_capacity_for_liquid( const item &liquid, const Character
     const bool allow_bucket = this == &p.weapon || !p.has_item( *this );
     int res = get_remaining_capacity_for_liquid( liquid, allow_bucket, err );
 
-    if( res > 0 && !type->rigid && p.inv.has_item( *this ) ) {
-        const units::volume volume_to_expand = std::max( p.volume_capacity() - p.volume_carried(),
-                                               0_ml );
+    if( res > 0 ) {
+        const units::volume volume_to_expand = contents.remaining_liquid_capacity( liquid );
 
         res = std::min( liquid.charges_per_volume( volume_to_expand ), res );
 

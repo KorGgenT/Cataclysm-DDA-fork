@@ -69,6 +69,9 @@ class item_pocket
         bool is_type( pocket_type ptype ) const;
         bool empty() const;
 
+        bool rigid() const;
+        bool watertight() const;
+
         std::list<item> all_items();
         std::list<item> all_items() const;
         std::list<item *> all_items_ptr( pocket_type pk_type );
@@ -152,7 +155,7 @@ class item_pocket
         bool same_contents( const item_pocket &rhs ) const;
         bool has_item_stacks_with( const item &it ) const;
 
-        bool better_pocket( const item_pocket &rhs ) const;
+        bool better_pocket( const item_pocket &rhs, const item &it ) const;
 
         bool operator==( const item_pocket &rhs ) const;
     private:

@@ -191,7 +191,7 @@ units::volume advanced_inv_area::free_volume( bool in_vehicle ) const
     // should be a specific location instead
     assert( id != AIM_ALL );
     if( id == AIM_INVENTORY || id == AIM_WORN ) {
-        return g->u.volume_capacity() - g->u.volume_carried();
+        return g->u.free_space();
     }
     return in_vehicle ? veh->free_volume( vstor ) : g->m.free_volume( pos );
 }

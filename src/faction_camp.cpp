@@ -3299,8 +3299,8 @@ int om_carry_weight_to_trips( const std::vector<item *> &itms, npc_ptr comp )
     }
     units::mass max_m = comp ? comp->weight_capacity() - comp->weight_carried() : 30_kilogram;
     //Assume an additional pack will be carried in addition to normal gear
-    units::volume sack_v = item( itype_id( "makeshift_sling" ) ).get_storage();
-    units::volume max_v = comp ? comp->volume_capacity() - comp->volume_carried() : sack_v;
+    units::volume sack_v = item( itype_id( "makeshift_sling" ) ).contents.total_container_capacity();
+    units::volume max_v = comp ? comp->free_space() : sack_v;
     max_v += sack_v;
     return om_carry_weight_to_trips( total_m, total_v, max_m, max_v );
 }

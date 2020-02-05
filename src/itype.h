@@ -261,10 +261,6 @@ struct islot_armor {
      */
     int warmth = 0;
     /**
-     * How much storage this items provides when worn.
-     */
-    units::volume storage = 0_ml;
-    /**
     * Factor modifiying weight capacity
     */
     float weight_capacity_modifier = 1.0;
@@ -949,10 +945,6 @@ struct itype {
         units::money price = 0_cent;
         /** Value after cataclysm, dependent upon practical usages. Price given is for a default-sized stack. */
         units::money price_post = -1_cent;
-
-        /**@}*/
-        // If non-rigid volume (and if worn encumbrance) increases proportional to contents
-        bool rigid = true;
 
         /** Damage output in melee for zero or more damage types */
         std::array<int, NUM_DT> melee;

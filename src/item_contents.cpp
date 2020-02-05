@@ -49,6 +49,33 @@ bool item_contents::same_contents( const item_contents &rhs ) const
     } );
 }
 
+item_pocket *item_contents::best_pocket( const item &it, bool nested )
+{
+    if( !can_contain( it ).success() ) {
+        return nullptr;
+    }
+    item_pocket *ret = nullptr;
+    for( item_pocket &pocket : contents ) {
+        if( nested && !pocket.rigid() ) {
+            continue;
+        }
+        if( ret == nullptr ) {
+            if( pocket.can_contain( it ).success() ) {
+                ret = &pocket;
+            }
+        } else if( pocket.can_contain( it ).success() && ret->better_pocket( pocket, it ) ) {
+            ret = &pocket;
+            for( item *contained : all_items_top() ) {
+                item_pocket *internal_pocket = contained->contents.best_pocket( it, nested );
+                if( internal_pocket != nullptr && ret->better_pocket( pocket, it ) ) {
+                    ret = internal_pocket;
+                }
+            }
+        }
+    }
+    return ret;
+}
+
 void item_contents::combine( const item_contents &rhs )
 {
     for( const item_pocket &pocket : rhs.contents ) {
@@ -76,6 +103,25 @@ void item_contents::move_legacy_to_pocket_type( const item_pocket::pocket_type p
         }
     }
     legacy_pocket().clear_items();
+}
+
+ret_val<bool> item_contents::can_contain_rigid( const item &it ) const
+{
+    ret_val<bool> ret = ret_val<bool>::make_failure( _( "is not a container" ) );
+    for( const item_pocket &pocket : contents ) {
+        if( !pocket.rigid() ) {
+            ret = ret_val<bool>::make_failure( _( "is not rigid" ) );
+            continue;
+        }
+        const ret_val<item_pocket::contain_code> pocket_contain_code = pocket.can_contain( it );
+        if( pocket_contain_code.success() ) {
+            return ret_val<bool>::make_success();
+        }
+        if( pocket_contain_code.value() != item_pocket::contain_code::ERR_LEGACY_CONTAINER ) {
+            ret = ret_val<bool>::make_failure( pocket_contain_code.str() );
+        }
+    }
+    return ret;
 }
 
 ret_val<bool> item_contents::can_contain( const item &it ) const
@@ -361,6 +407,40 @@ units::volume item_contents::total_container_capacity() const
     for( const item_pocket &pocket : contents ) {
         if( pocket.is_type( item_pocket::pocket_type::CONTAINER ) ) {
             total_vol += pocket.volume_capacity();
+        }
+    }
+    return total_vol;
+}
+
+units::volume item_contents::remaining_container_capacity() const
+{
+    units::volume total_vol = 0_ml;
+    for( const item_pocket &pocket : contents ) {
+        if( pocket.is_type( item_pocket::pocket_type::CONTAINER ) ) {
+            total_vol += pocket.remaining_volume();
+        }
+    }
+    return total_vol;
+}
+
+units::volume item_contents::remaining_liquid_capacity( const item &liquid ) const
+{
+    units::volume total_vol = 0_ml;
+    for( const item_pocket &pocket : contents ) {
+        if( pocket.is_type( item_pocket::pocket_type::CONTAINER ) && pocket.watertight()
+            && ( pocket.size() == 0 || ( pocket.size() == 1 && pocket.has_item_stacks_with( liquid ) ) ) ) {
+            total_vol += pocket.remaining_volume();
+        }
+    }
+    return total_vol;
+}
+
+units::volume item_contents::total_contained_volume() const
+{
+    units::volume total_vol = 0_ml;
+    for( const item_pocket &pocket : contents ) {
+        if( pocket.is_type( item_pocket::pocket_type::CONTAINER ) ) {
+            total_vol += pocket.contains_volume();
         }
     }
     return total_vol;

@@ -1551,6 +1551,24 @@ int Character::i_add_to_container( const item &it, const bool unloading )
     return charges;
 }
 
+item_pocket *Character::best_pocket( const item &it )
+{
+    item_pocket *ret = weapon.best_pocket( it );
+    for( item &it : worn ) {
+        item_pocket *internal_pocket = it.best_pocket( it );
+        if( internal_pocket != nullptr ) {
+            if( ret == nullptr ) {
+                ret = it.best_pocket( it );
+            } else {
+                if( ret->better_pocket( *internal_pocket, it ) ) {
+                    ret = internal_pocket;
+                }
+            }
+        }
+    }
+    return ret;
+}
+
 item &Character::i_add( item it, bool should_stack )
 {
     itype_id item_type_id = it.typeId();
@@ -1571,10 +1589,17 @@ item &Character::i_add( item it, bool should_stack )
             break;
         }
     }
-    auto &item_in_inv = inv.add_item( it, keep_invlet, true, should_stack );
-    item_in_inv.on_pickup( *this );
-    cached_info.erase( "reloadables" );
-    return item_in_inv;
+    item_pocket *pocket = best_pocket( it );
+    if( pocket == nullptr ) {
+        debugmsg( "no space to add item. dropping" );
+        return g->m.add_item_or_charges( pos(), it );
+    } else {
+        pocket->add( it );
+        item &ret = pocket->back();
+        ret.on_pickup( *this );
+        cached_info.erase( "reloadables" );
+        return ret;
+    }
 }
 
 std::list<item> Character::remove_worn_items_with( std::function<bool( item & )> filter )
@@ -1929,11 +1954,6 @@ units::mass Character::weight_carried() const
     return weight_carried_with_tweaks( {} );
 }
 
-units::volume Character::volume_carried() const
-{
-    return inv.volume();
-}
-
 int Character::best_nearby_lifting_assist() const
 {
     return best_nearby_lifting_assist( this->pos() );
@@ -2008,7 +2028,7 @@ units::mass Character::weight_carried_with_tweaks( const item_tweaks &tweaks ) c
 
 units::volume Character::volume_carried_with_tweaks( const item_tweaks &tweaks ) const
 {
-    const auto &i = tweaks.replace_inv ? tweaks.replace_inv->get() : inv;
+    const inventory &i = tweaks.replace_inv ? tweaks.replace_inv->get() : inv;
     return tweaks.without_items ? i.volume_without( *tweaks.without_items ) : i.volume();
 }
 
@@ -2056,47 +2076,17 @@ units::mass Character::weight_capacity() const
     return ret;
 }
 
-units::volume Character::volume_capacity() const
-{
-    return volume_capacity_reduced_by( 0_ml );
-}
-
-units::volume Character::volume_capacity_reduced_by(
-    const units::volume &mod, const std::map<const item *, int> &without_items ) const
-{
-    if( has_trait( trait_id( "DEBUG_STORAGE" ) ) ) {
-        return units::volume_max;
-    }
-
-    units::volume ret = -mod;
-    for( auto &i : worn ) {
-        if( !without_items.count( &i ) ) {
-            ret += i.get_storage();
-        }
-    }
-    if( has_bionic( bionic_id( "bio_storage" ) ) ) {
-        ret += 2_liter;
-    }
-    if( has_trait( trait_SHELL ) ) {
-        ret += 4_liter;
-    }
-    if( has_trait( trait_SHELL2 ) && !has_active_mutation( trait_SHELL2 ) ) {
-        ret += 6_liter;
-    }
-    if( has_trait( trait_PACKMULE ) ) {
-        ret = ret * 1.4;
-    }
-    if( has_trait( trait_DISORGANIZED ) ) {
-        ret = ret * 0.6;
-    }
-    return std::max( ret, 0_ml );
-}
-
 bool Character::can_pickVolume( const item &it, bool ) const
 {
-    inventory projected = inv;
-    projected.add_item( it, true );
-    return projected.volume() <= volume_capacity();
+    if( weapon.can_contain( it ) ) {
+        return true;
+    }
+    for( const item &w : worn ) {
+        if( w.can_contain( it ) ) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool Character::can_pickWeight( const item &it, bool safe ) const
@@ -2289,9 +2279,9 @@ void Character::drop_invalid_inventory()
         add_msg_if_player( m_bad, _( "Liquid from your inventory has leaked onto the ground." ) );
     }
 
-    if( volume_carried() > volume_capacity() ) {
-        auto items_to_drop = inv.remove_randomly_by_volume( volume_carried() - volume_capacity() );
-        put_into_vehicle_or_drop( *this, item_drop_reason::tumbling, items_to_drop );
+    weapon.contents.overflow( pos() );
+    for( item &w : worn ) {
+        w.contents.overflow( pos() );
     }
 }
 
@@ -6583,7 +6573,7 @@ bool Character::dispose_item( item_location &&obj, const std::string &prompt )
 
     opts.emplace_back( dispose_option{
         bucket ? _( "Spill contents and store in inventory" ) : _( "Store in inventory" ),
-        volume_carried() + obj->volume() <= volume_capacity(), '1',
+        can_pickVolume( *obj ), '1',
         item_handling_cost( *obj ),
         [this, bucket, &obj] {
             if( bucket && !obj->spill_contents( *this ) )
@@ -7888,25 +7878,78 @@ void Character::update_morale()
     apply_persistent_morale();
 }
 
+units::volume Character::free_space() const
+{
+    units::volume volume_capacity = 0_ml;
+    volume_capacity += weapon.contents.remaining_container_capacity();
+    for( const item &it : weapon.contents.all_items() ) {
+        volume_capacity += it.contents.remaining_container_capacity();
+    }
+    for( const item &w : worn ) {
+        volume_capacity += w.contents.remaining_container_capacity();
+        for( const item &it : w.contents.all_items() ) {
+            volume_capacity += it.contents.remaining_container_capacity();
+        }
+    }
+    return volume_capacity;
+}
+
+units::volume Character::volume_capacity() const
+{
+    units::volume volume_capacity = 0_ml;
+    volume_capacity += weapon.contents.total_container_capacity();
+    for( const item &it : weapon.contents.all_items() ) {
+        volume_capacity += it.contents.total_container_capacity();
+    }
+    for( const item &w : worn ) {
+        volume_capacity += w.contents.total_container_capacity();
+        for( const item &it : w.contents.all_items() ) {
+            volume_capacity += it.contents.total_container_capacity();
+        }
+    }
+    return volume_capacity;
+}
+
+units::volume Character::volume_carried() const
+{
+    units::volume volume_capacity = 0_ml;
+    volume_capacity += weapon.contents.total_contained_volume();
+    for( const item &it : weapon.contents.all_items() ) {
+        volume_capacity += it.contents.total_contained_volume();
+    }
+    for( const item &w : worn ) {
+        volume_capacity += w.contents.total_contained_volume();
+        for( const item &it : w.contents.all_items() ) {
+            volume_capacity += it.contents.total_contained_volume();
+        }
+    }
+    return volume_capacity;
+}
+
+void Character::hoarder_morale_penalty()
+{
+    int pen = free_space() / 125_ml;
+    if( pen > 70 ) {
+        pen = 70;
+    }
+    if( pen <= 0 ) {
+        pen = 0;
+    }
+    if( has_effect( effect_took_xanax ) ) {
+        pen = pen / 7;
+    } else if( has_effect( effect_took_prozac ) ) {
+        pen = pen / 2;
+    }
+    if( pen > 0 ) {
+        add_morale( MORALE_PERM_HOARDER, -pen, -pen, 1_minutes, 1_minutes, true );
+    }
+}
+
 void Character::apply_persistent_morale()
 {
     // Hoarders get a morale penalty if they're not carrying a full inventory.
     if( has_trait( trait_HOARDER ) ) {
-        int pen = ( volume_capacity() - volume_carried() ) / 125_ml;
-        if( pen > 70 ) {
-            pen = 70;
-        }
-        if( pen <= 0 ) {
-            pen = 0;
-        }
-        if( has_effect( effect_took_xanax ) ) {
-            pen = pen / 7;
-        } else if( has_effect( effect_took_prozac ) ) {
-            pen = pen / 2;
-        }
-        if( pen > 0 ) {
-            add_morale( MORALE_PERM_HOARDER, -pen, -pen, 1_minutes, 1_minutes, true );
-        }
+        hoarder_morale_penalty();
     }
     // Nomads get a morale penalty if they stay near the same overmap tiles too long.
     if( has_trait( trait_NOMAD ) || has_trait( trait_NOMAD2 ) || has_trait( trait_NOMAD3 ) ) {

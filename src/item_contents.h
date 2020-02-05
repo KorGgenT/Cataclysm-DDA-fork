@@ -37,6 +37,7 @@ class item_contents
 
         bool stacks_with( const item_contents &rhs ) const;
 
+        ret_val<bool> can_contain_rigid( const item &it ) const;
         ret_val<bool> can_contain( const item &it ) const;
         bool empty() const;
         bool legacy_empty() const;
@@ -57,6 +58,9 @@ class item_contents
         // total size the parent item needs to be modified based on rigidity of pockets
         units::volume item_size_modifier() const;
         units::volume total_container_capacity() const;
+        units::volume total_contained_volume() const;
+        units::volume remaining_container_capacity() const;
+        units::volume remaining_liquid_capacity( const item &liquid ) const;
         // total weight the parent item needs to be modified based on weight modifiers of pockets
         units::mass item_weight_modifier() const;
 
@@ -122,6 +126,11 @@ class item_contents
         void info( std::vector<iteminfo> &info ) const;
 
         bool same_contents( const item_contents &rhs ) const;
+        // finds the best pocket in the contents.
+        // searches through internal items as well
+        // if @nested then searches through pockets that
+        // are relevant if they are on an item that is contained
+        item_pocket *best_pocket( const item &it, bool nested = false );
 
         void serialize( JsonOut &json ) const;
         void deserialize( JsonIn &jsin );

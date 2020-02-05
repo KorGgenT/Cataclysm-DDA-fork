@@ -1531,7 +1531,6 @@ void Item_factory::load( islot_armor &slot, const JsonObject &jo, const std::str
     assign( jo, "environmental_protection", slot.env_resist, strict, 0 );
     assign( jo, "environmental_protection_with_filter", slot.env_resist_w_filter, strict, 0 );
     assign( jo, "warmth", slot.warmth, strict, 0 );
-    assign( jo, "storage", slot.storage, strict, 0_ml );
     assign( jo, "weight_capacity_modifier", slot.weight_capacity_modifier );
     assign( jo, "weight_capacity_bonus", slot.weight_capacity_bonus, strict, 0_gram );
     assign( jo, "power_armor", slot.power_armor, strict );
@@ -2073,7 +2072,6 @@ void Item_factory::load_basic_info( const JsonObject &jo, itype &def, const std:
     assign( jo, "cutting", def.melee[DT_CUT], strict, 0 );
     assign( jo, "to_hit", def.m_to_hit, strict );
     assign( jo, "container", def.default_container );
-    assign( jo, "rigid", def.rigid );
     assign( jo, "min_strength", def.min_str );
     assign( jo, "min_dexterity", def.min_dex );
     assign( jo, "min_intelligence", def.min_int );

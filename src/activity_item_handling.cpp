@@ -437,34 +437,6 @@ static std::list<act_item> reorder_for_dropping( Character &p, const drop_locati
                || ( first.loc->get_storage() > second.loc->get_storage()
                     && !second.loc->is_worn_only_with( *first.loc ) );
     } );
-
-    // Cumulatively increases
-    units::volume storage_loss = 0_ml;
-    // Cumulatively decreases
-    units::volume remaining_storage = p.volume_capacity();
-
-    while( !worn.empty() && !inv.empty() ) {
-        storage_loss += worn.front().loc->get_storage();
-        remaining_storage -= p.volume_capacity_reduced_by( storage_loss );
-        units::volume inventory_item_volume = inv.front().loc->volume();
-        // Does not fit
-        if( remaining_storage < inventory_item_volume ) {
-            break;
-        }
-
-        while( !inv.empty() && remaining_storage >= inventory_item_volume ) {
-            remaining_storage -= inventory_item_volume;
-
-            res.push_back( inv.front() );
-            // Free of charge
-            res.back().consumed_moves = 0;
-
-            inv.pop_front();
-        }
-
-        res.push_back( worn.front() );
-        worn.pop_front();
-    }
     // Now insert everything that remains
     std::copy( inv.begin(), inv.end(), std::back_inserter( res ) );
     std::copy( worn.begin(), worn.end(), std::back_inserter( res ) );

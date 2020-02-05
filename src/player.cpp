@@ -3588,16 +3588,6 @@ bool player::takeoff( item &it, std::list<item> *res )
     } );
 
     if( res == nullptr ) {
-        if( volume_carried() + it.volume() > volume_capacity_reduced_by( it.get_storage() ) ) {
-            if( is_npc() || query_yn( _( "No room in inventory for your %s.  Drop it?" ),
-                                      colorize( it.tname(), it.color_in_inventory() ) ) ) {
-                item_location loc( *this, &it );
-                drop( loc, pos() );
-                return true; // the drop activity ends up taking off the item anyway so shouldn't try to do it again here
-            } else {
-                return false;
-            }
-        }
         iter->on_takeoff( *this );
         inv.add_item_keep_invlet( it );
     } else {
