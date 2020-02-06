@@ -1167,6 +1167,7 @@ class item : public visitable<item>
         /*@{*/
         bool can_contain( const item &it ) const;
         bool can_contain( const itype &tp ) const;
+        bool can_contain_partial( const item &it ) const;
         /*@}*/
         item_pocket *best_pocket( const item &it );
 

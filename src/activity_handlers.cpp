@@ -1341,7 +1341,7 @@ void activity_handlers::fill_liquid_do_turn( player_activity *act, player *p )
                 }
                 break;
             case LTT_CONTAINER:
-                p->pour_into( p->i_at( act_ref.values.at( 3 ) ), liquid );
+                p->pour_into( *act_ref.targets.at( 0 ), liquid );
                 break;
             case LTT_MAP:
                 if( iexamine::has_keg( act_ref.coords.at( 1 ) ) ) {
