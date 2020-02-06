@@ -6572,24 +6572,6 @@ bool Character::dispose_item( item_location &&obj, const std::string &prompt )
     const bool bucket = obj->is_bucket_nonempty();
 
     opts.emplace_back( dispose_option{
-        bucket ? _( "Spill contents and store in inventory" ) : _( "Store in inventory" ),
-        can_pickVolume( *obj ), '1',
-        item_handling_cost( *obj ),
-        [this, bucket, &obj] {
-            if( bucket && !obj->spill_contents( *this ) )
-            {
-                return false;
-            }
-
-            moves -= item_handling_cost( *obj );
-            inv.add_item_keep_invlet( *obj );
-            inv.unsort();
-            obj.remove_item();
-            return true;
-        }
-    } );
-
-    opts.emplace_back( dispose_option{
         _( "Drop item" ), true, '2', 0, [this, &obj] {
             put_into_vehicle_or_drop( *this, item_drop_reason::deliberate, { *obj } );
             obj.remove_item();

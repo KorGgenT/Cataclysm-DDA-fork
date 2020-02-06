@@ -245,12 +245,22 @@
     "name": "large plastic bottle",
     "description": "It's a two-liter plastic bottle that can hold a lot of soda, or, nowadays, boiled water.",
     "weight": "13 g",
-    "volume": "2 L",
+    "volume": "2003 ml",
     "price": 25,
     "price_postapoc": 500,
     "material": "plastic",
     "symbol": ")",
     "color": "cyan",
+    "pocket_data": [
+      {
+        "pocket_type": "CONTAINER",
+        "watertight": true,
+        "rigid": true,
+        "max_contains_volume": "2 L",
+        "max_contains_weight": "3 kg",
+        "moves": 400
+      }
+    ],
     "contains": "2 L",
     "seals": true,
     "watertight": true

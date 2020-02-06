@@ -6111,6 +6111,15 @@ bool item::can_contain( const itype &tp ) const
     return can_contain( item( &tp ) );
 }
 
+bool item::can_contain_partial( const item &it ) const
+{
+    item i_copy = it;
+    if( i_copy.count_by_charges() ) {
+        i_copy.charges = 1;
+    }
+    return can_contain( i_copy );
+}
+
 item_pocket *item::best_pocket( const item &it )
 {
     return contents.best_pocket( it );
@@ -7497,10 +7506,8 @@ int item::get_remaining_capacity_for_liquid( const item &liquid, bool allow_buck
             return error( string_format( _( "You can't mix loads in your %s." ), tname() ) );
         }
         remaining_capacity = ammo_capacity() - ammo_remaining();
-    } else if( is_container() ) {
-        if( !type->container->watertight ) {
-            return error( string_format( _( "That %s isn't water-tight." ), tname() ) );
-        } else if( !type->container->seals && ( !allow_bucket || !is_bucket() ) ) {
+    } else if( can_contain_partial( liquid ) ) {
+        if( !type->container->seals && ( !allow_bucket || !is_bucket() ) ) {
             return error( string_format( is_bucket() ?
                                          _( "That %s must be on the ground or held to hold contents!" )
                                          : _( "You can't seal that %s!" ), tname() ) );
@@ -7735,40 +7742,16 @@ void item::fill_with( item &liquid, int amount )
         return;
     }
 
-    if( !is_container() ) {
-        if( !is_reloadable_with( liquid.typeId() ) ) {
-            debugmsg( "Tried to fill %s which is not a container and can't be reloaded with %s.",
-                      tname(), liquid.tname() );
-            return;
-        }
-        ammo_set( liquid.typeId(), ammo_remaining() + amount );
-    } else if( is_food_container() ) {
-        // if container already has liquid we need to sum the energy
-        item &cts = contents.legacy_front();
-        const float lhs_energy = cts.get_item_thermal_energy();
-        const float rhs_energy = liquid.get_item_thermal_energy();
-        if( rhs_energy < 0 ) {
-            debugmsg( "Poured item has no defined temperature" );
-        }
-        const float combined_specific_energy = ( lhs_energy + rhs_energy ) / ( to_gram(
-                cts.weight() ) + to_gram( liquid.weight() ) );
-        cts.set_item_specific_energy( combined_specific_energy );
-        //use maximum rot between the two
-        cts.set_relative_rot( std::max( cts.get_relative_rot(),
-                                        liquid.get_relative_rot() ) );
-        cts.mod_charges( amount );
-    } else if( !is_container_empty() ) {
-        // if container already has liquid we need to set the amount
-        item &cts = contents.legacy_front();
-        cts.mod_charges( amount );
-    } else {
-        item liquid_copy( liquid );
-        liquid_copy.charges = amount;
-        put_in( liquid_copy );
-    }
+    item liquid_copy( liquid );
+    liquid_copy.charges = amount;
 
-    liquid.mod_charges( -amount );
-    on_contents_changed();
+    if( can_contain( liquid_copy ) ) {
+        put_in( liquid_copy, item_pocket::pocket_type::CONTAINER );
+        liquid.mod_charges( -amount );
+        on_contents_changed();
+    } else {
+        debugmsg( "tried to put a liquid in a container that cannot contain it" );
+    }
 }
 
 void item::set_countdown( int num_turns )
@@ -7861,10 +7844,6 @@ void item::set_snippet( const snippet_id &id )
 
 const item_category &item::get_category() const
 {
-    if( is_container() && !contents.empty() ) {
-        return contents.legacy_front().get_category();
-    }
-
     static item_category null_category;
     return type->category_force.is_valid() ? type->category_force.obj() : null_category;
 }
