@@ -1896,7 +1896,7 @@ void find_ammo_helper( T &src, const item &obj, bool empty, Output out, bool nes
                     return VisitResponse::SKIP;
                 }
 
-                if( parent->is_container() && node->made_of( LIQUID ) || node->is_frozen_liquid() ) {
+                if( (parent->is_container() && node->made_of( LIQUID )) || node->is_frozen_liquid() ) {
                     out = item_location( src, node );
                 }
                 return nested ? VisitResponse::NEXT : VisitResponse::SKIP;
