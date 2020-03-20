@@ -294,7 +294,7 @@
   },
   {
     "id": "bowl_plastic",
-    "type": "CONTAINER",
+    "type": "GENERIC",
     "category": "other",
     "name": "plastic bowl",
     "symbol": "u",
@@ -302,6 +302,15 @@
     "copy-from": "base_plastic_dish",
     "volume": "750 ml",
     "container_data": { "contains": "750 ml", "seals": true, "watertight": true },
+    "pocket_data": [
+      {
+        "pocket_type": "CONTAINER",
+        "watertight": false,
+        "rigid": true,
+        "max_contains_volume": "750 ml",
+        "max_contains_weight": "1 kg"
+      }
+    ],
     "qualities": [ [ "CONTAIN", 1 ] ]
   },
   {
