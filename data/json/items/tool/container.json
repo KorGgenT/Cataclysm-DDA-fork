@@ -42,7 +42,7 @@
         "pocket_type": "CONTAINER",
         "watertight": true,
         "rigid": false,
-        "max_contains_volume": "750 ml",
+        "max_contains_volume": "500 ml",
         "max_contains_weight": "1 kg"
       }
     ]
