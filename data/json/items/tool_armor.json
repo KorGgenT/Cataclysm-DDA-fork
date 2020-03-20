@@ -1728,14 +1728,14 @@
     "encumbrance": 4,
     "material_thickness": 2,
     "pocket_data": [
-        {
-          "pocket_type": "CONTAINER",
-          "min_item_volume": "250 ml",
-          "max_contains_volume": "1 L",
-          "max_contains_weight": "1 kg",
-          "moves": 3
-        }
-      ],
+      {
+        "pocket_type": "CONTAINER",
+        "min_item_volume": "250 ml",
+        "max_contains_volume": "1 L",
+        "max_contains_weight": "1 kg",
+        "moves": 3
+      }
+    ],
     "use_action": [
       {
         "type": "holster",

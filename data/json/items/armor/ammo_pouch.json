@@ -595,11 +595,13 @@
     "coverage": 10,
     "encumbrance": 3,
     "material_thickness": 1,
-    "pocket_data": [{
-      "item_number_override": { "num_stacks": 20, "item_stacks": false },
-      "ammo_restriction": [ "arrow", "bolt" ],
-      "moves": 20
-    }],
+    "pocket_data": [
+      {
+        "item_number_override": { "num_stacks": 20, "item_stacks": false },
+        "ammo_restriction": [ "arrow", "bolt" ],
+        "moves": 20
+      }
+    ],
     "flags": [ "WAIST", "OVERSIZE", "WATER_FRIENDLY" ]
   },
   {
