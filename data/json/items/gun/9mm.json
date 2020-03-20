@@ -243,10 +243,7 @@
         "pocket_type": "MAGAZINE",
         "max_contains_volume": "1 L",
         "max_contains_weight": "10 kg",
-        "item_number_override": {
-          "num_items": 1,
-          "item_stacks": false
-        }
+        "item_number_override": { "num_items": 1, "item_stacks": false }
       }
     ],
     "magazines": [ [ "9mm", [ "mp5mag" ] ] ]
