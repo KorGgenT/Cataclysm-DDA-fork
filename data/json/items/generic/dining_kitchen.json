@@ -301,7 +301,6 @@
     "description": "A plastic bowl with a convenient sealing lid.  Holds 750 ml of liquid.",
     "copy-from": "base_plastic_dish",
     "volume": "750 ml",
-    "container_data": { "contains": "750 ml", "seals": true, "watertight": true },
     "pocket_data": [
       {
         "pocket_type": "CONTAINER",
