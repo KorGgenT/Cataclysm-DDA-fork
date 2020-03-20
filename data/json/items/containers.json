@@ -112,14 +112,7 @@
     "to_hit": -5,
     "rigid": false,
     "material": "cotton",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "max_contains_volume": "1 L",
-        "max_contains_weight": "3 kg",
-        "moves": 400
-      }
-    ],
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "3 kg", "moves": 400 } ],
     "symbol": ")",
     "color": "brown",
     "contains": "15 L",
@@ -136,14 +129,7 @@
     "price": 0,
     "to_hit": -5,
     "material": "cotton",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "max_contains_volume": "1 L",
-        "max_contains_weight": "3 kg",
-        "moves": 400
-      }
-    ],
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "3 kg", "moves": 400 } ],
     "symbol": ")",
     "color": "brown"
   },
@@ -381,14 +367,7 @@
     "material": "paper",
     "symbol": ")",
     "color": "white",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "rigid": true,
-        "max_contains_volume": "250 ml",
-        "max_contains_weight": "3 kg"
-      }
-    ]
+    "pocket_data": [ { "pocket_type": "CONTAINER", "rigid": true, "max_contains_volume": "250 ml", "max_contains_weight": "3 kg" } ]
   },
   {
     "id": "box_small",
@@ -398,14 +377,7 @@
     "description": "A small cardboard box.  No bigger than a foot in dimension.",
     "weight": "151 g",
     "volume": "1 L",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "rigid": true,
-        "max_contains_volume": "990 ml",
-        "max_contains_weight": "4 kg"
-      }
-    ],
+    "pocket_data": [ { "pocket_type": "CONTAINER", "rigid": true, "max_contains_volume": "990 ml", "max_contains_weight": "4 kg" } ],
     "price": 0,
     "material": "cardboard",
     "symbol": ")",
@@ -1230,14 +1202,7 @@
     "material": "gutskin",
     "symbol": ")",
     "color": "brown",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "watertight": true,
-        "max_contains_volume": "3 L",
-        "max_contains_weight": "6 kg"
-      }
-    ]
+    "pocket_data": [ { "pocket_type": "CONTAINER", "watertight": true, "max_contains_volume": "3 L", "max_contains_weight": "6 kg" } ]
   },
   {
     "id": "metal_tank",
@@ -1329,14 +1294,7 @@
     "material": "gutskin",
     "symbol": ")",
     "color": "brown",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "watertight": true,
-        "max_contains_volume": "1500 ml",
-        "max_contains_weight": "3 kg"
-      }
-    ]
+    "pocket_data": [ { "pocket_type": "CONTAINER", "watertight": true, "max_contains_volume": "1500 ml", "max_contains_weight": "3 kg" } ]
   },
   {
     "id": "waterskin",
@@ -1352,14 +1310,7 @@
     "material": "leather",
     "symbol": ")",
     "color": "brown",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "watertight": true,
-        "max_contains_volume": "1500 ml",
-        "max_contains_weight": "3 kg"
-      }
-    ],
+    "pocket_data": [ { "pocket_type": "CONTAINER", "watertight": true, "max_contains_volume": "1500 ml", "max_contains_weight": "3 kg" } ],
     "armor_data": { "covers": [ "LEG_EITHER" ], "coverage": 5, "material_thickness": 2 },
     "flags": [ "WAIST", "WATER_FRIENDLY" ]
   },
@@ -1377,14 +1328,7 @@
     "material": "leather",
     "symbol": ")",
     "color": "brown",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "watertight": true,
-        "max_contains_volume": "3 L",
-        "max_contains_weight": "6 kg"
-      }
-    ],
+    "pocket_data": [ { "pocket_type": "CONTAINER", "watertight": true, "max_contains_volume": "3 L", "max_contains_weight": "6 kg" } ],
     "armor_data": { "covers": [ "TORSO" ], "coverage": 10, "material_thickness": 2 },
     "flags": [ "WAIST", "WATER_FRIENDLY" ]
   },
@@ -1402,14 +1346,7 @@
     "material": "leather",
     "symbol": ")",
     "color": "brown",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "watertight": true,
-        "max_contains_volume": "5 L",
-        "max_contains_weight": "10 kg"
-      }
-    ],
+    "pocket_data": [ { "pocket_type": "CONTAINER", "watertight": true, "max_contains_volume": "5 L", "max_contains_weight": "10 kg" } ],
     "armor_data": { "covers": [ "TORSO" ], "coverage": 15, "material_thickness": 2 },
     "flags": [ "BELTED", "WATER_FRIENDLY" ]
   },
@@ -1427,14 +1364,7 @@
     "material": [ "wood", "steel" ],
     "symbol": ")",
     "color": "brown",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "watertight": true,
-        "max_contains_volume": "100 L",
-        "max_contains_weight": "200 kg"
-      }
-    ],
+    "pocket_data": [ { "pocket_type": "CONTAINER", "watertight": true, "max_contains_volume": "100 L", "max_contains_weight": "200 kg" } ],
     "contains": "100 L",
     "seals": true,
     "watertight": true,
@@ -1453,13 +1383,7 @@
     "material": "paper",
     "symbol": ",",
     "color": "light_gray",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "max_contains_volume": "2500 ml",
-        "max_contains_weight": "6 kg"
-      }
-    ],
+    "pocket_data": [ { "pocket_type": "CONTAINER", "max_contains_volume": "2500 ml", "max_contains_weight": "6 kg" } ],
     "flags": [ "TRADER_AVOID" ]
   },
   {
@@ -1521,14 +1445,7 @@
     "material": "plastic",
     "symbol": ")",
     "color": "white",
-    "pocket_data": [
-      {
-        "pocket_type": "CONTAINER",
-        "watertight": true,
-        "max_contains_volume": "3750 ml",
-        "max_contains_weight": "7 kg"
-      }
-    ],
+    "pocket_data": [ { "pocket_type": "CONTAINER", "watertight": true, "max_contains_volume": "3750 ml", "max_contains_weight": "7 kg" } ],
     "properties": [ [ "burst_when_filled", "75" ] ]
   },
   {
