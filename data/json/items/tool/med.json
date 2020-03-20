@@ -168,8 +168,6 @@
     "material": "plastic",
     "symbol": ";",
     "color": "light_cyan",
-    "contains": "250 ml",
-    "seals": true,
     "use_action": "BLOOD_DRAW",
     "flags": [ "SPEAR" ],
     "pocket_data": [
