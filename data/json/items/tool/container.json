@@ -37,8 +37,6 @@
     "material": "plastic",
     "symbol": ")",
     "color": "light_cyan",
-    "contains": "500 ml",
-    "seals": true,
     "pocket_data": [
       {
         "pocket_type": "CONTAINER",
