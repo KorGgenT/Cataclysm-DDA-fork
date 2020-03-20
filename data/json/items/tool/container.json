@@ -13,8 +13,6 @@
     "material": "steel",
     "symbol": ")",
     "color": "light_cyan",
-    "contains": "750 ml",
-    "seals": true,
     "pocket_data": [
       {
         "pocket_type": "CONTAINER",
