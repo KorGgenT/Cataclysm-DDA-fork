@@ -650,11 +650,35 @@ ret_val<item_pocket::contain_code> item_pocket::can_contain( const item &it ) co
     }
 
     // ammo restriction overrides item volume and weight data
-    if( !data->ammo_restriction.empty() && it.is_ammo()
-        && !data->ammo_restriction.count( it.ammo_type() ) ) {
-        return ret_val<item_pocket::contain_code>::make_failure(
-                   contain_code::ERR_AMMO, _( "item is not the correct ammo type" ) );
-    } else if( !data->ammo_restriction.empty() && it.is_ammo() ) {
+    if( !data->ammo_restriction.empty() ) {
+        if( !it.is_ammo() || data->ammo_restriction.count( it.ammo_type() ) == 0 ) {
+            return ret_val<item_pocket::contain_code>::make_failure(
+                       contain_code::ERR_AMMO, _( "item is not the correct ammo type" ) );
+        } else {
+            return ret_val<item_pocket::contain_code>::make_success();
+        }
+    }
+
+    if( data->_item_number_overrides.has_override ) {
+        if( data->_item_number_overrides.item_stacks ) {
+            if( contents.size() >= data->_item_number_overrides.num_items ) {
+                return ret_val<item_pocket::contain_code>::make_failure(
+                           contain_code::ERR_NO_SPACE, _( "not enough space" ) );
+            }
+        } else {
+            int num_items = 0;
+            for( const item &inside : contents ) {
+                num_items += inside.count();
+            }
+            num_items += it.count();
+
+            if( num_items > data->_item_number_overrides.num_items ) {
+                return ret_val<item_pocket::contain_code>::make_failure(
+                           contain_code::ERR_NO_SPACE, _( "not enough space" ) );
+            }
+        }
+
+        // we need to return early because this is an override for volume
         return ret_val<item_pocket::contain_code>::make_success();
     }
 
@@ -756,6 +780,13 @@ void item_pocket::overflow( const tripoint &pos )
             ++iter;
         }
     }
+
+    if( data->_item_number_overrides.has_override ) {
+        // TODO: overflow logic for item number overrides go here
+        // early return because item number overrides ignore volume and weight
+        return;
+    }
+
     if( remaining_volume() < 0_ml ) {
         contents.sort( []( const item & left, const item & right ) {
             return left.volume() > right.volume();

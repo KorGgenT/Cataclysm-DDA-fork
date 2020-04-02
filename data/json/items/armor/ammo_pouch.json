@@ -597,7 +597,7 @@
     "material_thickness": 1,
     "pocket_data": [
       {
-        "item_number_override": { "num_stacks": 20, "item_stacks": false },
+        "item_number_override": { "num_items": 20, "item_stacks": false },
         "ammo_restriction": [ "arrow", "bolt" ],
         "moves": 20
       }
