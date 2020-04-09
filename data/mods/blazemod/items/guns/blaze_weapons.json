@@ -21,7 +21,6 @@
     "durability": 8,
     "reload": 750,
     "valid_mod_locations": [  ],
-    "magazine_well": 1,
     "magazines": [ [ "h_projectile", [ "cannister_rack" ] ] ],
     "ammo_effects": [ "WIDE" ],
     "flags": [ "NEVER_JAMS", "MOUNTED_GUN", "NON-FOULING" ]
