@@ -76,7 +76,10 @@ TEST_CASE( "visitable_remove", "[visitable]" )
     item temp_liquid( liquid_id );
     item obj = temp_liquid.in_container( temp_liquid.type->default_container.value_or( "null" ) );
     REQUIRE( obj.contents.num_item_stacks() == 1 );
-    REQUIRE( obj.contents.front().typeId() == liquid_id );
+    const auto has_liquid_filter = [&liquid_id]( const item & it ) {
+        return it.typeId() == liquid_id;
+    };
+    REQUIRE( obj.has_item_with( has_liquid_filter ) );
 
     GIVEN( "A player with several bottles of water" ) {
         for( int i = 0; i != count; ++i ) {
@@ -105,8 +108,8 @@ TEST_CASE( "visitable_remove", "[visitable]" )
                     } ) );
                 }
                 AND_THEN( "the removed items all contain water" ) {
-                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id]( const item & e ) {
-                        return e.contents.num_item_stacks() == 1 && e.contents.front().typeId() == liquid_id;
+                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id, &has_liquid_filter]( const item & e ) {
+                        return e.contents.num_item_stacks() == 1 && e.has_item_with( has_liquid_filter );
                     } ) );
                 }
             }
@@ -132,8 +135,8 @@ TEST_CASE( "visitable_remove", "[visitable]" )
                     } ) );
                 }
                 AND_THEN( "the removed items all contained water" ) {
-                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id]( const item & e ) {
-                        return e.contents.num_item_stacks() == 1 && e.contents.front().typeId() == liquid_id;
+                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id, &has_liquid_filter]( const item & e ) {
+                        return e.contents.num_item_stacks() == 1 && e.has_item_with( has_liquid_filter );
                     } ) );
                 }
             }
@@ -168,8 +171,8 @@ TEST_CASE( "visitable_remove", "[visitable]" )
                         } ) );
                     }
                     AND_THEN( "the removed items all contain water" ) {
-                        CHECK( std::all_of( del.begin(), del.end(), [&liquid_id]( const item & e ) {
-                            return e.contents.num_item_stacks() == 1 && e.contents.front().typeId() == liquid_id;
+                        CHECK( std::all_of( del.begin(), del.end(), [&liquid_id, &has_liquid_filter]( const item & e ) {
+                            return e.contents.num_item_stacks() == 1 && e.has_item_with( has_liquid_filter );
                         } ) );
                     }
                 }
@@ -187,7 +190,7 @@ TEST_CASE( "visitable_remove", "[visitable]" )
 
                         AND_THEN( "the remaining water is contained by the currently wielded bottle" ) {
                             REQUIRE( p.weapon.contents.num_item_stacks() == 1 );
-                            REQUIRE( p.weapon.contents.front().typeId() == liquid_id );
+                            REQUIRE( p.weapon.has_item_with( has_liquid_filter ) );
                         }
                     }
                 }
@@ -204,8 +207,8 @@ TEST_CASE( "visitable_remove", "[visitable]" )
                         } ) );
                     }
                     AND_THEN( "the removed items all contained water" ) {
-                        CHECK( std::all_of( del.begin(), del.end(), [&liquid_id]( const item & e ) {
-                            return e.contents.num_item_stacks() == 1 && e.contents.front().typeId() == liquid_id;
+                        CHECK( std::all_of( del.begin(), del.end(), [&liquid_id, &has_liquid_filter]( const item & e ) {
+                            return e.contents.num_item_stacks() == 1 && e.has_item_with( has_liquid_filter );
                         } ) );
                     }
                 }
@@ -214,8 +217,7 @@ TEST_CASE( "visitable_remove", "[visitable]" )
 
         WHEN( "a hip flask containing water is worn" ) {
             item obj( worn_id );
-            obj.put_in( item( liquid_id, calendar::turn,
-                              temp_liquid.charges_per_volume( obj.get_container_capacity() ) ) );
+            obj.fill_with( item( liquid_id, calendar::turn ) );
             p.wear_item( obj );
 
             REQUIRE( count_items( p, container_id ) == count );
@@ -245,7 +247,7 @@ TEST_CASE( "visitable_remove", "[visitable]" )
 
                         AND_THEN( "the hip flask contains water" ) {
                             REQUIRE( found[0]->contents.num_item_stacks() == 1 );
-                            REQUIRE( found[0]->contents.front().typeId() == liquid_id );
+                            REQUIRE( found[0]->has_item_with( has_liquid_filter ) );
                         }
                     }
                 }
@@ -338,8 +340,8 @@ TEST_CASE( "visitable_remove", "[visitable]" )
                     } ) );
                 }
                 AND_THEN( "the removed items all contain water" ) {
-                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id]( const item & e ) {
-                        return e.contents.num_item_stacks() == 1 && e.contents.front().typeId() == liquid_id;
+                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id, &has_liquid_filter]( const item & e ) {
+                        return e.contents.num_item_stacks() == 1 && e.has_item_with( has_liquid_filter );
                     } ) );
                 }
             }
@@ -365,8 +367,8 @@ TEST_CASE( "visitable_remove", "[visitable]" )
                     } ) );
                 }
                 AND_THEN( "the removed items all contained water" ) {
-                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id]( const item & e ) {
-                        return e.contents.num_item_stacks() == 1 && e.contents.front().typeId() == liquid_id;
+                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id, &has_liquid_filter]( const item & e ) {
+                        return e.contents.num_item_stacks() == 1 && e.has_item_with( has_liquid_filter );
                     } ) );
                 }
             }
@@ -398,8 +400,8 @@ TEST_CASE( "visitable_remove", "[visitable]" )
                     } ) );
                 }
                 AND_THEN( "the removed items all contained water" ) {
-                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id]( const item & e ) {
-                        return e.contents.num_item_stacks() == 1 && e.contents.front().typeId() == liquid_id;
+                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id, has_liquid_filter]( const item & e ) {
+                        return e.contents.num_item_stacks() == 1 && e.has_item_with( has_liquid_filter );
                     } ) );
                 }
             }
@@ -452,8 +454,8 @@ TEST_CASE( "visitable_remove", "[visitable]" )
                     } ) );
                 }
                 AND_THEN( "the removed items all contain water" ) {
-                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id]( const item & e ) {
-                        return e.contents.num_item_stacks() == 1 && e.contents.front().typeId() == liquid_id;
+                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id, &has_liquid_filter]( const item & e ) {
+                        return e.contents.num_item_stacks() == 1 && e.has_item_with( has_liquid_filter );
                     } ) );
                 }
             }
@@ -479,8 +481,8 @@ TEST_CASE( "visitable_remove", "[visitable]" )
                     } ) );
                 }
                 AND_THEN( "the removed items all contained water" ) {
-                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id]( const item & e ) {
-                        return e.contents.num_item_stacks() == 1 && e.contents.front().typeId() == liquid_id;
+                    CHECK( std::all_of( del.begin(), del.end(), [&liquid_id, &has_liquid_filter]( const item & e ) {
+                        return e.contents.num_item_stacks() == 1 && e.has_item_with( has_liquid_filter );
                     } ) );
                 }
             }

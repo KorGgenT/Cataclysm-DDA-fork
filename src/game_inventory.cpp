@@ -247,6 +247,44 @@ void game_menus::inv::common( avatar &you )
     } while( loop_options.count( res ) != 0 );
 }
 
+void game_menus::inv::common( item_location loc, avatar &you )
+{
+    // Return to inventory menu on those inputs
+    static const std::set<int> loop_options = { { '\0', '=', 'f' } };
+
+    inventory_pick_selector inv_s( you );
+
+    inv_s.set_title( string_format( _( "Inventory of %s" ), loc->tname() ) );
+    inv_s.set_hint( string_format(
+                        _( "Item hotkeys assigned: <color_light_gray>%d</color>/<color_light_gray>%d</color>" ),
+                        you.allocated_invlets().count(), inv_chars.size() ) );
+
+    int res = 0;
+
+    bool need_refresh = true;
+    do {
+        inv_s.clear_items();
+        inv_s.add_contained_items( loc );
+        inv_s.update( need_refresh );
+
+        const item_location &location = inv_s.execute();
+
+        if( location == item_location::nowhere ) {
+            if( inv_s.keep_open ) {
+                inv_s.keep_open = false;
+                continue;
+            } else {
+                break;
+            }
+        }
+
+        g->refresh_all();
+        res = g->inventory_item_menu( location );
+        g->refresh_all();
+
+    } while( loop_options.count( res ) != 0 );
+}
+
 item_location game_menus::inv::titled_filter_menu( item_filter filter, avatar &you,
         const std::string &title, const std::string &none_message )
 {
@@ -269,11 +307,6 @@ class armor_inventory_preset: public inventory_selector_preset
             append_cell( [ this ]( const item_location & loc ) {
                 return get_number_string( loc->get_encumber( p ) );
             }, _( "ENCUMBRANCE" ) );
-
-            append_cell( [ this ]( const item_location & loc ) {
-                return loc->get_storage() > 0_ml ? string_format( "<%s>%s</color>", color,
-                        format_volume( loc->get_storage() ) ) : std::string();
-            }, _( "STORAGE" ) );
 
             append_cell( [ this ]( const item_location & loc ) {
                 return string_format( "<%s>%d%%</color>", color, loc->get_coverage() );
@@ -583,8 +616,7 @@ class comestible_inventory_preset : public inventory_selector_preset
         }
 
         std::string get_denial( const item_location &loc ) const override {
-            const item &med = !( *loc ).is_container_empty() && ( *loc ).get_contained().is_medication() &&
-                              ( *loc ).get_contained().type->has_use() ? ( *loc ).get_contained() : *loc;
+            const item &med = *loc;
 
             if( loc->made_of_from_type( LIQUID ) && !g->m.has_flag( flag_LIQUIDCONT, loc.position() ) ) {
                 return _( "Can't drink spilt liquids" );
@@ -621,9 +653,7 @@ class comestible_inventory_preset : public inventory_selector_preset
 
     protected:
         int get_order( const item_location &loc, const time_duration &time ) const {
-            if( time > 0_turns && !( loc->type->container && loc->type->container->preserves ) ) {
-                return 0;
-            } else if( get_consumable_item( loc ).rotten() ) {
+            if( get_consumable_item( loc ).rotten() ) {
                 if( p.has_trait( trait_SAPROPHAGE ) || p.has_trait( trait_SAPROVORE ) ) {
                     return 1;
                 } else {
@@ -801,24 +831,17 @@ class activatable_inventory_preset : public pickup_inventory_preset
         activatable_inventory_preset( const player &p ) : pickup_inventory_preset( p ), p( p ) {
             if( get_option<bool>( "INV_USE_ACTION_NAMES" ) ) {
                 append_cell( [ this ]( const item_location & loc ) {
-                    const item &it = !( *loc ).is_container_empty() && ( *loc ).get_contained().is_medication() &&
-                                     ( *loc ).get_contained().type->has_use() ? ( *loc ).get_contained() : *loc;
-                    return string_format( "<color_light_green>%s</color>", get_action_name( it ) );
+                    return string_format( "<color_light_green>%s</color>", get_action_name( *loc ) );
                 }, _( "ACTION" ) );
             }
         }
 
         bool is_shown( const item_location &loc ) const override {
-            if( !( *loc ).is_container_empty() && ( *loc ).get_contained().is_medication() &&
-                ( *loc ).get_contained().type->has_use() ) {
-                return true;
-            }
             return loc->type->has_use();
         }
 
         std::string get_denial( const item_location &loc ) const override {
-            const item &it = !( *loc ).is_container_empty() && ( *loc ).get_contained().is_medication() &&
-                             ( *loc ).get_contained().type->has_use() ? ( *loc ).get_contained() : *loc;
+            const item &it = *loc;
             const auto &uses = it.type->use_methods;
 
             if( uses.size() == 1 ) {
@@ -1233,41 +1256,38 @@ item_location game_menus::inv::wield( avatar &you )
 class holster_inventory_preset: public weapon_inventory_preset
 {
     public:
-        holster_inventory_preset( const player &p, const holster_actor &actor ) :
-            weapon_inventory_preset( p ), actor( actor ) {
+        holster_inventory_preset( const player &p, const holster_actor &actor, const item &holster ) :
+            weapon_inventory_preset( p ), actor( actor ), holster( holster ) {
         }
 
         bool is_shown( const item_location &loc ) const override {
-            return actor.can_holster( *loc );
+            return actor.can_holster( holster, *loc );
         }
 
     private:
         const holster_actor &actor;
+        const item &holster;
 };
 
 item_location game_menus::inv::holster( player &p, item &holster )
 {
     const std::string holster_name = holster.tname( 1, false );
-    const auto actor = dynamic_cast<const holster_actor *>
-                       ( holster.type->get_use( "holster" )->get_actor_ptr() );
+    const use_function *use = holster.type->get_use( "holster" );
+    const holster_actor *actor = use == nullptr ? nullptr : dynamic_cast<const holster_actor *>
+                                 ( use->get_actor_ptr() );
 
-    if( !actor ) {
-        const std::string msg = string_format( _( "You can't put anything into your %s." ),
-                                               holster_name );
-        popup( msg, PF_GET_KEY );
-        return item_location();
-    }
-
-    const std::string title = actor->holster_prompt.empty()
+    const std::string title = ( actor ? actor->holster_prompt.empty() : true )
                               ? _( "Holster item" )
                               : _( actor->holster_prompt );
     const std::string hint = string_format( _( "Choose an item to put into your %s" ),
                                             holster_name );
 
-    return inv_internal( p, holster_inventory_preset( p, *actor ), title, 1,
-                         string_format( _( "You have no items you could put into your %s." ),
-                                        holster_name ),
-                         hint );
+    item_filter holster_filter = [holster]( const item & it ) {
+        return holster.can_contain( it );
+    };
+    return game_menus::inv::titled_filter_menu( holster_filter, *p.as_avatar(), title,
+            string_format( _( "You have no items you could put into your %s." ),
+                           holster_name ) );
 }
 
 class saw_barrel_inventory_preset: public weapon_inventory_preset
@@ -1531,7 +1551,7 @@ void game_menus::inv::swap_letters( player &p )
         [ &p ]( const std::string::value_type & elem ) {
             if( p.inv.assigned_invlet.count( elem ) ) {
                 return c_yellow;
-            } else if( p.invlet_to_position( elem ) != INT_MIN ) {
+            } else if( p.invlet_to_item( elem ) != nullptr ) {
                 return c_white;
             } else {
                 return c_dark_gray;

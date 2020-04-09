@@ -33,6 +33,7 @@
 #include "cursesdef.h"
 #include "inventory.h"
 #include "item_location.h"
+#include "item_pocket.h"
 #include "pldata.h"
 #include "type_id.h"
 #include "magic.h"
@@ -586,7 +587,8 @@ class player : public Character
          * @param base_cost Cost due to storage type.
          */
         void store( item &container, item &put, bool penalties = true,
-                    int base_cost = INVENTORY_HANDLING_PENALTY );
+                    int base_cost = INVENTORY_HANDLING_PENALTY,
+                    item_pocket::pocket_type pk_type = item_pocket::pocket_type::CONTAINER );
         /** Draws the UI and handles player input for the armor re-ordering window */
         void sort_armor();
         /** Uses a tool */
@@ -691,10 +693,6 @@ class player : public Character
          * @param quantity How many charges to remove
          */
         item reduce_charges( item *it, int quantity );
-        /** Return the item position of the item with given invlet, return INT_MIN if
-         * the player does not have such an item with that invlet. Don't use this on npcs.
-         * Only use the invlet in the user interface, otherwise always use the item position. */
-        int invlet_to_position( int invlet ) const;
 
         /**
         * Check whether player has a bionic power armor interface.

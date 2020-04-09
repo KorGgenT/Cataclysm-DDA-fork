@@ -768,6 +768,8 @@ class Character : public Creature, public visitable<Character>
         int get_mod( const trait_id &mut, const std::string &arg ) const;
         /** Applies skill-based boosts to stats **/
         void apply_skill_boost();
+
+        item_pocket *best_pocket( const item &it );
     protected:
         void do_skill_rust();
         /** Applies stat mods to character. */
@@ -1098,6 +1100,16 @@ class Character : public Creature, public visitable<Character>
          */
         std::list<item> remove_worn_items_with( std::function<bool( item & )> filter );
 
+        // returns a list of all pointers the character has, including items contained in other items.
+        // only for CONTAINER pocket type; does not look for magazines
+        std::list<item *> all_items_ptr();
+
+        /** Return the itemposition of the item with given invlet, return nullptr if
+         * the player does not have such an item with that invlet. Don't use this on npcs.
+         * Only use the invlet in the user interface, otherwise always use the item position. */
+        item *invlet_to_item( int invlet );
+        const item *invlet_to_item( int invlet ) const;
+
         // Returns the item with a given inventory position.
         item &i_at( int position );
         const item &i_at( int position ) const;
@@ -1234,13 +1246,15 @@ class Character : public Creature, public visitable<Character>
             const cata::optional<std::reference_wrapper<const inventory>> replace_inv;
         };
 
-        units::mass weight_carried_with_tweaks( const item_tweaks & ) const;
-        units::volume volume_carried_with_tweaks( const item_tweaks & ) const;
+        units::mass weight_carried_with_tweaks( const item_tweaks &tweaks ) const;
+        units::mass weight_carried_with_tweaks( const std::vector<std::pair<item_location, int>>
+                                                &locations ) const;
+        units::volume volume_carried_with_tweaks( const item_tweaks &tweaks ) const;
+        units::volume volume_carried_with_tweaks( const std::vector<std::pair<item_location, int>>
+                &locations )
+        const;
         units::mass weight_capacity() const override;
         units::volume volume_capacity() const;
-        units::volume volume_capacity_reduced_by(
-            const units::volume &mod,
-            const std::map<const item *, int> &without_items = {} ) const;
 
         bool can_pickVolume( const item &it, bool safe = false ) const;
         bool can_pickWeight( const item &it, bool safe = true ) const;
@@ -1633,6 +1647,9 @@ class Character : public Creature, public visitable<Character>
         virtual void on_item_takeoff( const item & ) {}
         virtual void on_worn_item_washed( const item & ) {}
 
+        // how much free space the character has in its pocketses
+        units::volume free_space() const;
+
         /** Returns an unoccupied, safe adjacent point. If none exists, returns player position. */
         tripoint adjacent_tile() const;
 
@@ -1844,6 +1861,8 @@ class Character : public Creature, public visitable<Character>
         void update_morale();
         /** Ensures persistent morale effects are up-to-date */
         void apply_persistent_morale();
+        // the morale penalty for hoarders
+        void hoarder_morale_penalty();
         /** Used to apply morale modifications from food and medication **/
         void modify_morale( item &food, int nutr = 0 );
         // Modified by traits, &c

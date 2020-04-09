@@ -157,9 +157,9 @@ static pickup_answer handle_problematic_pickup( const item &it, bool &offered_sw
     if( it.is_armor() ) {
         amenu.addentry( WEAR, u.can_wear( it ).success(), 'W', _( "Wear %s" ), it.display_name() );
     }
-    if( it.is_bucket_nonempty() ) {
-        amenu.addentry( SPILL, u.can_pickVolume( it ), 's', _( "Spill %s, then pick up %s" ),
-                        it.contents.front().tname(), it.display_name() );
+    if( it.will_spill() && !it.contents.empty() ) {
+        amenu.addentry( SPILL, u.can_pickVolume( it ), 's', _( "Spill contents of %s, then pick up %s" ),
+                        it.tname(), it.display_name() );
     }
 
     amenu.query();
@@ -244,7 +244,7 @@ bool pick_one_up( item_location &loc, int quantity, bool &got_water, bool &offer
         }
     }
     if( newit.invlet != '\0' &&
-        u.invlet_to_position( newit.invlet ) != INT_MIN ) {
+        u.invlet_to_item( newit.invlet ) != nullptr ) {
         // Existing invlet is not re-usable, remove it and let the code in player.cpp/inventory.cpp
         // add a new invlet, otherwise keep the (usable) invlet.
         newit.invlet = '\0';
@@ -280,7 +280,7 @@ bool pick_one_up( item_location &loc, int quantity, bool &got_water, bool &offer
         } else {
             option = CANCEL;
         }
-    } else if( newit.is_bucket() && !newit.is_container_empty() ) {
+    } else if( newit.will_spill() && !newit.is_container_empty() ) {
         if( !autopickup ) {
             const std::string &explain = string_format( _( "Can't stash %s while it's not empty" ),
                                          newit.display_name() );
@@ -367,7 +367,6 @@ bool Pickup::do_pickup( std::vector<item_location> &targets, std::vector<int> &q
 {
     bool got_water = false;
     bool weight_is_okay = ( g->u.weight_carried() <= g->u.weight_capacity() );
-    bool volume_is_okay = ( g->u.volume_carried() <= g->u.volume_capacity() );
     bool offered_swap = false;
 
     // Map of items picked up so we can output them all at the end and
@@ -400,9 +399,6 @@ bool Pickup::do_pickup( std::vector<item_location> &targets, std::vector<int> &q
     }
     if( weight_is_okay && g->u.weight_carried() > g->u.weight_capacity() ) {
         add_msg( m_bad, _( "You're overburdened!" ) );
-    }
-    if( volume_is_okay && g->u.volume_carried() > g->u.volume_capacity() ) {
-        add_msg( m_bad, _( "You struggle to carry such a large volume!" ) );
     }
 
     return !problem;
@@ -1039,20 +1035,12 @@ void show_pickup_message( const PickupMap &mapPickup )
 
 bool Pickup::handle_spillable_contents( Character &c, item &it, map &m )
 {
-    if( it.is_bucket_nonempty() ) {
-        const item &it_cont = it.contents.front();
-        int num_charges = it_cont.charges;
-        while( !it.spill_contents( c ) ) {
-            if( num_charges > it_cont.charges ) {
-                num_charges = it_cont.charges;
-            } else {
-                break;
-            }
-        }
+    if( it.will_spill() && !it.contents.empty() ) {
+        it.contents.spill_open_pockets( c );
 
         // If bucket is still not empty then player opted not to handle the
         // rest of the contents
-        if( it.is_bucket_nonempty() ) {
+        if( !it.contents.empty() ) {
             c.add_msg_player_or_npc(
                 _( "To avoid spilling its contents, you set your %1$s on the %2$s." ),
                 _( "To avoid spilling its contents, <npcname> sets their %1$s on the %2$s." ),
