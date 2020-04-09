@@ -33,7 +33,10 @@
     "coverage": 100,
     "material_thickness": 2,
     "encumbrance": 9,
-    "storage": "3 L",
+    "pocket_data": [
+      { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "3 kg", "moves": 80 },
+      { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "3 kg", "moves": 80 }
+    ],
     "warmth": 20,
     "environmental_protection": 5,
     "flags": [
@@ -218,7 +221,10 @@
     "covers": [ "TORSO" ],
     "coverage": 85,
     "encumbrance": 7,
-    "storage": "2500 ml",
+    "pocket_data": [
+      { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "3 kg", "moves": 80 },
+      { "pocket_type": "CONTAINER", "max_contains_volume": "1 L", "max_contains_weight": "3 kg", "moves": 80 }
+    ],
     "warmth": 15,
     "material_thickness": 3,
     "use_action": {
