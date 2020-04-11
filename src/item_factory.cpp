@@ -26,6 +26,7 @@
 #include "explosion.h"
 #include "flat_set.h"
 #include "game_constants.h"
+#include "generic_factory.h"
 #include "init.h"
 #include "item.h"
 #include "item_contents.h"
@@ -197,12 +198,6 @@ void Item_factory::finalize_pre( itype &obj )
         if( tag.size() > 6 && tag.substr( 0, 6 ) == "LIGHT_" ) {
             obj.light_emission = std::max( atoi( tag.substr( 6 ).c_str() ), 0 );
         }
-    }
-
-    // Set max volume for containers to prevent integer overflow
-    if( obj.container && obj.container->contains > 10000_liter ) {
-        debugmsg( obj.id + " storage volume is too large, reducing to 10000 liters" );
-        obj.container->contains = 10000_liter;
     }
 
     // for ammo not specifying loudness (or an explicit zero) derive value from other properties
@@ -933,7 +928,6 @@ void Item_factory::init()
     add_iuse( "BREAK_STICK", &iuse::break_stick );
 
     add_actor( std::make_unique<ammobelt_actor>() );
-    add_actor( std::make_unique<bandolier_actor>() );
     add_actor( std::make_unique<cauterize_actor>() );
     add_actor( std::make_unique<consume_drug_iuse>() );
     add_actor( std::make_unique<delayed_transform_iuse>() );
@@ -1290,19 +1284,6 @@ void Item_factory::check_definitions() const
             }
         }
 
-        if( type->container ) {
-            if( type->container->seals && type->container->unseals_into != "null" ) {
-                msg += string_format( "resealable container unseals_into %s\n",
-                                      type->container->unseals_into.c_str() );
-            }
-            if( type->container->contains <= 0_ml ) {
-                msg += string_format( "\"contains\" (%d) must be >0\n", type->container->contains.value() );
-            }
-            if( !has_template( type->container->unseals_into ) ) {
-                msg += string_format( "unseals_into invalid id %s\n", type->container->unseals_into.c_str() );
-            }
-        }
-
         for( const auto &elem : type->use_methods ) {
             const iuse_actor *actor = elem.second.get_actor_ptr();
 
@@ -1651,7 +1632,6 @@ void Item_factory::load( islot_armor &slot, const JsonObject &jo, const std::str
     assign( jo, "environmental_protection", slot.env_resist, strict, 0 );
     assign( jo, "environmental_protection_with_filter", slot.env_resist_w_filter, strict, 0 );
     assign( jo, "warmth", slot.warmth, strict, 0 );
-    assign( jo, "storage", slot.storage, strict, 0_ml );
     assign( jo, "weight_capacity_modifier", slot.weight_capacity_modifier );
     assign( jo, "weight_capacity_bonus", slot.weight_capacity_bonus, strict, 0_gram );
     assign( jo, "power_armor", slot.power_armor, strict );
@@ -1943,15 +1923,6 @@ void Item_factory::load_comestible( const JsonObject &jo, const std::string &src
     }
 }
 
-void Item_factory::load_container( const JsonObject &jo, const std::string &src )
-{
-    itype def;
-    if( load_definition( jo, src, def ) ) {
-        load_slot( def.container, jo, src );
-        load_basic_info( jo, def, src );
-    }
-}
-
 void Item_factory::load( islot_seed &slot, const JsonObject &jo, const std::string & )
 {
     assign( jo, "grow", slot.grow, false, 1_days );
@@ -1960,15 +1931,6 @@ void Item_factory::load( islot_seed &slot, const JsonObject &jo, const std::stri
     slot.fruit_id = jo.get_string( "fruit" );
     slot.spawn_seeds = jo.get_bool( "seeds", true );
     slot.byproducts = jo.get_string_array( "byproducts" );
-}
-
-void Item_factory::load( islot_container &slot, const JsonObject &jo, const std::string & )
-{
-    assign( jo, "contains", slot.contains );
-    assign( jo, "seals", slot.seals );
-    assign( jo, "watertight", slot.watertight );
-    assign( jo, "preserves", slot.preserves );
-    assign( jo, "unseals_into", slot.unseals_into );
 }
 
 void Item_factory::load( islot_gunmod &slot, const JsonObject &jo, const std::string &src )
@@ -2205,13 +2167,11 @@ void Item_factory::load_basic_info( const JsonObject &jo, itype &def, const std:
     assign( jo, "cutting", def.melee[DT_CUT], strict, 0 );
     assign( jo, "to_hit", def.m_to_hit, strict );
     assign( jo, "container", def.default_container );
-    assign( jo, "rigid", def.rigid );
     assign( jo, "min_strength", def.min_str );
     assign( jo, "min_dexterity", def.min_dex );
     assign( jo, "min_intelligence", def.min_int );
     assign( jo, "min_perception", def.min_per );
     assign( jo, "emits", def.emits );
-    assign( jo, "magazine_well", def.magazine_well );
     assign( jo, "explode_in_fire", def.explode_in_fire );
     assign( jo, "insulation", def.insulation_factor );
     assign( jo, "solar_efficiency", def.solar_efficiency );
@@ -2367,7 +2327,8 @@ void Item_factory::load_basic_info( const JsonObject &jo, itype &def, const std:
         }
     }
 
-    load_slot_optional( def.container, jo, "container_data", src );
+    assign( jo, "pocket_data", def.pockets );
+
     load_slot_optional( def.armor, jo, "armor_data", src );
     load_slot_optional( def.pet_armor, jo, "pet_armor_data", src );
     load_slot_optional( def.book, jo, "book_data", src );
@@ -2450,13 +2411,6 @@ void Item_factory::migrate_item( const itype_id &id, item &obj )
         }
 
         obj.contents.migrate_item( obj, iter->second.contents );
-
-        // check contents of migrated containers do not exceed capacity
-        if( obj.is_container() && !obj.contents.empty() ) {
-            item &child = obj.contents.back();
-            const int capacity = child.charges_per_volume( obj.get_container_capacity() );
-            child.charges = std::min( child.charges, capacity );
-        }
     }
 }
 

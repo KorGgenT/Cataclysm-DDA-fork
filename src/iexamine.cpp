@@ -3350,13 +3350,17 @@ void iexamine::tree_maple_tapped( player &p, const tripoint &examp )
     map_stack items = g->m.i_at( examp );
     if( !items.empty() ) {
         item &it = items.only_item();
-        if( it.is_bucket() || it.is_watertight_container() ) {
+        if( it.will_spill() || it.is_watertight_container() ) {
             container = &it;
 
-            if( !it.is_container_empty() && it.contents.front().typeId() == "maple_sap" ) {
-                has_sap = true;
-                charges = it.contents.front().charges;
-            }
+            it.visit_items( [&charges, &has_sap]( const item * it ) {
+                if( it->typeId() == "maple_syrup" ) {
+                    has_sap = true;
+                    charges = it->charges;
+                    return VisitResponse::ABORT;
+                }
+                return VisitResponse::NEXT;
+            } );
         }
     }
 
