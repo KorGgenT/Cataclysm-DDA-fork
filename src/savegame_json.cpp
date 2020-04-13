@@ -212,6 +212,12 @@ void item_number_overrides::deserialize( JsonIn &jsin )
     load( data );
 }
 
+void resealable_data::deserialize( JsonIn &jsin )
+{
+    JsonObject data = jsin.get_object();
+    load( data );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///// player_activity.h
 

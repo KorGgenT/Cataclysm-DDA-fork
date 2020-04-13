@@ -862,6 +862,7 @@ item item::in_container( const itype_id &cont ) const
             }
 
             ret.invlet = invlet;
+            ret.seal();
             return ret;
         }
     }
@@ -6162,9 +6163,19 @@ bool item::is_map() const
     return get_category().get_id() == "maps";
 }
 
+bool item::seal()
+{
+    return contents.seal_all_pockets();
+}
+
 bool item::is_container() const
 {
     return contents.has_pocket_type( item_pocket::pocket_type::CONTAINER );
+}
+
+item_pocket *item::contained_where( const item &contained )
+{
+    return contents.contained_where( contained );
 }
 
 bool item::is_watertight_container() const
@@ -7786,20 +7797,20 @@ int item::get_remaining_capacity_for_liquid( const item &liquid, const Character
 bool item::use_amount( const itype_id &it, int &quantity, std::list<item> &used,
                        const std::function<bool( const item & )> &filter )
 {
+    if( is_null() ) {
+        return false;
+    }
     // Remember quantity so that we can unseal self
     int old_quantity = quantity;
-    visit_items(
-    [&]( item * a ) {
-        // visit_items checks the item itself first. we want to do its contents first.
-        if( a == this ) {
-            return VisitResponse::NEXT;
+    std::vector<item *> removed_items;
+    for( item *contained : contents.all_items_top() ) {
+        if( contained->use_amount_internal( it, quantity, used, filter ) ) {
+            removed_items.push_back( contained );
         }
-        if( a->use_amount_internal( it, quantity, used, filter ) ) {
-            this->remove_item( *a );
-            return VisitResponse::SKIP;
-        }
-        return VisitResponse::NEXT;
-    } );
+    }
+    for( item *removed : removed_items ) {
+        this->remove_item( *removed );
+    }
 
     if( quantity != old_quantity ) {
         on_contents_changed();
@@ -7810,6 +7821,9 @@ bool item::use_amount( const itype_id &it, int &quantity, std::list<item> &used,
 bool item::use_amount_internal( const itype_id &it, int &quantity, std::list<item> &used,
                                 const std::function<bool( const item & )> &filter )
 {
+    if( typeId() == "null" ) {
+        return false;
+    }
     if( typeId() == it && quantity > 0 && filter( *this ) ) {
         used.push_back( *this );
         quantity--;
@@ -9172,10 +9186,10 @@ bool item::process_blackpowder_fouling( player *carrier )
 }
 
 bool item::process( player *carrier, const tripoint &pos, bool activate, float insulation,
-                    temperature_flag flag, float spoil_multiplier )
+                    temperature_flag flag, float spoil_multiplier_parent )
 {
-    contents.process( carrier, pos, activate, insulation, flag, spoil_multiplier );
-    return process_internal( carrier, pos, activate, insulation, flag, spoil_multiplier );
+    contents.process( carrier, pos, activate, insulation, flag, spoil_multiplier_parent );
+    return process_internal( carrier, pos, activate, insulation, flag, spoil_multiplier_parent );
 }
 
 void item::set_last_rot_check( const time_point &pt )
