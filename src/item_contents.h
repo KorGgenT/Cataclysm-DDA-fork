@@ -125,6 +125,7 @@ class item_contents
          */
         size_t num_item_stacks() const;
 
+        item_pocket *contained_where( const item &contained );
         void on_pickup( Character &guy );
         bool spill_contents( const tripoint &pos );
         // spill items that don't fit in the container
@@ -135,6 +136,9 @@ class item_contents
          * Sets the items contained to their defaults.
          */
         void set_item_defaults();
+
+        // returns true if any pocket was sealed
+        bool seal_all_pockets();
 
         // heats up the contents if they have temperature
         void heat_up();
@@ -170,7 +174,7 @@ class item_contents
          * NOTE: this destroys the items that get processed
          */
         void process( player *carrier, const tripoint &pos, bool activate, float insulation = 1,
-                      temperature_flag flag = temperature_flag::TEMP_NORMAL, float spoil_multiplier = 1.0f );
+                      temperature_flag flag = temperature_flag::TEMP_NORMAL, float spoil_multiplier_parent = 1.0f );
 
         void migrate_item( item &obj, const std::set<itype_id> &migrations );
         bool item_has_uses_recursive() const;

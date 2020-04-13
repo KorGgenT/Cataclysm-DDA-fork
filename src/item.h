@@ -648,17 +648,14 @@ class item : public visitable<item>
         /** Permits filthy components, should only be used as a helper in creating filters */
         bool allow_crafting_component() const;
 
-        /**
-         * @name Containers
-         *
-         * Containers come in two flavors:
-         * - suitable for liquids (@ref is_watertight_container),
-         * - and the remaining one (they are for currently only for flavor).
-         */
-        /*@{*/
+        // seal the item's pockets. used for crafting and spawning items.
+        bool seal();
         /** Whether this is container. Note that container does not necessarily means it's
          * suitable for liquids. */
         bool is_container() const;
+        // for pocket update stuff, which pocket is @contained in?
+        // returns a nullptr if the item is not contaiend, and prints a debug message
+        item_pocket *contained_where( const item &contained );
         /** Whether this is a container which can be used to store liquids. */
         bool is_watertight_container() const;
         /** Whether this item has no contents at all. */
@@ -1071,12 +1068,13 @@ class item : public visitable<item>
          * location of the carrier.
          * @param activate Whether the item should be activated (true), or
          * processed as an active item.
+         * @param spoil_multiplier_parent is the spoilage multiplier passed down from any parent item
          * @return true if the item has been destroyed by the processing. The caller
          * should than delete the item wherever it was stored.
          * Returns false if the item is not destroyed.
          */
         bool process( player *carrier, const tripoint &pos, bool activate, float insulation = 1,
-                      temperature_flag flag = temperature_flag::TEMP_NORMAL, float spoil_multiplier = 1.0f );
+                      temperature_flag flag = temperature_flag::TEMP_NORMAL, float spoil_multiplier_parent = 1.0f );
 
         /**
          * Gets the point (vehicle tile) the cable is connected to.

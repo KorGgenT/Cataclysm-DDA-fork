@@ -11,6 +11,7 @@
 #include "ret_val.h"
 #include "translations.h"
 #include "units.h"
+#include "value_ptr.h"
 #include "visitable.h"
 
 class Character;
@@ -101,6 +102,9 @@ class item_pocket
         units::volume item_size_modifier() const;
         units::mass item_weight_modifier() const;
 
+        /** gets the spoilage multiplier depending on sealed data */
+        float spoil_multiplier() const;
+
         int moves() const;
 
         int best_quality( const quality_id &id ) const;
@@ -119,6 +123,18 @@ class item_pocket
         bool item_has_uses_recursive() const;
         // will the items inside this pocket fall out of this pocket if it is placed into another item?
         bool will_spill() const;
+        /**
+         * if true, this item has data that is different when unsealed than when sealed.
+         */
+        bool resealable() const;
+        // seal the pocket. returns false if it fails (pocket does not seal)
+        bool seal();
+        /**
+         * if the item is resealable then it is never "sealed", otherwise check if sealed and !resealable
+         * if the item is "sealed" then that means you cannot interact with it normally without breaking the seal
+         */
+        bool sealed() const;
+        std::string translated_sealed_prefix() const;
         bool detonate( const tripoint &p, std::vector<item> &drops );
         bool process( const itype &type, player *carrier, const tripoint &pos, bool activate,
                       float insulation, temperature_flag flag );
@@ -147,7 +163,7 @@ class item_pocket
          * NOTE: this destroys the items that get processed
          */
         void process( player *carrier, const tripoint &pos, bool activate, float insulation = 1,
-                      temperature_flag flag = temperature_flag::TEMP_NORMAL, float spoil_multiplier = 1.0f );
+                      temperature_flag flag = temperature_flag::TEMP_NORMAL, float spoil_multiplier_parent = 1.0f );
         pocket_type saved_type() const {
             return _saved_type;
         }
@@ -218,6 +234,24 @@ struct item_number_overrides {
     void deserialize( JsonIn &jsin );
 };
 
+/**
+ *  There are a few implicit things about this struct when applied to pocket_data:
+ *  - When a pocket_data::open_container == true, if it's sealed this is false.
+ *  - When a pocket_data::watertight == false, if it's sealed this is true.
+ *     This is relevant for crafting and spawned items.
+ *     Example: Plastic bag with liquid in it, you need to
+  *     poke a hole into it to get the liquid, and it's no longer watertight
+ */
+struct resealable_data {
+    // required for generic_factory
+    bool was_loaded;
+    /** multiplier for spoilage rate of contained items when sealed */
+    float spoil_multiplier = 1.0f;
+
+    void load( const JsonObject &jo );
+    void deserialize( JsonIn &jsin );
+};
+
 class pocket_data
 {
     public:
@@ -248,8 +282,9 @@ class pocket_data
         bool gastight = false;
         // the pocket will spill its contents if placed in another container
         bool open_container = false;
-        // the pocket is not resealable.
-        bool resealable = true;
+
+        /** Data that is different for sealed pockets than unsealed pockets. This takes priority. */
+        cata::value_ptr<resealable_data> sealed_data;
         // allows only items with at least one of the following flags to be stored inside
         // empty means no restriction
         std::vector<std::string> flag_restriction;

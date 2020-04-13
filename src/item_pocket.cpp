@@ -56,8 +56,8 @@ void pocket_data::load( const JsonObject &jo )
     optional( jo, was_loaded, "open_container", open_container, false );
     optional( jo, was_loaded, "flag_restriction", flag_restriction );
     optional( jo, was_loaded, "rigid", rigid, false );
-    optional( jo, was_loaded, "resealable", resealable, true );
     optional( jo, was_loaded, "item_number_override", _item_number_overrides );
+    optional( jo, was_loaded, "sealed_data", sealed_data );
 }
 
 void item_number_overrides::load( const JsonObject &jo )
@@ -67,6 +67,11 @@ void item_number_overrides::load( const JsonObject &jo )
     if( num_items > 0 ) {
         has_override = true;
     }
+}
+
+void resealable_data::load( const JsonObject &jo )
+{
+    optional( jo, was_loaded, "spoil_multiplier", spoil_multiplier, 1.0f );
 }
 
 bool item_pocket::operator==( const item_pocket &rhs ) const
@@ -150,7 +155,7 @@ bool item_pocket::better_pocket( const item_pocket &rhs, const item &it ) const
     }
     if( it.is_comestible() && it.get_comestible()->spoils != 0_seconds ) {
         // a lower spoil multiplier is better
-        return rhs.data->spoil_multiplier < data->spoil_multiplier;
+        return rhs.spoil_multiplier() < spoil_multiplier();
     }
     if( data->rigid != rhs.data->rigid ) {
         return rhs.data->rigid;
@@ -186,7 +191,7 @@ bool item_pocket::is_funnel_container( units::volume &bigger_than ) const
     if( !data->watertight ) {
         return false;
     }
-    if( !data->resealable && _sealed ) {
+    if( !resealable() && _sealed ) {
         return false;
     }
     for( const item &liquid : allowed_liquids ) {
@@ -315,6 +320,15 @@ units::mass item_pocket::item_weight_modifier() const
     return total_mass;
 }
 
+float item_pocket::spoil_multiplier() const
+{
+    if( sealed() ) {
+        return data->sealed_data->spoil_multiplier;
+    } else {
+        return data->spoil_multiplier;
+    }
+}
+
 int item_pocket::moves() const
 {
     if( data ) {
@@ -396,7 +410,7 @@ void item_pocket::handle_liquid_or_spill( Character &guy )
             liquid_handler::handle_all_liquid( liquid, 1 );
         } else {
             item i_copy( *iter );
-            contents.erase( iter );
+            iter = contents.erase( iter );
             guy.i_add_or_drop( i_copy );
         }
     }
@@ -428,7 +442,45 @@ bool item_pocket::will_explode_in_a_fire() const
 
 bool item_pocket::will_spill() const
 {
-    return data->open_container || ( !data->resealable && !_sealed );
+    if( sealed() ) {
+        return false;
+    } else {
+        return data->open_container;
+    }
+}
+
+bool item_pocket::resealable() const
+{
+    // if it has sealed data it is understood that the
+    // data is different when sealed than when not
+    return !data->sealed_data;
+}
+
+bool item_pocket::seal()
+{
+    if( resealable() ) {
+        return false;
+    }
+    _sealed = true;
+    return true;
+}
+
+bool item_pocket::sealed() const
+{
+    if( resealable() ) {
+        return false;
+    } else {
+        return _sealed;
+    }
+}
+
+std::string item_pocket::translated_sealed_prefix() const
+{
+    if( sealed() ) {
+        return _( "sealed" );
+    } else {
+        return _( "open" );
+    }
 }
 
 bool item_pocket::detonate( const tripoint &pos, std::vector<item> &drops )
@@ -546,7 +598,7 @@ void item_pocket::general_info( std::vector<iteminfo> &info, int pocket_number,
         info.emplace_back( "DESCRIPTION",
                            _( "This pocket can <info>contain a gas</info>." ) );
     }
-    if( data->open_container ) {
+    if( will_spill() ) {
         info.emplace_back( "DESCRIPTION",
                            _( "This pocket will <bad>spill</bad> if placed into another item or worn." ) );
     }
@@ -554,15 +606,19 @@ void item_pocket::general_info( std::vector<iteminfo> &info, int pocket_number,
         info.emplace_back( "DESCRIPTION",
                            _( "This pocket <info>protects its contents from fire</info>." ) );
     }
-    if( data->spoil_multiplier != 1.0f ) {
-        info.emplace_back( "DESCRIPTION",
-                           _( "This pocket makes contained items spoil at <neutral>%.0f%%</neutral> their original rate." ),
-                           data->spoil_multiplier * 100 );
+    if( spoil_multiplier() != 1.0f ) {
+        if( spoil_multiplier() != 0.0f ) {
+            info.emplace_back( "DESCRIPTION",
+                               string_format( _( "Contained items spoil at <neutral>%.0f%%</neutral> their original rate." ),
+                                              spoil_multiplier() * 100 ) );
+        } else {
+            info.emplace_back( "DESCRIPTION", "Contained items <info>won't spoil</info>." );
+        }
     }
     if( data->weight_multiplier != 1.0f ) {
         info.emplace_back( "DESCRIPTION",
-                           _( "Items in this pocket weigh <neutral>%.0f%%</neutral> their original weight." ),
-                           data->weight_multiplier * 100 );
+                           string_format( _( "Items in this pocket weigh <neutral>%.0f%%</neutral> their original weight." ),
+                                          data->weight_multiplier * 100 ) );
     }
 }
 
@@ -573,13 +629,21 @@ void item_pocket::contents_info( std::vector<iteminfo> &info, int pocket_number,
 
     insert_separation_line( info );
     if( disp_pocket_number ) {
-        const std::string pock_num = string_format( _( "<bold>Pocket %d</bold>" ),
-                                     pocket_number );
-        info.emplace_back( "DESCRIPTION", pock_num );
+        if( !resealable() ) {
+            info.emplace_back( "DESCRIPTION", string_format( _( "<bold>%s pocket %d</bold>" ),
+                               translated_sealed_prefix(),
+                               pocket_number ) );
+        } else {
+            info.emplace_back( "DESCRIPTION", string_format( _( "<bold>pocket %d</bold>" ),
+                               pocket_number ) );
+        }
     }
     if( contents.empty() ) {
         info.emplace_back( "DESCRIPTION", _( "This pocket is empty." ) );
         return;
+    }
+    if( sealed() ) {
+        info.emplace_back( "DESCRIPTION", _( "This pocket is <info>sealed</info>." ) );
     }
     info.emplace_back( "DESCRIPTION",
                        string_format( "%s: <neutral>%s / %s</neutral>", _( "Volume" ),
@@ -722,10 +786,7 @@ bool item_pocket::can_contain_liquid( bool held_or_ground ) const
     if( held_or_ground ) {
         return data->watertight;
     } else {
-        if( data->open_container ) {
-            return false;
-        }
-        if( !data->resealable && !_sealed ) {
+        if( will_spill() ) {
             return false;
         }
         return data->watertight;
@@ -821,7 +882,7 @@ void item_pocket::overflow( const tripoint &pos )
 
 void item_pocket::on_pickup( Character &guy )
 {
-    if( data->open_container ) {
+    if( will_spill() ) {
         handle_liquid_or_spill( guy );
     }
 }
@@ -883,10 +944,8 @@ void item_pocket::has_rotten_away()
 
 void item_pocket::remove_rotten( const tripoint &pnt )
 {
-    bool will_not_spoil = !data->resealable && _sealed;
-
     for( auto iter = contents.begin(); iter != contents.end(); ) {
-        if( iter->has_rotten_away( pnt, will_not_spoil ? 0.0f : data->spoil_multiplier ) ) {
+        if( iter->has_rotten_away( pnt, spoil_multiplier() ) ) {
             iter = contents.erase( iter );
         } else {
             ++iter;
@@ -895,16 +954,12 @@ void item_pocket::remove_rotten( const tripoint &pnt )
 }
 
 void item_pocket::process( player *carrier, const tripoint &pos, bool activate, float insulation,
-                           temperature_flag flag, float spoil_multiplier )
+                           temperature_flag flag, float spoil_multiplier_parent )
 {
-    const bool will_not_spoil = !data->resealable && _sealed;
-
-    if( will_not_spoil ) {
-        spoil_multiplier = 0.0f;
-    }
-
     for( auto iter = contents.begin(); iter != contents.end(); ) {
-        if( iter->process( carrier, pos, activate, insulation, flag, spoil_multiplier ) ) {
+        if( iter->process( carrier, pos, activate, insulation, flag,
+                           // spoil multipliers on pockets are not additive or multiplicative, they choose the best
+                           std::min( spoil_multiplier_parent, spoil_multiplier() ) ) ) {
             iter = contents.erase( iter );
         } else {
             ++iter;
@@ -959,7 +1014,7 @@ bool item_pocket::can_unload_liquid() const
 
     const item &cts = contents.front();
     bool cts_is_frozen_liquid = cts.made_of_from_type( LIQUID ) && cts.made_of( SOLID );
-    return data->open_container || !cts_is_frozen_liquid;
+    return will_spill() || !cts_is_frozen_liquid;
 }
 
 std::list<item> &item_pocket::edit_contents()
