@@ -168,6 +168,12 @@ class Item_factory
         void load_bionic( const JsonObject &jo, const std::string &src );
         /*@}*/
 
+        /**
+          *  a temporary function to aid in nested container migration of magazine and gun json
+          *  - creates a magazine pocket if none is specified and the islot is loaded
+          */
+        void check_and_create_magazine_pockets( itype &def );
+
         /** called after all JSON has been read and performs any necessary cleanup tasks */
         void finalize();
 

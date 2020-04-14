@@ -329,7 +329,6 @@ item::item() : bday( calendar::start_of_cataclysm )
     type = nullitem();
     charges = 0;
     contents = item_contents( type->pockets );
-    check_and_create_magazine_pocket();
 }
 
 item::item( const itype *type, time_point turn, int qty ) : type( type ), bday( turn )
@@ -396,8 +395,6 @@ item::item( const itype *type, time_point turn, int qty ) : type( type ), bday( 
     if( type->relic_data ) {
         relic_data = type->relic_data;
     }
-    contents = item_contents( type->pockets );
-    check_and_create_magazine_pocket();
 }
 
 item::item( const itype_id &id, time_point turn, int qty )
@@ -418,44 +415,6 @@ item::item( const itype_id &id, time_point turn, solitary_tag tag )
 safe_reference<item> item::get_safe_reference()
 {
     return anchor.reference_to( this );
-}
-
-void item::check_and_create_magazine_pocket()
-{
-    if( contents.has_pocket_type( item_pocket::pocket_type::MAGAZINE ) ) {
-        // we assume here that the pocket in json will work.
-        return;
-    }
-    if( !is_magazine() && type->magazines.empty() ) {
-        return;
-    } else if( is_magazine() ) {
-        pocket_data mag_data;
-        mag_data.type = item_pocket::pocket_type::MAGAZINE;
-        mag_data.ammo_restriction = type->magazine->type;
-        mag_data._item_number_overrides.has_override = true;
-        mag_data._item_number_overrides.item_stacks = false;
-        mag_data._item_number_overrides.num_items = type->magazine->capacity;
-        mag_data.fire_protection = type->magazine->protects_contents;
-        mag_data.max_contains_volume = 20_liter;
-        mag_data.max_contains_weight = 40_kilogram;
-        mag_data.rigid = true;
-        contents.add_pocket( mag_data );
-        return;
-    } else {
-        pocket_data mag_data;
-        mag_data.type = item_pocket::pocket_type::MAGAZINE;
-        mag_data._item_number_overrides.has_override = true;
-        mag_data._item_number_overrides.item_stacks = true;
-        // only one magazine in a pocket, for now
-        mag_data._item_number_overrides.num_items = 1;
-        mag_data.rigid = true;
-        mag_data.max_contains_volume = 20_liter;
-        mag_data.max_contains_weight = 40_kilogram;
-        // the magazine pocket does not use can_contain like normal CONTAINER pockets
-        // so we don't have to worry about having random items be put into the mag
-        contents.add_pocket( mag_data );
-        return;
-    }
 }
 
 static const item *get_most_rotten_component( const item &craft )
@@ -4395,11 +4354,7 @@ std::string item::display_name( unsigned int quantity ) const
     int max_amount = 0;
     bool show_amt = false;
     // We should handle infinite charges properly in all cases.
-    if( contents.num_item_stacks() == 1 ) {
-        item front_item( contents.only_item() );
-        amount = front_item.charges;
-        max_amount = front_item.charges_per_volume( get_total_capacity() );
-    } else if( is_book() && get_chapters() > 0 ) {
+    if( is_book() && get_chapters() > 0 ) {
         // a book which has remaining unread chapters
         amount = get_remaining_chapters( g->u );
     } else if( ammo_capacity() > 0 ) {

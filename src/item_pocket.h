@@ -218,22 +218,6 @@ class item_pocket
         bool _sealed = true;
 };
 
-// an object that has data on how many items can exist inside an item
-struct item_number_overrides {
-    bool was_loaded;
-    // if false any of the other data is useless.
-    // loading any data changes this to true
-    bool has_override = false;
-
-    int num_items = 0;
-    // the number applies to how many stacks of items
-    // if false, it takes the absolute total (with charges)
-    bool item_stacks = true;
-
-    void load( const JsonObject &jo );
-    void deserialize( JsonIn &jsin );
-};
-
 /**
  *  There are a few implicit things about this struct when applied to pocket_data:
  *  - When a pocket_data::open_container == true, if it's sealed this is false.
@@ -264,8 +248,8 @@ class pocket_data
         units::volume min_item_volume = 0_ml;
         // max weight of stuff the pocket can hold
         units::mass max_contains_weight = 0_gram;
-        // an override to force the container to only have a specific number of items
-        item_number_overrides _item_number_overrides;
+        // if true, this pocket can can contain one and only one item
+        bool holster = false;
         // multiplier for spoilage rate of contained items
         float spoil_multiplier = 1.0f;
         // items' weight in this pocket are modified by this number
@@ -288,8 +272,9 @@ class pocket_data
         // allows only items with at least one of the following flags to be stored inside
         // empty means no restriction
         std::vector<std::string> flag_restriction;
-        // items stored are restricted to this ammotype
-        std::set<ammotype> ammo_restriction;
+        // items stored are restricted to these ammo types:
+        // the pocket can only contain one of them since the amoutn is also defined for each ammotype
+        std::map<ammotype, int> ammo_restriction;
         // container's size and encumbrance does not change based on contents.
         bool rigid = false;
 
