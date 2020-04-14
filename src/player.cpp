@@ -3481,7 +3481,7 @@ bool player::add_or_drop_with_msg( item &it, const bool unloading )
 bool player::unload( item &it )
 {
     // Unload a container consuming moves per item successfully removed
-    if( it.is_container() || it.is_bandolier() ) {
+    if( it.is_container() ) {
         if( it.contents.empty() ) {
             add_msg( m_info, _( "The %s is already empty!" ), it.tname() );
             return false;
@@ -3671,7 +3671,7 @@ hint_rating player::rate_action_reload( const item &it ) const
 
 hint_rating player::rate_action_unload( const item &it ) const
 {
-    if( ( it.is_container() || it.is_bandolier() ) && !it.contents.empty() &&
+    if( it.is_container() && !it.contents.empty() &&
         it.can_unload_liquid() ) {
         return HINT_GOOD;
     }
