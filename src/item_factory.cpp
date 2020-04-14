@@ -2148,6 +2148,40 @@ void npc_implied_flags( itype &item_template )
     }
 }
 
+void Item_factory::check_and_create_magazine_pockets( itype &def )
+{
+    if( !def.pockets.empty() ) {
+        // this means pockets were defined in json already
+        // we assume they're good to go, or error elsewhere
+        return;
+    }
+    if( def.magazine ) {
+        pocket_data mag_data;
+        mag_data.type = item_pocket::pocket_type::MAGAZINE;
+        for( const ammotype amtype : def.magazine->type ) {
+            mag_data.ammo_restriction.emplace( amtype, def.magazine->capacity );
+        }
+        mag_data.fire_protection = def.magazine->protects_contents;
+        mag_data.max_contains_volume = 20_liter;
+        mag_data.max_contains_weight = 40_kilogram;
+        mag_data.rigid = true;
+        def.pockets.push_back( mag_data );
+        return;
+    } else if( def.gun ) {
+        pocket_data mag_data;
+        mag_data.type = item_pocket::pocket_type::MAGAZINE;
+        // only one magazine in a pocket, for now
+        mag_data.holster = true;
+        mag_data.rigid = true;
+        mag_data.max_contains_volume = 20_liter;
+        mag_data.max_contains_weight = 40_kilogram;
+        // the magazine pocket does not use can_contain like normal CONTAINER pockets
+        // so we don't have to worry about having random items be put into the mag
+        def.pockets.push_back( mag_data );
+        return;
+    }
+}
+
 void Item_factory::load_basic_info( const JsonObject &jo, itype &def, const std::string &src )
 {
     bool strict = src == "dda";
@@ -2346,6 +2380,8 @@ void Item_factory::load_basic_info( const JsonObject &jo, itype &def, const std:
         load_slot( def.gunmod, jo_gunmod, src );
         load_slot( def.mod, jo_gunmod, src );
     }
+
+    check_and_create_magazine_pockets( def );
 
     if( jo.has_string( "abstract" ) ) {
         def.id = jo.get_string( "abstract" );

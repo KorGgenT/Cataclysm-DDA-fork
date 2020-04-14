@@ -59,14 +59,6 @@ void item_contents::combine( const item_contents &rhs )
     }
 }
 
-static std::vector<pocket_data> dynamically_loaded_pockets;
-
-void item_contents::add_pocket( const pocket_data &added_pocket )
-{
-    dynamically_loaded_pockets.push_back( pocket_data( added_pocket ) );
-    contents.push_back( item_pocket( &dynamically_loaded_pockets.back() ) );
-}
-
 ret_val<item_pocket *> item_contents::find_pocket_for( const item &it,
         item_pocket::pocket_type pk_type )
 {

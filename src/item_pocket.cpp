@@ -56,17 +56,8 @@ void pocket_data::load( const JsonObject &jo )
     optional( jo, was_loaded, "open_container", open_container, false );
     optional( jo, was_loaded, "flag_restriction", flag_restriction );
     optional( jo, was_loaded, "rigid", rigid, false );
-    optional( jo, was_loaded, "item_number_override", _item_number_overrides );
+    optional( jo, was_loaded, "holster", holster );
     optional( jo, was_loaded, "sealed_data", sealed_data );
-}
-
-void item_number_overrides::load( const JsonObject &jo )
-{
-    optional( jo, was_loaded, "num_items", num_items );
-    optional( jo, was_loaded, "item_stacks", item_stacks );
-    if( num_items > 0 ) {
-        has_override = true;
-    }
 }
 
 void resealable_data::load( const JsonObject &jo )
@@ -680,6 +671,7 @@ void item_pocket::contents_info( std::vector<iteminfo> &info, int pocket_number,
 
 ret_val<item_pocket::contain_code> item_pocket::can_contain( const item &it ) const
 {
+
     if( data->type == item_pocket::pocket_type::CORPSE ) {
         // corpses can't have items stored in them the normal way,
         // we simply don't want them to "spill"
@@ -694,6 +686,12 @@ ret_val<item_pocket::contain_code> item_pocket::can_contain( const item &it ) co
                        contain_code::ERR_MOD, _( "only mods can go into mod pocket" ) );
         }
     }
+
+    if( data->holster && !contents.empty() ) {
+        return ret_val<item_pocket::contain_code>::make_failure(
+                   contain_code::ERR_NO_SPACE, _( "holster already contains an item" ) );
+    }
+
     if( it.made_of( phase_id::LIQUID ) ) {
         if( !data->watertight ) {
             return ret_val<item_pocket::contain_code>::make_failure(
@@ -727,34 +725,36 @@ ret_val<item_pocket::contain_code> item_pocket::can_contain( const item &it ) co
 
     // ammo restriction overrides item volume and weight data
     if( !data->ammo_restriction.empty() ) {
-        if( !it.is_ammo() || data->ammo_restriction.count( it.ammo_type() ) == 0 ) {
+        if( !it.is_ammo() ) {
+            return ret_val<item_pocket::contain_code>::make_failure(
+                       contain_code::ERR_AMMO, _( "item is not an ammo" ) );
+        }
+
+        const ammotype it_ammo = it.ammo_type();
+        const auto ammo_restriction_iter = data->ammo_restriction.find( it_ammo );
+
+        if( ammo_restriction_iter == data->ammo_restriction.end() ) {
             return ret_val<item_pocket::contain_code>::make_failure(
                        contain_code::ERR_AMMO, _( "item is not the correct ammo type" ) );
-        } else {
-            return ret_val<item_pocket::contain_code>::make_success();
         }
-    }
 
-    if( data->_item_number_overrides.has_override ) {
-        if( data->_item_number_overrides.item_stacks ) {
-            if( static_cast<int>( contents.size() ) >= data->_item_number_overrides.num_items ) {
+        // how much ammo is inside the pocket
+        int internal_count = 0;
+        // the ammo must match what's inside
+        if( !contents.empty() ) {
+            if( it_ammo != contents.front().ammo_type() ) {
                 return ret_val<item_pocket::contain_code>::make_failure(
-                           contain_code::ERR_NO_SPACE, _( "not enough space" ) );
-            }
-        } else {
-            int num_items = 0;
-            for( const item &inside : contents ) {
-                num_items += inside.count();
-            }
-            num_items += it.count();
-
-            if( num_items > data->_item_number_overrides.num_items ) {
-                return ret_val<item_pocket::contain_code>::make_failure(
-                           contain_code::ERR_NO_SPACE, _( "not enough space" ) );
+                           contain_code::ERR_AMMO, _( "item is not the correct ammo type" ) );
+            } else {
+                internal_count = contents.front().count();
             }
         }
 
-        // we need to return early because this is an override for volume
+        if( it.count() + internal_count > ammo_restriction_iter->second ) {
+            return ret_val<item_pocket::contain_code>::make_failure(
+                       contain_code::ERR_NO_SPACE, _( "tried to put too many charges of ammo in item" ) );
+        }
+
         return ret_val<item_pocket::contain_code>::make_success();
     }
 
@@ -854,9 +854,34 @@ void item_pocket::overflow( const tripoint &pos )
         }
     }
 
-    if( data->_item_number_overrides.has_override ) {
-        // TODO: overflow logic for item number overrides go here
-        // early return because item number overrides ignore volume and weight
+    if( !data->ammo_restriction.empty() ) {
+        const ammotype contained_ammotype = contents.front().ammo_type();
+        const auto ammo_iter = data->ammo_restriction.find( contained_ammotype );
+        if( ammo_iter == data->ammo_restriction.end() ) {
+            // only one ammotype is allowed in an ammo restricted pocket
+            // so if the first one is wrong, they're all wrong
+            spill_contents( pos );
+            return;
+        }
+        int total_qty = 0;
+        for( auto iter = contents.begin(); iter != contents.end(); ) {
+            item &ammo = *iter;
+            total_qty += ammo.count();
+            const int overflow_count = ammo_iter->second - ammo.count() - total_qty;
+            if( overflow_count > 0 ) {
+                ammo.charges -= overflow_count;
+                item dropped_ammo( ammo.typeId(), ammo.birthday(), overflow_count );
+                g->m.add_item_or_charges( pos, contents.front() );
+                total_qty -= overflow_count;
+            }
+            if( ammo.count() == 0 ) {
+                iter = contents.erase( iter );
+            } else {
+                ++iter;
+            }
+        }
+        // return early, the rest of this function checks against volume and weight
+        // and ammo_restriction is an override
         return;
     }
 
