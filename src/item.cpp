@@ -9353,9 +9353,6 @@ bool item::is_reloadable() const
     if( has_flag( flag_NO_RELOAD ) && !has_flag( flag_VEHICLE ) ) {
         return false; // turrets ignore NO_RELOAD flag
 
-    } else if( contents.remaining_container_capacity() > 0_ml ) {
-        return true;
-
     } else if( !is_gun() && !is_tool() && !is_magazine() ) {
         return false;
 
