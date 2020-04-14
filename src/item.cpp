@@ -5931,11 +5931,6 @@ bool item::is_ammo_belt() const
     return is_magazine() && has_flag( flag_MAG_BELT );
 }
 
-bool item::is_bandolier() const
-{
-    return type->can_use( "bandolier" );
-}
-
 bool item::is_holster() const
 {
     return type->can_use( "holster" );
@@ -9357,9 +9352,6 @@ bool item::is_reloadable() const
 {
     if( has_flag( flag_NO_RELOAD ) && !has_flag( flag_VEHICLE ) ) {
         return false; // turrets ignore NO_RELOAD flag
-
-    } else if( is_bandolier() ) {
-        return true;
 
     } else if( contents.remaining_container_capacity() > 0_ml ) {
         return true;

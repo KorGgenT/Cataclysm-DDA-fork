@@ -1115,7 +1115,6 @@ class item : public visitable<item>
         bool is_magazine() const;
         bool is_battery() const;
         bool is_ammo_belt() const;
-        bool is_bandolier() const;
         bool is_holster() const;
         bool is_ammo() const;
         // is this armor for a pet creature?  if on_pet is true, returns false if a pet isn't

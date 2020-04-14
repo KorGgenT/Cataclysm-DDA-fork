@@ -2596,7 +2596,7 @@ std::vector<item_location> Character::find_reloadables()
             reloadable = node->magazine_current() == nullptr ||
                          node->ammo_remaining() < node->ammo_capacity();
         } else {
-            reloadable = ( node->is_magazine() || node->is_bandolier() ||
+            reloadable = ( node->is_magazine() ||
                            ( node->is_gun() && node->magazine_integral() ) ) &&
                          node->ammo_remaining() < node->ammo_capacity();
         }
