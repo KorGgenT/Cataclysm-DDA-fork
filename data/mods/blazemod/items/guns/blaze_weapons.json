@@ -22,7 +22,6 @@
     "durability": 9,
     "modes": [ [ "DEFAULT", "semi-auto", 1 ], [ "AUTO", "auto", 3 ] ],
     "reload": 150,
-    "magazine_well": 1,
     "magazines": [ [ "bolt", [ "bolt_hopper" ] ] ],
     "flags": [ "NEVER_JAMS", "MOUNTED_GUN" ]
   },
@@ -48,7 +47,6 @@
     "durability": 8,
     "reload": 750,
     "valid_mod_locations": [  ],
-    "magazine_well": 1,
     "magazines": [ [ "h_projectile", [ "cannister_rack" ] ] ],
     "ammo_effects": [ "WIDE" ],
     "flags": [ "NEVER_JAMS", "MOUNTED_GUN", "NON-FOULING" ]
@@ -204,7 +202,6 @@
     "ups_charges": 9,
     "reload": 150,
     "valid_mod_locations": [  ],
-    "magazine_well": 1,
     "magazines": [ [ "nail", [ "nailmag" ] ] ],
     "flags": [ "MOUNTED_GUN", "NEVER_JAMS", "NON-FOULING" ]
   },
@@ -232,7 +229,6 @@
     "modes": [ [ "DEFAULT", "semi-auto", 1 ], [ "AUTO", "auto", 5 ] ],
     "reload": 150,
     "valid_mod_locations": [  ],
-    "magazine_well": 1,
     "magazines": [ [ "nail", [ "nailmag" ] ] ],
     "flags": [ "MOUNTED_GUN", "NEVER_JAMS" ]
   },
@@ -369,7 +365,6 @@
     "ups_charges": 1,
     "reload": 150,
     "valid_mod_locations": [  ],
-    "magazine_well": 1,
     "magazines": [ [ "BB", [ "bb_hopper" ] ] ],
     "flags": [ "BURST_ONLY", "MOUNTED_GUN", "NEVER_JAMS", "NON-FOULING" ]
   },
@@ -446,7 +441,6 @@
     "sight_dispersion": 150,
     "durability": 9,
     "modes": [ [ "DEFAULT", "semi-auto", 1 ], [ "AUTO", "auto", 5 ] ],
-    "magazine_well": 1,
     "magazines": [ [ "pebble", [ "pebble_hopper" ] ] ],
     "reload": 150,
     "flags": [ "NEVER_JAMS", "MOUNTED_GUN", "NON-FOULING" ]

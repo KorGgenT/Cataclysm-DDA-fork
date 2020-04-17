@@ -39,8 +39,7 @@
     "ammo": "battery",
     "magazines": [
       [ "battery", [ "heavy_plus_battery_cell", "heavy_battery_cell", "heavy_atomic_battery_cell", "heavy_disposable_cell" ] ]
-    ],
-    "magazine_well": 4
+    ]
   },
   {
     "id": "inhaler",

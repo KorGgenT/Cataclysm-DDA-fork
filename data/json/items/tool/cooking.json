@@ -74,8 +74,7 @@
         "battery",
         [ "medium_battery_cell", "medium_plus_battery_cell", "medium_atomic_battery_cell", "medium_disposable_cell" ]
       ]
-    ],
-    "magazine_well": 2
+    ]
   },
   {
     "id": "carver_on",
@@ -89,8 +88,7 @@
     "revert_to": "carver_off",
     "qualities": [ [ "CUT", 1 ], [ "BUTCHER", 25 ] ],
     "use_action": "CARVER_ON",
-    "flags": [ "MESSY", "TRADER_AVOID", "NONCONDUCTIVE" ],
-    "magazine_well": 2
+    "flags": [ "MESSY", "TRADER_AVOID", "NONCONDUCTIVE" ]
   },
   {
     "id": "char_purifier",
@@ -225,8 +223,7 @@
         "battery",
         [ "medium_battery_cell", "medium_plus_battery_cell", "medium_atomic_battery_cell", "medium_disposable_cell" ]
       ]
-    ],
-    "magazine_well": 2
+    ]
   },
   {
     "id": "dehydrator",
@@ -249,8 +246,7 @@
         "battery",
         [ "medium_battery_cell", "medium_plus_battery_cell", "medium_atomic_battery_cell", "medium_disposable_cell" ]
       ]
-    ],
-    "magazine_well": 2
+    ]
   },
   {
     "id": "eggs_ferment",
@@ -345,8 +341,7 @@
         "battery",
         [ "medium_battery_cell", "medium_plus_battery_cell", "medium_atomic_battery_cell", "medium_disposable_cell" ]
       ]
-    ],
-    "magazine_well": 2
+    ]
   },
   {
     "id": "gasoline_cooker",
@@ -444,8 +439,7 @@
         "battery",
         [ "medium_battery_cell", "medium_plus_battery_cell", "medium_atomic_battery_cell", "medium_disposable_cell" ]
       ]
-    ],
-    "magazine_well": 2
+    ]
   },
   {
     "id": "jar_eggs_pickled",
@@ -563,8 +557,7 @@
         "battery",
         [ "medium_battery_cell", "medium_plus_battery_cell", "medium_atomic_battery_cell", "medium_disposable_cell" ]
       ]
-    ],
-    "magazine_well": 2
+    ]
   },
   {
     "id": "mess_tin",
@@ -648,8 +641,7 @@
         "battery",
         [ "medium_plus_battery_cell", "medium_battery_cell", "medium_atomic_battery_cell", "medium_disposable_cell" ]
       ]
-    ],
-    "magazine_well": 2
+    ]
   },
   {
     "id": "mortar_pestle",
@@ -689,8 +681,7 @@
         "battery",
         [ "medium_battery_cell", "medium_plus_battery_cell", "medium_atomic_battery_cell", "medium_disposable_cell" ]
       ]
-    ],
-    "magazine_well": 2
+    ]
   },
   {
     "id": "multi_cooker_filled",
@@ -948,8 +939,7 @@
         "battery",
         [ "medium_battery_cell", "medium_plus_battery_cell", "medium_atomic_battery_cell", "medium_disposable_cell" ]
       ]
-    ],
-    "magazine_well": 2
+    ]
   },
   {
     "id": "waffleiron",
@@ -999,7 +989,6 @@
           "light_disposable_cell"
         ]
       ]
-    ],
-    "magazine_well": 1
+    ]
   }
 ]
