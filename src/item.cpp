@@ -4095,6 +4095,7 @@ void item::on_pickup( Character &p )
 
 void item::on_contents_changed()
 {
+    contents.update_open_pockets();
     encumbrance_update_ = true;
 }
 
