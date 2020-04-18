@@ -693,7 +693,7 @@ class item : public visitable<item>
         // checks if the item can have things placed in it
         bool has_pockets() const {
             // what has it gots in them, precious
-            return contents.size() > 0;
+            return contents.size() > 3;
         }
         /**
          * Puts the given item into this one, no checks are performed.

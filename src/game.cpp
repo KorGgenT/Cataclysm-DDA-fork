@@ -2136,9 +2136,9 @@ int game::inventory_item_menu( item_location locThisItem, int iStartX, int iWidt
         addentry( 'm', pgettext( "action", "mend" ), u.rate_action_mend( oThisItem ) );
         addentry( 'D', pgettext( "action", "disassemble" ), u.rate_action_disassemble( oThisItem ) );
         if( oThisItem.has_pockets() ) {
-            addentry( 'i', pgettext( "action", "insert" ), HINT_GOOD );
+            addentry( 'i', pgettext( "action", "insert" ), hint_rating::good );
             if( oThisItem.contents.num_item_stacks() > 0 ) {
-                addentry( 'o', pgettext( "action", "open" ), HINT_GOOD );
+                addentry( 'o', pgettext( "action", "open" ), hint_rating::good );
             }
         }
 

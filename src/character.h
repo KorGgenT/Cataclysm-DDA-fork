@@ -1365,6 +1365,7 @@ class Character : public Creature, public visitable<Character>
         const;
         units::mass weight_capacity() const override;
         units::volume volume_capacity() const;
+        units::volume free_space() const;
 
         bool can_pickVolume( const item &it, bool safe = false ) const;
         bool can_pickWeight( const item &it, bool safe = true ) const;
