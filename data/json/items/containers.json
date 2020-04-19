@@ -311,6 +311,7 @@
         "max_contains_volume": "500 ml",
         "max_contains_weight": "1 kg",
         "spoil_multiplier": 0.5,
+        "sealed_data": { "spoilage_multiplier": 0.0 },
         "moves": 400
       }
     ],
@@ -578,7 +579,8 @@
         "open_container": true,
         "resealable": false,
         "max_contains_volume": "250 ml",
-        "max_contains_weight": "1 kg"
+        "max_contains_weight": "1 kg",
+        "sealed_data": { "spoilage_multiplier": 0.0 }
       }
     ],
     "unseals_into": "can_drink_unsealed"
@@ -651,7 +653,8 @@
         "open_container": true,
         "resealable": false,
         "max_contains_volume": "500 ml",
-        "max_contains_weight": "1 kg"
+        "max_contains_weight": "1 kg",
+        "sealed_data": { "spoilage_multiplier": 0.0 }
       }
     ],
     "unseals_into": "bag_plastic"
@@ -880,8 +883,9 @@
         "watertight": true,
         "resealable": false,
         "open_container": true,
-        "max_contains_volume": "37490 ml",
-        "max_contains_weight": "50 kg"
+        "sealed_data": { "spoilage_multiplier": 0.0 },
+        "max_contains_volume": "250 ml",
+        "max_contains_weight": "1 kg"
       }
     ],
     "unseals_into": "cup_plastic_unsealed"
@@ -1095,6 +1099,16 @@
     "color": "light_cyan",
     "seals": false,
     "preserves": true,
+    "pocket_data": [
+      {
+        "pocket_type": "CONTAINER",
+        "rigid": true,
+        "watertight": true,
+        "max_contains_volume": "3 L",
+        "max_contains_weight": "6 kg",
+        "sealed_data": { "spoilage_multiplier": 0.0 }
+      }
+    ],
     "unseals_into": "jar_3l_glass"
   },
   {
@@ -1132,6 +1146,16 @@
     "color": "light_cyan",
     "seals": false,
     "preserves": true,
+    "pocket_data": [
+      {
+        "pocket_type": "CONTAINER",
+        "rigid": true,
+        "watertight": true,
+        "max_contains_volume": "500 ml",
+        "max_contains_weight": "1 kg",
+        "sealed_data": { "spoilage_multiplier": 0.0 }
+      }
+    ],
     "unseals_into": "jar_glass"
   },
   {
@@ -1587,7 +1611,8 @@
         "rigid": true,
         "resealable": false,
         "max_contains_volume": "3 L",
-        "max_contains_weight": "6 kg"
+        "max_contains_weight": "6 kg",
+        "sealed_data": { "spoilage_multiplier": 0.0 }
       }
     ],
     "unseals_into": "can_food_big_unsealed"
