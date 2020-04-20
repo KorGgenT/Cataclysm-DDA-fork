@@ -50,9 +50,8 @@ bool player_has_item_of_type( const std::string &type )
 
 void clear_character( player &dummy, bool debug_storage )
 {
-    // Remove first worn item until there are none left.
-    std::list<item> temp;
-    while( dummy.takeoff( dummy.i_at( -2 ), &temp ) );
+    // delete all worn items.
+    dummy.worn.clear();
     dummy.inv.clear();
     dummy.remove_weapon();
     dummy.clear_mutations();
