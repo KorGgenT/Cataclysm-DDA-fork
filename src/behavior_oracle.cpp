@@ -64,11 +64,20 @@ status_t character_oracle_t::can_wear_warmer_clothes() const
     const player *p = dynamic_cast<const player *>( subject );
     // Check inventory for wearable warmer clothes, greedily.
     // Don't consider swapping clothes yet, just evaluate adding clothes.
-    for( const auto &i : subject->inv.const_slice() ) {
-        const item &candidate = i->front();
-        if( candidate.get_warmth() > 0 || p->can_wear( candidate ).success() ) {
-            return running;
+    const auto clothing_finder =
+    [&p]( const item & candidate ) {
+        if( p->is_worn( candidate ) ) {
+            // need to skip things we're already wearing
+            return false;
         }
+        if( candidate.get_warmth() > 0 || p->can_wear( candidate ).success() ) {
+            return true;
+        }
+        return false;
+    };
+
+    if( p->has_item_with( clothing_finder ) ) {
+        return running;
     }
     return failure;
 }
@@ -78,21 +87,30 @@ status_t character_oracle_t::can_make_fire() const
     // Check inventory for firemaking tools and fuel
     bool tool = false;
     bool fuel = false;
-    for( const auto &i : subject->inv.const_slice() ) {
-        const item &candidate = i->front();
-        if( candidate.has_flag( flag_FIRESTARTER ) ) {
+
+    const auto fire_finder =
+    [&tool, &fuel]( const item * candidate ) {
+        if( candidate->has_flag( flag_FIRESTARTER ) ) {
             tool = true;
             if( fuel ) {
-                return running;
+                return VisitResponse::ABORT;
             }
-        } else if( candidate.flammable() ) {
+        } else if( candidate->flammable() ) {
             fuel = true;
             if( tool ) {
-                return running;
+                return VisitResponse::ABORT;
             }
         }
+        return VisitResponse::NEXT;
+    };
+
+    subject->visit_items( fire_finder );
+
+    if( tool && fuel ) {
+        return running;
+    } else {
+        return success;
     }
-    return success;
 }
 
 status_t character_oracle_t::can_take_shelter() const
@@ -105,7 +123,7 @@ status_t character_oracle_t::can_take_shelter() const
 status_t character_oracle_t::has_water() const
 {
     // Check if we know about water somewhere
-    bool found_water = subject->inv.has_item_with( []( const item & cand ) {
+    bool found_water = subject->has_item_with( []( const item & cand ) {
         return cand.is_food() && cand.get_comestible()->quench > 0;
     } );
     return found_water ? running : failure;
@@ -114,7 +132,7 @@ status_t character_oracle_t::has_water() const
 status_t character_oracle_t::has_food() const
 {
     // Check if we know about food somewhere
-    bool found_food = subject->inv.has_item_with( []( const item & cand ) {
+    bool found_food = subject->has_item_with( []( const item & cand ) {
         return cand.is_food() && cand.get_comestible()->has_calories();
     } );
     return found_food ? running : failure;
