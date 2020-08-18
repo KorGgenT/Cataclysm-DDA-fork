@@ -274,8 +274,7 @@ static int game_uilist()
     std::vector<uilist_entry> uilist_initializer = {
         { uilist_entry( debug_menu_index::ENABLE_ACHIEVEMENTS, true, 'a', _( "Enable achievements" ) ) },
         { uilist_entry( debug_menu_index::SHOW_MSG, true, 'd', _( "Show debug message" ) ) },
-        { uilist_entry( debug_menu_index::CRASH_GAME, true, 'C', _( "Crash game (test crash handling)" ) ) },
-        { uilist_entry( debug_menu_index::QUIT_NOSAVE, true, 'Q', _( "Quit to main menu" ) )  },
+        { uilist_entry( debug_menu_index::CRASH_GAME, true, 'C', _( "Crash game (test crash handling)" ) ) }
     };
 
     return uilist( _( "Game…" ), uilist_initializer );
@@ -354,6 +353,7 @@ static cata::optional<debug_menu_index> debug_menu_uilist( bool display_all_entr
             { uilist_entry( 7, true, 'v', _( "Vehicle…" ) ) },
             { uilist_entry( 4, true, 't', _( "Teleport…" ) ) },
             { uilist_entry( 5, true, 'm', _( "Map…" ) ) },
+            { uilist_entry( debug_menu_index::QUIT_NOSAVE, true, 'Q', _( "Quit to main menu" ) )  },
         };
 
         // insert debug-only menu right after "Info".
@@ -394,7 +394,9 @@ static cata::optional<debug_menu_index> debug_menu_uilist( bool display_all_entr
             case 7:
                 action = vehicle_uilist();
                 break;
-
+            case static_cast<int>( debug_menu_index::QUIT_NOSAVE ):
+                return debug_menu_index::QUIT_NOSAVE;
+                break;
             default:
                 return cata::nullopt;
         }
@@ -569,7 +571,7 @@ void character_edit_menu()
     nmenu.addentry( D_MUTATE, true, 'u', "%s", _( "M[u]tate" ) );
     nmenu.addentry( D_STATUS, true, '@', "%s", _( "Status Window [@]" ) );
     nmenu.addentry( D_TELE, true, 'e', "%s", _( "t[e]leport" ) );
-    nmenu.addentry( D_ADD_EFFECT, true, 't', "%s", _( "Add an effec[t]" ) );
+    nmenu.addentry( D_ADD_EFFECT, true, 'f', "%s", _( "Add an e[f]fect" ) );
     nmenu.addentry( D_ASTHMA, true, 'k', "%s", _( "Cause asthma attac[k]" ) );
     nmenu.addentry( D_MISSION_EDIT, true, 'M', "%s", _( "Edit [M]issions (WARNING: Unstable!)" ) );
     if( p.is_npc() ) {
@@ -1224,14 +1226,13 @@ void debug()
         debug_menu_index::ENABLE_ACHIEVEMENTS,
         debug_menu_index::BENCHMARK,
         debug_menu_index::SHOW_MSG,
+        // it's not that it's not cheaty, it's that disabling achievements 
+        // doesn't matter when you quit the game wihtout saving, thus this saves a keypress
+        debug_menu_index::QUIT_NOSAVE
     };
     bool should_disable_achievements = action && !non_cheaty_options.count( *action );
     if( should_disable_achievements && achievements.is_enabled() ) {
-        if( query_yn( _( "Using this will disable achievements.  Proceed?" ) ) ) {
-            achievements.set_enabled( false );
-        } else {
-            action = cata::nullopt;
-        }
+        add_msg( m_debug, _( "Achievements disabled due to debug menu usage, you can re-enable in the debug menu." ) );
     }
 
     if( !action ) {
