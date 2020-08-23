@@ -49,6 +49,8 @@
 #include "ui.h"
 #include "units.h"
 
+static const skill_id skill_spellcraft( "spellcraft" );
+
 static const trait_id trait_NONE( "NONE" );
 
 namespace io
@@ -102,6 +104,21 @@ std::string enum_to_string<spell_flag>( spell_flag data )
         case spell_flag::NO_FAIL: return "NO_FAIL";
         case spell_flag::WONDER: return "WONDER";
         case spell_flag::LAST: break;
+    }
+    debugmsg( "Invalid spell_flag" );
+    abort();
+}
+template<>
+std::string enum_to_string<magic_energy_type>( magic_energy_type data )
+{
+    switch( data ) {
+    case magic_energy_type::bionic: return "BIONIC";
+    case magic_energy_type::fatigue: return "FATIGUE";
+    case magic_energy_type::hp: return "HP";
+    case magic_energy_type::mana: return "MANA";
+    case magic_energy_type::none: return "NONE";
+    case magic_energy_type::stamina: return "STAMINA";
+    case magic_energy_type::last: break;
     }
     debugmsg( "Invalid spell_flag" );
     abort();
@@ -285,8 +302,7 @@ void spell_type::load( const JsonObject &jo, const std::string & )
     std::string temp_string;
     optional( jo, was_loaded, "spell_class", temp_string, "NONE" );
     spell_class = trait_id( temp_string );
-    optional( jo, was_loaded, "energy_source", temp_string, "NONE" );
-    energy_source = energy_source_from_string( temp_string );
+    optional( jo, was_loaded, "energy_source", energy_source, magic_energy_type::none );
     optional( jo, was_loaded, "damage_type", dmg_type, damage_type::NONE );
     optional( jo, was_loaded, "difficulty", difficulty, 0 );
     optional( jo, was_loaded, "max_level", max_level, 0 );
@@ -298,6 +314,186 @@ void spell_type::load( const JsonObject &jo, const std::string & )
     for( const JsonMember member : jo.get_object( "learn_spells" ) ) {
         learn_spells.insert( std::pair<std::string, int>( member.name(), member.get_int() ) );
     }
+}
+
+void spell_type::serialize( JsonOut &json ) const
+{
+    json.start_object();
+
+    json.member( "type", "SPELL" );
+    json.member( "id", id );
+    json.member( "name", name.translated() );
+    json.member( "description", description.translated() );
+    json.member( "effect", effect_name );
+    {
+        std::vector<std::string> target_vec;
+        for( int i = 0; i < static_cast<int>( spell_target::num_spell_targets ); i++ ) {
+            const spell_target cur = static_cast<spell_target>( i );
+            if( valid_targets.test( cur ) ) {
+                target_vec.push_back( io::enum_to_string( cur ) );
+            }
+        }
+        json.member( "valid_targets", target_vec );
+    }
+    if( !effect_str.empty() ) {
+        json.member( "effect_str", effect_str );
+    }
+    if( skill != skill_spellcraft ) {
+        json.member( "skill", skill );
+    }
+    if( !spell_components.is_empty() ) {
+        json.member( "components", spell_components );
+    }
+    if( message.translated() != "You cast %s!" ) {
+        json.member( "message", message.translated() );
+    }
+    if( sound_description.translated() != "an explosion" ) {
+        json.member( "sound_description", sound_description.translated() );
+    }
+    if( sound_type != sounds::sound_t::combat ) {
+        json.member( "sound_type", io::enum_to_string( sound_type ) );
+    }
+    if( sound_ambient ) {
+        json.member( "sound_ambient", sound_ambient );
+    }
+    if( !sound_id.empty() ) {
+        json.member( "sound_id", sound_id );
+    }
+    if( sound_variant != "default" ) {
+        json.member( "sound_variant", sound_variant );
+    }
+    {
+        std::vector<std::string> target_vec;
+        for( int i = 0; i < static_cast<int>( spell_target::num_spell_targets ); i++ ) {
+            const spell_target cur = static_cast<spell_target>( i );
+            if( effect_targets.test( cur ) ) {
+                target_vec.push_back( io::enum_to_string( cur ) );
+            }
+        }
+        if( !target_vec.empty() ) {
+            json.member( "effect_filter", target_vec );
+        }
+    }
+    if( !targeted_monster_ids.empty() ) {
+        json.member( "targeted_monster_ids", targeted_monster_ids );
+    }
+    if( !additional_spells.empty() ) {
+        json.member( "extra_effects", additional_spells );
+    }
+    if( affected_bps.count() != 0 ) {
+        json.member( "affected_body_parts", affected_bps );
+    }
+    {
+        std::vector<std::string> spell_vec;
+        for( int i = 0; i < static_cast<int>( spell_flag::LAST ); i++ ) {
+            const spell_flag cur = static_cast<spell_flag>( i );
+            if( spell_tags.test( cur ) ) {
+                spell_vec.push_back( io::enum_to_string( cur ) );
+            }
+        }
+        if( !spell_vec.empty() ) {
+            json.member( "effect_filter", spell_vec );
+        }
+    }
+    if( field ) {
+        json.member( "field_id", field->id().str() );
+        if( field_chance != 1 ) {
+            json.member( "field_chance", field_chance );
+        }
+        if( !( min_field_intensity == 0 && min_field_intensity == max_field_intensity ) ) {
+            json.member( "min_field_intensity", min_field_intensity );
+            json.member( "max_field_intensity", max_field_intensity );
+        }
+        if( field_intensity_increment != 0.0f ) {
+            json.member( "field_intensity_increment", field_intensity_increment );
+        }
+        if( field_intensity_variance != 0.0f ) {
+            json.member( "field_intensity_variance", field_intensity_variance );
+        }
+    }
+    if( !( min_damage == 0 && min_damage == max_damage ) ) {
+        json.member( "min_damage", min_damage );
+        json.member( "max_damage", max_damage );
+    }
+    if( damage_increment != 0.0f ) {
+        json.member( "damage_increment", damage_increment );
+    }
+    if( !( min_range == 0 && min_range == max_range ) ) {
+        json.member( "min_range", min_range );
+        json.member( "max_range", max_range );
+    }
+    if( range_increment != 0.0f ) {
+        json.member( "range_increment", range_increment );
+    }
+    if( !( min_aoe == 0 && min_aoe == max_aoe ) ) {
+        json.member( "min_aoe", min_aoe );
+        json.member( "max_aoe", max_aoe );
+    }
+    if( aoe_increment != 0.0f ) {
+        json.member( "aoe_increment", aoe_increment );
+    }
+    if( !( min_dot == 0 && min_dot == max_dot ) ) {
+        json.member( "min_dot", min_dot );
+        json.member( "max_dot", max_dot );
+    }
+    if( dot_increment != 0.0f ) {
+        json.member( "dot_increment", dot_increment );
+    }
+    if( !( min_duration == 0 && min_duration == max_duration ) ) {
+        json.member( "min_duration", min_duration );
+        json.member( "max_duration", max_duration );
+    }
+    if( duration_increment != 0.0f ) {
+        json.member( "duration_increment", duration_increment );
+    }
+    if( !( min_pierce == 0 && min_pierce == max_pierce ) ) {
+        json.member( "min_pierce", min_pierce );
+        json.member( "max_pierce", max_pierce );
+    }
+    if( pierce_increment != 0.0f ) {
+        json.member( "pierce_increment", pierce_increment );
+    }
+    if( base_energy_cost != 0 || final_energy_cost != base_energy_cost ) {
+        json.member( "base_energy_cost", base_energy_cost );
+    }
+    if( final_energy_cost != base_energy_cost ) {
+        json.member( "final_energy_cost", final_energy_cost );
+    }
+    if( energy_increment != 0.0f ) {
+        json.member( "energy_increment", energy_increment );
+    }
+    if( spell_class != trait_NONE ) {
+        json.member( "spell_class", spell_class );
+    }
+    if( energy_source != magic_energy_type::none ) {
+        json.member( "energy_source", io::enum_to_string( energy_source ) );
+    }
+    if( dmg_type != DT_NONE ) {
+        json.member( "damage_type", io::enum_to_string( dmg_type ) );
+    }
+    if( difficulty != 0 ) {
+        json.member( "difficulty", difficulty );
+    }
+    if( max_level != 0 ) {
+        json.member( "max_level", max_level );
+    }
+    if( base_casting_time != 0 || final_casting_time != base_casting_time ) {
+        json.member( "base_casting_time", base_casting_time );
+    }
+    if( final_casting_time != base_casting_time ) {
+        json.member( "final_casting_time", final_casting_time );
+    }
+    if( !learn_spells.empty() ) {
+        json.start_object();
+
+        for( const std::pair<std::string, int> &sp : learn_spells ) {
+            json.member( sp.first, sp.second );
+        }
+
+        json.end_object();
+    }
+
+    json.end_object();
 }
 
 static bool spell_infinite_loop_check( std::set<spell_id> spell_effects, const spell_id &sp )

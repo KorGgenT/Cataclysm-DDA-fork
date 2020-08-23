@@ -75,7 +75,8 @@ enum class magic_energy_type : int {
     stamina,
     bionic,
     fatigue,
-    none
+    none,
+    last
 };
 
 enum class spell_target : int {
@@ -88,6 +89,11 @@ enum class spell_target : int {
     fire,
     blood,
     num_spell_targets
+};
+
+template<>
+struct enum_traits<magic_energy_type> {
+    static constexpr auto last = magic_energy_type::last;
 };
 
 template<>
@@ -169,7 +175,7 @@ class spell_type
         std::vector<fake_spell> additional_spells;
 
         // if the spell has a field name defined, this is where it is
-        cata::optional<field_type_id> field;
+        cata::optional<field_type_id> field = cata::nullopt;
         // the chance one_in( field_chance ) that the field spawns at a tripoint in the area of the spell
         int field_chance = 0;
         // field intensity at spell level 0
@@ -281,6 +287,7 @@ class spell_type
 
         static void load_spell( const JsonObject &jo, const std::string &src );
         void load( const JsonObject &jo, const std::string & );
+        void serialize( JsonOut &json ) const;
         /**
          * All spells in the game.
          */
