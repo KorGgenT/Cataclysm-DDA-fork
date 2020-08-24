@@ -577,6 +577,38 @@ void charm_monster( const spell &sp, Creature &caster, const tripoint &target );
 void mutate( const spell &sp, Creature &caster, const tripoint &target );
 void bash( const spell &sp, Creature &caster, const tripoint &target );
 void none( const spell &sp, Creature &, const tripoint &target );
+
+const
+std::map<std::string, std::function<void( const spell &, Creature &, const tripoint & )>>
+effect_map{
+    { "pain_split", spell_effect::pain_split },
+    { "target_attack", spell_effect::target_attack },
+    { "targeted_polymorph", spell_effect::targeted_polymorph },
+    { "projectile_attack", spell_effect::projectile_attack },
+    { "cone_attack", spell_effect::cone_attack },
+    { "line_attack", spell_effect::line_attack },
+    { "teleport_random", spell_effect::teleport_random },
+    { "spawn_item", spell_effect::spawn_ethereal_item },
+    { "recover_energy", spell_effect::recover_energy },
+    { "summon", spell_effect::spawn_summoned_monster },
+    { "summon_vehicle", spell_effect::spawn_summoned_vehicle },
+    { "translocate", spell_effect::translocate },
+    { "area_pull", spell_effect::area_pull },
+    { "area_push", spell_effect::area_push },
+    { "timed_event", spell_effect::timed_event },
+    { "ter_transform", spell_effect::transform_blast },
+    { "noise", spell_effect::noise },
+    { "vomit", spell_effect::vomit },
+    { "explosion", spell_effect::explosion },
+    { "flashbang", spell_effect::flashbang },
+    { "mod_moves", spell_effect::mod_moves },
+    { "map", spell_effect::map },
+    { "morale", spell_effect::morale },
+    { "charm_monster", spell_effect::charm_monster },
+    { "mutate", spell_effect::mutate },
+    { "bash", spell_effect::bash },
+    { "none", spell_effect::none }
+};
 } // namespace spell_effect
 
 class spellbook_callback : public uilist_callback
