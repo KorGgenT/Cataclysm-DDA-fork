@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{EC6E05EB-8EE1-4D16-914E-F8DA029E5F50}</ProjectGuid>
-    <Keyword>QtVS_v303</Keyword>                                
+    <Keyword>QtVS_v303</Keyword>
     <RootNamespace>ObjectCreator</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
