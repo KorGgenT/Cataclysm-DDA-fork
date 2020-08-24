@@ -392,7 +392,7 @@ void spell_type::serialize( JsonOut &json ) const
             }
         }
         if( !spell_vec.empty() ) {
-            json.member( "effect_filter", spell_vec );
+            json.member( "flags", spell_vec );
         }
     }
     if( field ) {
