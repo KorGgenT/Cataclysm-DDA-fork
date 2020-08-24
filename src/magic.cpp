@@ -152,26 +152,6 @@ void spell_type::load_spell( const JsonObject &jo, const std::string &src )
     spell_factory.load( jo, src );
 }
 
-static magic_energy_type energy_source_from_string( const std::string &str )
-{
-    if( str == "MANA" ) {
-        return magic_energy_type::mana;
-    } else if( str == "HP" ) {
-        return magic_energy_type::hp;
-    } else if( str == "BIONIC" ) {
-        return magic_energy_type::bionic;
-    } else if( str == "STAMINA" ) {
-        return magic_energy_type::stamina;
-    } else if( str == "FATIGUE" ) {
-        return magic_energy_type::fatigue;
-    } else if( str == "NONE" ) {
-        return magic_energy_type::none;
-    } else {
-        debugmsg( _( "ERROR: Invalid magic_energy_type string.  Defaulting to NONE" ) );
-        return magic_energy_type::none;
-    }
-}
-
 static std::string moves_to_string( const int moves )
 {
     if( moves < to_moves<int>( 2_seconds ) ) {
