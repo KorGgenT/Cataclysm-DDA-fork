@@ -141,7 +141,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\object_creator\creator_main.cpp" />
-    <ClCompile Include="..\object_creator\creator_main_window .cpp" />
+    <ClCompile Include="..\object_creator\creator_main_window.cpp" />
+
     <ClCompile Include="..\object_creator\spell_window.cpp" />
     <ClCompile Include="..\src\messages.cpp" />
   </ItemGroup>
