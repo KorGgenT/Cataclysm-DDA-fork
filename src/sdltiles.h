@@ -19,14 +19,27 @@ class window;
 #include <string>
 
 #include "color_loader.h"
+#include "coordinates.h"
 #include "sdl_wrappers.h"
+#include "string_id.h"
 
 class cata_tiles;
+
+struct weather_type;
+
+using weather_type_id = string_id<weather_type>;
 
 namespace catacurses
 {
 class window;
 } // namespace catacurses
+
+namespace overmap_ui
+{
+// {note symbol, note color, offset to text}
+std::tuple<char, nc_color, size_t> get_note_display_info( const std::string &note );
+weather_type_id get_weather_at_point( const tripoint_abs_omt &pos );
+} // namespace overmap_ui
 
 extern std::unique_ptr<cata_tiles> tilecontext;
 extern std::array<SDL_Color, color_loader<SDL_Color>::COLOR_NAMES_COUNT> windowsPalette;

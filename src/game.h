@@ -31,6 +31,7 @@
 #include "pimpl.h"
 #include "point.h"
 #include "type_id.h"
+#include "uistate.h"
 #include "weather.h"
 
 class Character;

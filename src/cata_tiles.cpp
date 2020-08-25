@@ -92,7 +92,7 @@ static const std::array<std::string, 8> multitile_keys = {{
 extern int fontwidth;
 extern int fontheight;
 static const std::string empty_string;
-static const std::array<std::string, 12> TILE_CATEGORY_IDS = {{
+static const std::array<std::string, 13> TILE_CATEGORY_IDS = {{
         "", // C_NONE,
         "vehicle_part", // C_VEHICLE_PART,
         "terrain", // C_TERRAIN,
@@ -105,6 +105,7 @@ static const std::array<std::string, 12> TILE_CATEGORY_IDS = {{
         "bullet", // C_BULLET,
         "hit_entity", // C_HIT_ENTITY,
         "weather", // C_WEATHER,
+        "overmap_terrain"
     }
 };
 
@@ -977,19 +978,6 @@ void tileset_loader::load_tile_spritelists( const JsonObject &entry,
     }
 }
 
-struct tile_render_info {
-    const tripoint pos{};
-    // accumulator for 3d tallness of sprites rendered here so far;
-    int height_3d = 0;
-    lit_level ll;
-    bool invisible[5];
-    tile_render_info( const tripoint &pos, const int height_3d, const lit_level ll,
-                      const bool ( &invisible )[5] )
-        : pos( pos ), height_3d( height_3d ), ll( ll ) {
-        std::copy( invisible, invisible + 5, this->invisible );
-    }
-};
-
 void cata_tiles::draw( const point &dest, const tripoint &center, int width, int height,
                        std::multimap<point, formatted_text> &overlay_strings,
                        color_block_overlay_container &color_blocks )
@@ -1710,6 +1698,15 @@ bool cata_tiles::draw_from_id_string( std::string id, TILE_CATEGORY category,
             }
             sym = tmp.symbol().empty() ? ' ' : tmp.symbol().front();
             col = tmp.color();
+        } else if( category == C_OVERMAP_TERRAIN ) {
+            const oter_str_id tmp( id );
+            if( tmp.is_valid() ) {
+                sym = tmp->get_symbol().front();
+                col = tmp->get_color();
+            }
+        } else if( category == C_OVERMAP_NOTE ) {
+            sym = id[5];
+            col = color_from_string( id.substr( 7, id.length() - 1 ) );
         }
         // Special cases for walls
         switch( sym ) {
@@ -1881,6 +1878,7 @@ bool cata_tiles::draw_from_id_string( std::string id, TILE_CATEGORY category,
         case C_BULLET:
         case C_HIT_ENTITY:
         case C_WEATHER:
+        case C_OVERMAP_TERRAIN:
             // TODO: come up with ways to make random sprites consistent for these types
             break;
         case C_MONSTER:

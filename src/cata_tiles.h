@@ -71,6 +71,8 @@ enum TILE_CATEGORY {
     C_BULLET,
     C_HIT_ENTITY,
     C_WEATHER,
+    C_OVERMAP_TERRAIN,
+    C_OVERMAP_NOTE
 };
 
 class texture
@@ -281,6 +283,7 @@ class cata_tiles
         void draw( const point &dest, const tripoint &center, int width, int height,
                    std::multimap<point, formatted_text> &overlay_strings,
                    color_block_overlay_container &color_blocks );
+        void draw_om( const point &dest, const tripoint_abs_omt &center_abs_omt, bool blink );
 
         /** Minimap functionality */
         void draw_minimap( const point &dest, const tripoint &center, int width, int height );
@@ -484,6 +487,8 @@ class cata_tiles
         point player_to_screen( const point & ) const;
         static std::vector<options_manager::id_and_option> build_renderer_list();
         static std::vector<options_manager::id_and_option> build_display_list();
+    private:
+        int get_omt_rotation( std::string &id );
     protected:
         template <typename maptype>
         void tile_loading_report( const maptype &tiletypemap, TILE_CATEGORY category,
@@ -587,6 +592,19 @@ class cata_tiles
 
     public:
         std::string memory_map_mode = "color_pixel_sepia";
+};
+
+struct tile_render_info {
+    const tripoint pos{};
+    // accumulator for 3d tallness of sprites rendered here so far;
+    int height_3d = 0;
+    lit_level ll;
+    bool invisible[5];
+    tile_render_info( const tripoint &pos, const int height_3d, const lit_level ll,
+                      const bool( &invisible )[5] )
+        : pos( pos ), height_3d( height_3d ), ll( ll ) {
+        std::copy( invisible, invisible + 5, this->invisible );
+    }
 };
 
 #endif // CATA_SRC_CATA_TILES_H

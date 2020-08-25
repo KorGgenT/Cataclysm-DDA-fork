@@ -79,10 +79,6 @@ namespace overmap_ui
 struct draw_data_t {
     // draw monster groups on the overmap.
     bool debug_mongroup = false;
-    // draw weather, e.g. clouds etc.
-    bool debug_weather = false;
-    // draw weather only around player position
-    bool visible_weather = false;
     // draw editor.
     bool debug_editor = false;
     // draw scent traces.
