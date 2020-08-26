@@ -497,8 +497,8 @@ static point_abs_omt draw_notes( const tripoint_abs_omt &origin )
 
 static void draw_ascii(
     const catacurses::window &w, const tripoint_abs_omt &center,
-    const tripoint_abs_omt &orig, bool blink, bool show_explored, bool fast_scroll,
-    input_context *inp_ctxt, const draw_data_t &data )
+    const tripoint_abs_omt &orig, bool /* blink */, bool show_explored, bool /* fast_scroll */,
+    input_context * /* inp_ctxt */, const draw_data_t &data )
 {
 
     const int om_map_width = OVERMAP_WINDOW_WIDTH;
