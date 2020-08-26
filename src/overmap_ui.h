@@ -4,6 +4,7 @@
 
 #include "coordinates.h"
 #include "point.h"
+#include "string_id.h"
 
 namespace catacurses
 {
@@ -12,6 +13,9 @@ class window;
 
 class input_context;
 class nc_color;
+
+struct weather_type;
+using weather_type_id = string_id<weather_type>;
 
 namespace ui
 {
