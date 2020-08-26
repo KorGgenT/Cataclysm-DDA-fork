@@ -88,6 +88,9 @@ struct draw_data_t {
     int iZoneIndex = -1;
 };
 
+std::tuple<char, nc_color, size_t> get_note_display_info( const std::string &note );
+weather_type_id get_weather_at_point( const tripoint_abs_omt &pos );
+
 void draw(
     const catacurses::window &w, const catacurses::window &wbar, const tripoint_abs_omt &center,
     const tripoint_abs_omt &orig, bool blink, bool show_explored, bool fast_scroll,
