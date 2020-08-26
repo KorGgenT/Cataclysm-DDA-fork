@@ -965,7 +965,7 @@ static void draw_ascii(
 
 void draw_om_sidebar(
     const catacurses::window &wbar, const tripoint_abs_omt &center,
-    const tripoint_abs_omt &orig, bool blink, bool fast_scroll,
+    const tripoint_abs_omt &orig, bool /* blink */, bool fast_scroll,
     input_context *inp_ctxt, const draw_data_t &data )
 {
     avatar &player_character = get_avatar();
