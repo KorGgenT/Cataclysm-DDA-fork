@@ -11,6 +11,7 @@ class window;
 } // namespace catacurses
 
 class input_context;
+class nc_color;
 
 namespace ui
 {
