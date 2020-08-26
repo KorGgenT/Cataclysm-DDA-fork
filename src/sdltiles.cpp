@@ -817,7 +817,6 @@ void cata_tiles::draw_om( const point &dest, const tripoint_abs_omt &center_abs_
     const int min_row = 0;
     const int max_row = s.y;
     int height_3d = 0;
-    map &the_map = get_map();
     avatar &you = get_avatar();
     const tripoint_abs_omt avatar_pos = you.global_omt_location();
     const tripoint_abs_omt corner_NW = center_abs_omt - point( max_col / 2, max_row / 2 );
@@ -843,7 +842,6 @@ void cata_tiles::draw_om( const point &dest, const tripoint_abs_omt &center_abs_
             const tripoint pos( col + o.x, row + o.y, center_abs_omt.z() );
             const tripoint_abs_omt omp = corner_NW + point( col, row );
 
-            bool invisible[5] = { false, false, false, false, false };
             const bool see = overmap_buffer.seen( omp );
             const bool los = see && you.overmap_los( omp, sight_points );
             const oter_id &cur_ter = overmap_buffer.ter( omp );
@@ -991,7 +989,7 @@ void cata_tiles::draw_om( const point &dest, const tripoint_abs_omt &center_abs_
 
             geometry->rect( renderer, clipRect, SDL_Color() );
 
-            const point label_pos( draw_pos.x - ( name.length() * fontwidth / 2 ), draw_pos.y );
+            const point label_pos( draw_pos + point( -( name.length() * fontwidth / 2 ), 0 ) );
             map_font->OutputChar( renderer, geometry, name, label_pos, 11 );
         };
 
