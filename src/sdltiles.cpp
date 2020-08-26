@@ -704,11 +704,11 @@ cata::optional<std::pair<tripoint_abs_omt, std::string>> get_mission_arrow(
     const int east_border_x = west_border_x * 2;
 
     tripoint north_pmax( overmap_area.p_max );
-    north_pmax.y += north_border_y;
+    north_pmax.y = overmap_area.p_min.y + north_border_y;
     tripoint south_pmin( overmap_area.p_min );
     south_pmin.y += south_border_y;
     tripoint west_pmax( overmap_area.p_max );
-    west_pmax.x += west_border_x;
+    west_pmax.x = overmap_area.p_min.x + west_border_x;
     tripoint east_pmin( overmap_area.p_min );
     east_pmin.x += east_border_x;
 
