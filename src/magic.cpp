@@ -416,7 +416,7 @@ void spell_type::serialize( JsonOut &json ) const
     if( energy_source != magic_energy_type::none ) {
         json.member( "energy_source", io::enum_to_string( energy_source ) );
     }
-    if( dmg_type != DT_NONE ) {
+    if( dmg_type != damage_type::NONE ) {
         json.member( "damage_type", io::enum_to_string( dmg_type ) );
     }
     if( difficulty != 0 ) {
