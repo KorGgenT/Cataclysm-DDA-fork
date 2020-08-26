@@ -729,7 +729,7 @@ cata::optional<std::pair<tripoint_abs_omt, std::string>> get_mission_arrow(
         } else if( east_sector.contains( *prev ) ) {
             mission_arrow_variant += 'e';
         }
-    } else if( z < 0 ) {
+    } else if( z > 0 ) {
         mission_arrow_variant += "down";
     } else {
         mission_arrow_variant += "up";
