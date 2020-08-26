@@ -958,14 +958,16 @@ void cata_tiles::draw_om( const point &dest, const tripoint_abs_omt &center_abs_
     draw_from_id_string( "cursor", global_omt_to_draw_position( center_abs_omt ), 0, 0, lit_level::LIT,
                          false );
 
-    // reduce the area where the map cursor is drawn so it doesn't get cut off
-    inclusive_cuboid<tripoint> map_cursor_area = overmap_area;
-    map_cursor_area.p_max.y--;
-    const cata::optional<std::pair<tripoint_abs_omt, std::string>> mission_arrow =
-                get_mission_arrow( map_cursor_area, center_abs_omt );
-    if( mission_arrow ) {
-        draw_from_id_string( mission_arrow->second, global_omt_to_draw_position( mission_arrow->first ), 0,
-                             0, lit_level::LIT, false );
+    if( blink ) {
+        // reduce the area where the map cursor is drawn so it doesn't get cut off
+        inclusive_cuboid<tripoint> map_cursor_area = overmap_area;
+        map_cursor_area.p_max.y--;
+        const cata::optional<std::pair<tripoint_abs_omt, std::string>> mission_arrow =
+                    get_mission_arrow( map_cursor_area, center_abs_omt );
+        if( mission_arrow ) {
+            draw_from_id_string( mission_arrow->second, global_omt_to_draw_position( mission_arrow->first ), 0,
+                                 0, lit_level::LIT, false );
+        }
     }
 
     // Labels need to be drawn last, as anything that attempts to draw a sprite after will fail.

@@ -362,7 +362,8 @@ CachedTTFFont::CachedTTFFont(
     TTF_SetFontStyle( font.get(), TTF_STYLE_NORMAL );
 }
 
-SDL_Texture_Ptr CachedTTFFont::create_glyph( const SDL_Renderer_Ptr &renderer, const std::string &ch,
+SDL_Texture_Ptr CachedTTFFont::create_glyph( const SDL_Renderer_Ptr &renderer,
+        const std::string &ch,
         const int color )
 {
     const auto function = fontblending ? TTF_RenderUTF8_Blended : TTF_RenderUTF8_Solid;
@@ -494,7 +495,8 @@ BitmapFont::BitmapFont(
     }
 }
 
-void BitmapFont::draw_ascii_lines( const SDL_Renderer_Ptr &renderer, const GeometryRenderer_Ptr &geometry,
+void BitmapFont::draw_ascii_lines( const SDL_Renderer_Ptr &renderer,
+                                   const GeometryRenderer_Ptr &geometry,
                                    unsigned char line_id, const point &p, unsigned char color ) const
 {
     BitmapFont *t = const_cast<BitmapFont *>( this );
@@ -668,7 +670,8 @@ bool FontFallbackList::isGlyphProvided( const std::string & ) const
     return true;
 }
 
-void FontFallbackList::OutputChar( const SDL_Renderer_Ptr &renderer, const GeometryRenderer_Ptr &geometry,
+void FontFallbackList::OutputChar( const SDL_Renderer_Ptr &renderer,
+                                   const GeometryRenderer_Ptr &geometry,
                                    const std::string &ch, const point &p,
                                    unsigned char color, const float opacity )
 {
