@@ -978,12 +978,10 @@ static void draw_om_sidebar(
     const bool viewing_weather = uistate.overmap_debug_weather || uistate.overmap_visible_weather;
 
     // If we're debugging monster groups, find the monster group we've selected
-    const mongroup *mgroup = nullptr;
     std::vector<mongroup *> mgroups;
     if( data.debug_mongroup ) {
         mgroups = overmap_buffer.monsters_at( center );
         for( const auto &mgp : mgroups ) {
-            mgroup = mgp;
             if( mgp->horde ) {
                 break;
             }
