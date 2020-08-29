@@ -873,6 +873,15 @@ void cata_tiles::draw_om( const point &dest, const tripoint_abs_omt &center_abs_
                                  ll, false, height_3d );
 
             if( see ) {
+                if( blink && uistate.overmap_debug_mongroup ) {
+                    const std::vector<mongroup *> mgroups = overmap_buffer.monsters_at( omp );
+                    if( !mgroups.empty() ) {
+                        auto mgroup_iter = mgroups.begin();
+                        std::advance( mgroup_iter, rng( 0, mgroups.size() - 1 ) );
+                        draw_from_id_string( ( *mgroup_iter )->type->defaultMonster.str(), pos, 0, 0, lit_level::LIT,
+                                             false );
+                    }
+                }
                 const int horde_size = overmap_buffer.get_horde_size( omp );
                 if( showhordes && los && horde_size >= HORDE_VISIBILITY_SIZE ) {
                     switch( horde_size ) {

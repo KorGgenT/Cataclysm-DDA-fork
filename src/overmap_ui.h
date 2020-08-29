@@ -82,8 +82,6 @@ namespace overmap_ui
 {
 // drawing relevant data, e.g. what to draw.
 struct draw_data_t {
-    // draw monster groups on the overmap.
-    bool debug_mongroup = false;
     // draw editor.
     bool debug_editor = false;
     // draw scent traces.

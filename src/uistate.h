@@ -116,6 +116,8 @@ class uistatedata
         bool overmap_show_forest_trails = true;
         bool overmap_visible_weather = false;
         bool overmap_debug_weather = false;
+        // draw monster groups on the overmap.
+        bool overmap_debug_mongroup = false;
 
         // V Menu Stuff
         int list_item_sort = 0;
