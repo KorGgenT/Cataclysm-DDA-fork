@@ -884,25 +884,31 @@ void cata_tiles::draw_om( const point &dest, const tripoint_abs_omt &center_abs_
                 }
                 const int horde_size = overmap_buffer.get_horde_size( omp );
                 if( showhordes && los && horde_size >= HORDE_VISIBILITY_SIZE ) {
-                    switch( horde_size ) {
-                        case HORDE_VISIBILITY_SIZE:
-                            draw_from_id_string( "mon_zombie", pos, 0, 0, lit_level::LIT, false );
-                            break;
-                        case HORDE_VISIBILITY_SIZE + 1:
-                            draw_from_id_string( "mon_zombie_tough", pos, 0, 0, lit_level::LIT, false );
-                            break;
-                        case HORDE_VISIBILITY_SIZE + 2:
-                            draw_from_id_string( "mon_zombie_brute", pos, 0, 0, lit_level::LIT, false );
-                            break;
-                        case HORDE_VISIBILITY_SIZE + 3:
-                            draw_from_id_string( "mon_zombie_hulk", pos, 0, 0, lit_level::LIT, false );
-                            break;
-                        case HORDE_VISIBILITY_SIZE + 4:
-                            draw_from_id_string( "mon_zombie_necro", pos, 0, 0, lit_level::LIT, false );
-                            break;
-                        default:
-                            draw_from_id_string( "mon_zombie_master", pos, 0, 0, lit_level::LIT, false );
-                            break;
+                    // a little bit of hardcoded fallbacks for hordes
+                    if( find_tile_with_season( id ) != nullptr ) {
+                        draw_from_id_string( string_format( "overmap_horde_%d", HORDE_VISIBILITY_SIZE ),
+                                             pos, 0, 0, lit_level::LIT, false );
+                    } else {
+                        switch( horde_size ) {
+                            case HORDE_VISIBILITY_SIZE:
+                                draw_from_id_string( "mon_zombie", pos, 0, 0, lit_level::LIT, false );
+                                break;
+                            case HORDE_VISIBILITY_SIZE + 1:
+                                draw_from_id_string( "mon_zombie_tough", pos, 0, 0, lit_level::LIT, false );
+                                break;
+                            case HORDE_VISIBILITY_SIZE + 2:
+                                draw_from_id_string( "mon_zombie_brute", pos, 0, 0, lit_level::LIT, false );
+                                break;
+                            case HORDE_VISIBILITY_SIZE + 3:
+                                draw_from_id_string( "mon_zombie_hulk", pos, 0, 0, lit_level::LIT, false );
+                                break;
+                            case HORDE_VISIBILITY_SIZE + 4:
+                                draw_from_id_string( "mon_zombie_necro", pos, 0, 0, lit_level::LIT, false );
+                                break;
+                            default:
+                                draw_from_id_string( "mon_zombie_master", pos, 0, 0, lit_level::LIT, false );
+                                break;
+                        }
                     }
                 }
             }
