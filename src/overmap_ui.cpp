@@ -1139,8 +1139,7 @@ void draw(
     } else {
 #ifdef TILES
         cata_cursesport::WINDOW *const win = w.get<cata_cursesport::WINDOW>();
-        const point window_pos( win->pos.x, win->pos.y );
-        tilecontext->draw_om( window_pos, center, blink );
+        tilecontext->draw_om( win->pos, center, blink );
 #endif // TILES
     }
 }
