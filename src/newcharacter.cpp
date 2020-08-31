@@ -2891,17 +2891,6 @@ std::vector<trait_id> Character::get_base_traits() const
 std::vector<trait_id> Character::get_mutations( bool include_hidden, mutation_filter filter ) const
 {
     std::vector<trait_id> result;
-    for( const std::pair<const trait_id, trait_data> &t : my_mutations ) {
-        if( include_hidden || t.first.obj().player_display ) {
-            if( filter == mutation_filter::anger_relations && t.first.obj().anger_relations.empty() ) {
-                continue;
-            }
-            if( filter == mutation_filter::ignored_by && t.first.obj().ignored_by.empty() ) {
-                continue;
-            }
-            result.push_back( t.first );
-        }
-    }
     for( const trait_id &ench_trait : enchantment_cache->get_mutations() ) {
         if( include_hidden || ench_trait->player_display ) {
             bool found = false;
@@ -2914,6 +2903,43 @@ std::vector<trait_id> Character::get_mutations( bool include_hidden, mutation_fi
             if( !found ) {
                 result.push_back( ench_trait );
             }
+        }
+    }
+    for( const std::pair<const trait_id, trait_data> &t : my_mutations ) {
+        if( include_hidden || t.first.obj().player_display ) {
+            if( filter == mutation_filter::anger_relations && t.first.obj().anger_relations.empty() ) {
+                continue;
+            }
+            if( filter == mutation_filter::ignored_by && t.first.obj().ignored_by.empty() ) {
+                continue;
+            }
+            bool cancels = false;
+            for( const trait_id &ench_trait : result ) {
+                for( const trait_id &cancels_tr : t.first->cancels ) {
+                    if( ench_trait == cancels_tr ) {
+                        cancels = true;
+                        break;
+                    }
+                }
+                for( const std::string &t_type : t.first->types ) {
+                    for( const std::string &ench_type : ench_trait->types ) {
+                        if( t_type == ench_type ) {
+                            cancels = true;
+                            break;
+                        }
+                    }
+                    if( cancels ) {
+                        break;
+                    }
+                }
+                if( cancels ) {
+                    break;
+                }
+            }
+            if( !cancels ) {
+                result.push_back( t.first );
+            }
+            cancels = false;
         }
     }
     return result;
