@@ -752,7 +752,7 @@ void creator::spell_window::write_json()
     }
     if( !has_targets ) {
         add_newline( errors );
-        errors += "\nSpell has no valid targets";
+        errors += "Spell has no valid targets";
     }
 
     if( !errors.empty() ) {
