@@ -753,6 +753,8 @@ void creator::spell_window::write_json()
     if( !has_targets ) {
         add_newline( errors );
         errors += "Spell has no valid targets";
+        spell_json.setText( QString{} );
+        return;
     }
 
     if( !errors.empty() ) {
