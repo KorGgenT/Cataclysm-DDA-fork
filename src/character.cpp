@@ -123,7 +123,9 @@ static const efftype_id effect_bite( "bite" );
 static const efftype_id effect_bleed( "bleed" );
 static const efftype_id effect_blind( "blind" );
 static const efftype_id effect_blisters( "blisters" );
+static const efftype_id effect_bloodworms( "bloodworms" );
 static const efftype_id effect_boomered( "boomered" );
+static const efftype_id effect_brainworms( "brainworms" );
 static const efftype_id effect_cig( "cig" );
 static const efftype_id effect_cold( "cold" );
 static const efftype_id effect_common_cold( "common_cold" );
@@ -134,6 +136,7 @@ static const efftype_id effect_cough_suppress( "cough_suppress" );
 static const efftype_id effect_crushed( "crushed" );
 static const efftype_id effect_darkness( "darkness" );
 static const efftype_id effect_deaf( "deaf" );
+static const efftype_id effect_dermatik( "dermatik" );
 static const efftype_id effect_disinfected( "disinfected" );
 static const efftype_id effect_disrupted_sleep( "disrupted_sleep" );
 static const efftype_id effect_downed( "downed" );
@@ -143,6 +146,7 @@ static const efftype_id effect_flu( "flu" );
 static const efftype_id effect_foodpoison( "foodpoison" );
 static const efftype_id effect_frostbite( "frostbite" );
 static const efftype_id effect_frostbite_recovery( "frostbite_recovery" );
+static const efftype_id effect_fungus( "fungus" );
 static const efftype_id effect_glowing( "glowing" );
 static const efftype_id effect_glowy_led( "glowy_led" );
 static const efftype_id effect_got_checked( "got_checked" );
@@ -178,20 +182,24 @@ static const efftype_id effect_nausea( "nausea" );
 static const efftype_id effect_nightmares( "nightmares" );
 static const efftype_id effect_no_sight( "no_sight" );
 static const efftype_id effect_onfire( "onfire" );
+static const efftype_id effect_paincysts( "paincysts" );
 static const efftype_id effect_pkill1( "pkill1" );
 static const efftype_id effect_pkill2( "pkill2" );
 static const efftype_id effect_pkill3( "pkill3" );
 static const efftype_id effect_recently_coughed( "recently_coughed" );
+static const efftype_id effect_recover( "recover" );
 static const efftype_id effect_ridden( "ridden" );
 static const efftype_id effect_riding( "riding" );
 static const efftype_id effect_monster_saddled( "monster_saddled" );
 static const efftype_id effect_sleep( "sleep" );
 static const efftype_id effect_slept_through_alarm( "slept_through_alarm" );
 static const efftype_id effect_stunned( "stunned" );
+static const efftype_id effect_tapeworm( "tapeworm" );
 static const efftype_id effect_tied( "tied" );
 static const efftype_id effect_took_prozac( "took_prozac" );
 static const efftype_id effect_took_xanax( "took_xanax" );
 static const efftype_id effect_webbed( "webbed" );
+static const efftype_id effect_weed_high( "weed_high" );
 static const efftype_id effect_winded( "winded" );
 
 static const field_type_str_id field_fd_clairvoyant( "fd_clairvoyant" );
@@ -211,6 +219,8 @@ static const itype_id itype_UPS_off( "UPS_off" );
 
 static const skill_id skill_archery( "archery" );
 static const skill_id skill_dodge( "dodge" );
+static const skill_id skill_firearm( "firearm" );
+static const skill_id skill_firstaid( "firstaid" );
 static const skill_id skill_pistol( "pistol" );
 static const skill_id skill_rifle( "rifle" );
 static const skill_id skill_shotgun( "shotgun" );
@@ -234,11 +244,15 @@ static const trait_id trait_CHITIN_FUR3( "CHITIN_FUR3" );
 static const trait_id trait_CLUMSY( "CLUMSY" );
 static const trait_id trait_DEBUG_NODMG( "DEBUG_NODMG" );
 static const trait_id trait_DEFT( "DEFT" );
+static const trait_id trait_EATHEALTH( "EATHEALTH" );
 static const trait_id trait_FELINE_FUR( "FELINE_FUR" );
 static const trait_id trait_FUR( "FUR" );
+static const trait_id trait_INFIMMUNE( "INFIMMUNE" );
 static const trait_id trait_LIGHTFUR( "LIGHTFUR" );
+static const trait_id trait_LIGHTSTEP( "LIGHTSTEP" );
 static const trait_id trait_LUPINE_FUR( "LUPINE_FUR" );
 static const trait_id trait_PACIFIST( "PACIFIST" );
+static const trait_id trait_PARAIMMUNE( "PARAIMMUNE" );
 static const trait_id trait_PROF_SKATER( "PROF_SKATER" );
 static const trait_id trait_QUILLS( "QUILLS" );
 static const trait_id trait_SAVANT( "SAVANT" );
@@ -11820,4 +11834,274 @@ bool Character::defer_move( const tripoint &next )
     auto_move_route.insert( auto_move_route.begin(), next );
     next_expected_position = pos();
     return true;
+}
+
+void Character::process_effects()
+{
+    //Special Removals
+    if( has_effect( effect_darkness ) && g->is_in_sunlight( pos() ) ) {
+        remove_effect( effect_darkness );
+    }
+    if( has_trait( trait_M_IMMUNE ) && has_effect( effect_fungus ) ) {
+        vomit();
+        remove_effect( effect_fungus );
+        add_msg_if_player( m_bad, _( "We have mistakenly colonized a local guide!  Purging now." ) );
+    }
+    if( has_trait( trait_PARAIMMUNE ) && ( has_effect( effect_dermatik ) ||
+                                           has_effect( effect_tapeworm ) ||
+                                           has_effect( effect_bloodworms ) || has_effect( effect_brainworms ) ||
+                                           has_effect( effect_paincysts ) ) ) {
+        remove_effect( effect_dermatik );
+        remove_effect( effect_tapeworm );
+        remove_effect( effect_bloodworms );
+        remove_effect( effect_brainworms );
+        remove_effect( effect_paincysts );
+        add_msg_if_player( m_good, _( "Something writhes and inside of you as it dies." ) );
+    }
+    if( has_trait( trait_ACIDBLOOD ) && ( has_effect( effect_dermatik ) ||
+                                          has_effect( effect_bloodworms ) ||
+                                          has_effect( effect_brainworms ) ) ) {
+        remove_effect( effect_dermatik );
+        remove_effect( effect_bloodworms );
+        remove_effect( effect_brainworms );
+    }
+    if( has_trait( trait_EATHEALTH ) && has_effect( effect_tapeworm ) ) {
+        remove_effect( effect_tapeworm );
+        add_msg_if_player( m_good, _( "Your bowels gurgle as something inside them dies." ) );
+    }
+    if( has_trait( trait_INFIMMUNE ) && ( has_effect( effect_bite ) || has_effect( effect_infected ) ||
+                                          has_effect( effect_recover ) ) ) {
+        remove_effect( effect_bite );
+        remove_effect( effect_infected );
+        remove_effect( effect_recover );
+    }
+
+    //Human only effects
+    for( auto &elem : *effects ) {
+        for( auto &_effect_it : elem.second ) {
+            process_one_effect( _effect_it.second, false );
+        }
+    }
+
+    Creature::process_effects();
+}
+
+double Character::vomit_mod()
+{
+    double mod = mutation_value( "vomit_multiplier" );
+    if( has_effect( effect_weed_high ) ) {
+        mod *= .1;
+    }
+    // If you're already nauseous, any food in your stomach greatly
+    // increases chance of vomiting. Liquids don't provoke vomiting, though.
+    if( stomach.contains() != 0_ml && has_effect( effect_nausea ) ) {
+        mod *= 5 * get_effect_int( effect_nausea );
+    }
+    return mod;
+}
+
+item Character::reduce_charges( item *it, int quantity )
+{
+    if( !has_item( *it ) ) {
+        debugmsg( "invalid item (name %s) for reduce_charges", it->tname() );
+        return item();
+    }
+    if( it->charges <= quantity ) {
+        return i_rem( it );
+    }
+    it->mod_charges( -quantity );
+    item result( *it );
+    result.charges = quantity;
+    return result;
+}
+
+bool Character::avoid_trap( const tripoint &pos, const trap &tr ) const
+{
+    /** @EFFECT_DEX increases chance to avoid traps */
+
+    /** @EFFECT_DODGE increases chance to avoid traps */
+    int myroll = dice( 3, dex_cur + get_skill_level( skill_dodge ) * 1.5 );
+    int traproll;
+    if( tr.can_see( pos, *this ) ) {
+        traproll = dice( 3, tr.get_avoidance() );
+    } else {
+        traproll = dice( 6, tr.get_avoidance() );
+    }
+
+    if( has_trait( trait_LIGHTSTEP ) ) {
+        myroll += dice( 2, 6 );
+    }
+
+    if( has_trait( trait_CLUMSY ) ) {
+        myroll -= dice( 2, 6 );
+    }
+
+    return myroll >= traproll;
+}
+
+void Character::pause()
+{
+    moves = 0;
+    recoil = MAX_RECOIL;
+
+    map &here = get_map();
+    // Train swimming if underwater
+    if( !in_vehicle ) {
+        if( underwater ) {
+            practice( skill_swimming, 1 );
+            drench( 100, { {
+                    bodypart_str_id( "leg_l" ), bodypart_str_id( "leg_r" ), bodypart_str_id( "torso" ), bodypart_str_id( "arm_l" ),
+                    bodypart_str_id( "arm_r" ), bodypart_str_id( "head" ), bodypart_str_id( "eyes" ), bodypart_str_id( "mouth" ),
+                    bodypart_str_id( "foot_l" ), bodypart_str_id( "foot_r" ), bodypart_str_id( "hand_l" ), bodypart_str_id( "hand_r" )
+                }
+            }, true );
+        } else if( here.has_flag( TFLAG_DEEP_WATER, pos() ) ) {
+            practice( skill_swimming, 1 );
+            // Same as above, except no head/eyes/mouth
+            drench( 100, { {
+                    bodypart_str_id( "leg_l" ), bodypart_str_id( "leg_r" ), bodypart_str_id( "torso" ), bodypart_str_id( "arm_l" ),
+                    bodypart_str_id( "arm_r" ), bodypart_str_id( "foot_l" ), bodypart_str_id( "foot_r" ), bodypart_str_id( "hand_l" ),
+                    bodypart_str_id( "hand_r" )
+                }
+            }, true );
+        } else if( here.has_flag( "SWIMMABLE", pos() ) ) {
+            drench( 80, { { bodypart_str_id( "foot_l" ), bodypart_str_id( "foot_r" ), bodypart_str_id( "leg_l" ), bodypart_str_id( "leg_r" ) } },
+            false );
+        }
+    }
+
+    // Try to put out clothing/hair fire
+    if( has_effect( effect_onfire ) ) {
+        time_duration total_removed = 0_turns;
+        time_duration total_left = 0_turns;
+        bool on_ground = has_effect( effect_downed );
+        for( const bodypart_id &bp : get_all_body_parts() ) {
+            effect &eff = get_effect( effect_onfire, bp );
+            if( eff.is_null() ) {
+                continue;
+            }
+
+            // TODO: Tools and skills
+            total_left += eff.get_duration();
+            // Being on the ground will smother the fire much faster because you can roll
+            const time_duration dur_removed = on_ground ? eff.get_duration() / 2 + 2_turns : 1_turns;
+            eff.mod_duration( -dur_removed );
+            total_removed += dur_removed;
+        }
+
+        // Don't drop on the ground when the ground is on fire
+        if( total_left > 1_minutes && !is_dangerous_fields( here.field_at( pos() ) ) ) {
+            add_effect( effect_downed, 2_turns, false, 0, true );
+            add_msg_player_or_npc( m_warning,
+                                   _( "You roll on the ground, trying to smother the fire!" ),
+                                   _( "<npcname> rolls on the ground!" ) );
+        } else if( total_removed > 0_turns ) {
+            add_msg_player_or_npc( m_warning,
+                                   _( "You attempt to put out the fire on you!" ),
+                                   _( "<npcname> attempts to put out the fire on them!" ) );
+        }
+    }
+    // put pressure on bleeding wound, prioritizing most severe bleeding
+    if( !is_armed() && has_effect( effect_bleed ) ) {
+        int most = 0;
+        bodypart_id bp_id;
+        for( const bodypart_id &bp : get_all_body_parts() ) {
+            if( most <= get_effect_int( effect_bleed, bp ) ) {
+                most = get_effect_int( effect_bleed, bp );
+                bp_id = bp;
+            }
+        }
+        effect &e = get_effect( effect_bleed, bp_id );
+        time_duration penalty = 1_turns * ( encumb( bodypart_id( "hand_r" ) ) + encumb(
+                                                bodypart_id( "hand_l" ) ) );
+        time_duration benefit = 5_turns + 10_turns * get_skill_level( skill_firstaid );
+
+        if( is_limb_broken( bodypart_id( "arm_l" ) ) || is_limb_broken( bodypart_id( "arm_r" ) ) ) {
+            add_msg_player_or_npc( m_warning,
+                                   _( "Your broken limb significantly hampers your efforts to puting pressure on the bleeding wound!" ),
+                                   _( "<npcname>'s broken limb significantly hampers efforts of putting pressure on the bleeding wound!" ) );
+            e.mod_duration( -1_turns );
+        } else if( benefit <= penalty ) {
+            add_msg_player_or_npc( m_warning,
+                                   _( "Your hands are too encumbred to effectivly put pressure on the bleeding wound!" ),
+                                   _( "<npcname>'s hands are too encumbred to effectivly put pressure on the bleeding wound!" ) );
+            e.mod_duration( -1_turns );
+        } else {
+            e.mod_duration( -( benefit - penalty ) );
+            add_msg_player_or_npc( m_warning,
+                                   _( "You attempt to put pressure on the bleeding wound!" ),
+                                   _( "<npcname> attempts to put pressure on the bleeding wound!" ) );
+            practice( skill_firstaid, 1 );
+        }
+    }
+    // on-pause effects for martial arts
+    martial_arts_data->ma_onpause_effects( *this );
+
+    if( is_npc() ) {
+        // The stuff below doesn't apply to NPCs
+        // search_surroundings should eventually do, though
+        return;
+    }
+
+    if( in_vehicle && one_in( 8 ) ) {
+        VehicleList vehs = here.get_vehicles();
+        vehicle *veh = nullptr;
+        for( auto &v : vehs ) {
+            veh = v.v;
+            if( veh && veh->is_moving() && veh->player_in_control( *this ) ) {
+                double exp_temp = 1 + veh->total_mass() / 400.0_kilogram +
+                                  std::abs( veh->velocity / 3200.0 );
+                int experience = static_cast<int>( exp_temp );
+                if( exp_temp - experience > 0 && x_in_y( exp_temp - experience, 1.0 ) ) {
+                    experience++;
+                }
+                practice( skill_id( "driving" ), experience );
+                break;
+            }
+        }
+    }
+
+    search_surroundings();
+    wait_effects();
+}
+
+void Character::search_surroundings()
+{
+    if( controlling_vehicle ) {
+        return;
+    }
+    map &here = get_map();
+    // Search for traps in a larger area than before because this is the only
+    // way we can "find" traps that aren't marked as visible.
+    // Detection formula takes care of likelihood of seeing within this range.
+    for( const tripoint &tp : here.points_in_radius( pos(), 5 ) ) {
+        const trap &tr = here.tr_at( tp );
+        if( tr.is_null() || tp == pos() ) {
+            continue;
+        }
+        if( has_active_bionic( bio_ground_sonar ) && !knows_trap( tp ) && tr.detected_by_ground_sonar() ) {
+            const std::string direction = direction_name( direction_from( pos(), tp ) );
+            add_msg_if_player( m_warning, _( "Your ground sonar detected a %1$s to the %2$s!" ),
+                               tr.name(), direction );
+            add_known_trap( tp, tr );
+        }
+        if( !sees( tp ) ) {
+            continue;
+        }
+        if( tr.can_see( tp, *this ) ) {
+            // Already seen, or can never be seen
+            continue;
+        }
+        // Chance to detect traps we haven't yet seen.
+        if( tr.detect_trap( tp, *this ) ) {
+            if( !tr.is_trivial_to_spot() ) {
+                // Only bug player about traps that aren't trivial to spot.
+                const std::string direction = direction_name(
+                                                  direction_from( pos(), tp ) );
+                add_msg_if_player( _( "You've spotted a %1$s to the %2$s!" ),
+                                   tr.name(), direction );
+            }
+            add_known_trap( tp, tr );
+        }
+    }
 }
