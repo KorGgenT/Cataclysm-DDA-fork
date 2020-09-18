@@ -261,16 +261,6 @@ player::~player() = default;
 player::player( player && ) = default;
 player &player::operator=( player && ) = default;
 
-void player::normalize()
-{
-    Character::normalize();
-
-    recalc_hp();
-
-    set_all_parts_temp_conv( BODYTEMP_NORM );
-    set_stamina( get_stamina_max() );
-}
-
 void player::process_turn()
 {
     // Has to happen before reset_stats
@@ -594,7 +584,7 @@ std::list<item *> player::get_radio_items()
     return rc_items;
 }
 
-bool player::avoid_trap( const tripoint &pos, const trap &tr ) const
+bool Character::avoid_trap( const tripoint &pos, const trap &tr ) const
 {
     /** @EFFECT_DEX increases chance to avoid traps */
 
@@ -618,7 +608,7 @@ bool player::avoid_trap( const tripoint &pos, const trap &tr ) const
     return myroll >= traproll;
 }
 
-void player::pause()
+void Character::pause()
 {
     moves = 0;
     recoil = MAX_RECOIL;
@@ -744,7 +734,7 @@ void player::pause()
     wait_effects();
 }
 
-void player::search_surroundings()
+void Character::search_surroundings()
 {
     if( controlling_vehicle ) {
         return;
@@ -1373,7 +1363,7 @@ void player::process_one_effect( effect &it, bool is_new )
     // Speed and stats are handled in recalc_speed_bonus and reset_stats respectively
 }
 
-void player::process_effects()
+void Character::process_effects()
 {
     //Special Removals
     if( has_effect( effect_darkness ) && g->is_in_sunlight( pos() ) ) {
@@ -1423,7 +1413,7 @@ void player::process_effects()
     Creature::process_effects();
 }
 
-double player::vomit_mod()
+double Character::vomit_mod()
 {
     double mod = mutation_value( "vomit_multiplier" );
     if( has_effect( effect_weed_high ) ) {
@@ -1517,7 +1507,7 @@ void player::process_items()
     }
 }
 
-item player::reduce_charges( item *it, int quantity )
+item Character::reduce_charges( item *it, int quantity )
 {
     if( !has_item( *it ) ) {
         debugmsg( "invalid item (name %s) for reduce_charges", it->tname() );

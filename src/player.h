@@ -108,12 +108,6 @@ class player : public Character
         player &operator=( const player & ) = delete;
         player &operator=( player && );
 
-        /** Calls Character::normalize()
-         *  normalizes HP and body temperature
-         */
-
-        void normalize() override;
-
         bool is_player() const override {
             return true;
         }
@@ -123,13 +117,6 @@ class player : public Character
         const player *as_player() const override {
             return this;
         }
-
-        /** Processes human-specific effects of effects before calling Creature::process_effects(). */
-        void process_effects() override;
-        /** Handles the still hard-coded effects. */
-        void hardcoded_effects( effect &it );
-        /** Returns the modifier value used for vomiting effects. */
-        double vomit_mod();
 
         bool is_npc() const override {
             return false;    // Overloaded for NPCs in npc.h
@@ -153,11 +140,6 @@ class player : public Character
         void process_turn() override;
         /** Calculates the various speed bonuses we will get from mutations, etc. */
         void recalc_speed_bonus();
-
-        /** Called when a player triggers a trap, returns true if they don't set it off */
-        bool avoid_trap( const tripoint &pos, const trap &tr ) const override;
-
-        void pause(); // '.' command; pauses & resets recoil
 
         // melee.cpp
 
@@ -385,16 +367,6 @@ class player : public Character
         void on_worn_item_transform( const item &old_it, const item &new_it );
 
         void process_items();
-        /**
-         * Remove charges from a specific item.
-         * The item must exist and it must be counted by charges.
-         * @param it A pointer to the item, it *must* exist.
-         * @param quantity The number of charges to remove, must not be larger than
-         * the current charges of the item.
-         * @return An item that contains the removed charges, it's effectively a
-         * copy of the item with the proper charges.
-         */
-        item reduce_charges( item *it, int quantity );
 
         /**
         * Check whether player has a bionic power armor interface.
@@ -453,8 +425,6 @@ class player : public Character
         void add_msg_player_or_say( const game_message_params &params, const std::string &player_msg,
                                     const std::string &npc_speech ) const override;
 
-        /** Search surrounding squares for traps (and maybe other things in the future). */
-        void search_surroundings();
         // formats and prints encumbrance info to specified window
         void print_encumbrance( const catacurses::window &win, int line = -1,
                                 const item *selected_clothing = nullptr ) const;

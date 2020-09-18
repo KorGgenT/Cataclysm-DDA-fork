@@ -660,6 +660,28 @@ class Character : public Creature, public visitable<Character>
         /** Bitset of all the body parts covered only with items with `flag` (or nothing) */
         body_part_set exclusive_flag_coverage( const std::string &flag ) const;
 
+        /** Processes human-specific effects of effects before calling Creature::process_effects(). */
+        void process_effects() override;
+        /** Handles the still hard-coded effects. */
+        void hardcoded_effects( effect &it );
+        /** Returns the modifier value used for vomiting effects. */
+        double vomit_mod();
+        // '.' command; pauses & resets recoil
+        void pause();
+        /**
+         * Remove charges from a specific item.
+         * The item must exist and it must be counted by charges.
+         * @param it A pointer to the item, it *must* exist.
+         * @param quantity The number of charges to remove, must not be larger than
+         * the current charges of the item.
+         * @return An item that contains the removed charges, it's effectively a
+         * copy of the item with the proper charges.
+         */
+        item reduce_charges( item *it, int quantity );
+        /** Search surrounding squares for traps (and maybe other things in the future). */
+        void search_surroundings();
+        /** Called when a player triggers a trap, returns true if they don't set it off */
+        bool avoid_trap( const tripoint &pos, const trap &tr ) const override;
         /** Processes effects which may prevent the Character from moving (bear traps, crushed, etc.).
          *  Returns false if movement is stopped. */
         bool move_effects( bool attacking ) override;

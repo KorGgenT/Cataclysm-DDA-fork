@@ -4014,6 +4014,9 @@ void Character::normalize()
 
     set_body();
     recalc_hp();
+
+    set_all_parts_temp_conv( BODYTEMP_NORM );
+    set_stamina( get_stamina_max() );
 }
 
 // Actual player death is mostly handled in game::is_game_over
