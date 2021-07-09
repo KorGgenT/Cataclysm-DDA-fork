@@ -3555,8 +3555,14 @@ static window_dimensions get_window_dimensions( const catacurses::window &win,
         dim.scaled_font_size.x = map_font->width;
         dim.scaled_font_size.y = map_font->height;
     } else if( overmap_font && g && win == g->w_overmap ) {
-        dim.scaled_font_size.x = overmap_font->width;
-        dim.scaled_font_size.y = overmap_font->height;
+        if( use_tiles && use_tiles_overmap ) {
+            // tiles might have different dimensions than standard font
+            dim.scaled_font_size.x = tilecontext->get_tile_width();
+            dim.scaled_font_size.y = tilecontext->get_tile_height();
+        } else {
+            dim.scaled_font_size.x = overmap_font->width;
+            dim.scaled_font_size.y = overmap_font->height;
+        }
     } else {
         dim.scaled_font_size.x = fontwidth;
         dim.scaled_font_size.y = fontheight;
@@ -3593,6 +3599,35 @@ window_dimensions get_window_dimensions( const catacurses::window &win )
 window_dimensions get_window_dimensions( const point &pos, const point &size )
 {
     return get_window_dimensions( {}, pos, size );
+}
+
+cata::optional<tripoint> input_context::get_coordinates_overmap()
+{
+    if( !coordinate_input_received ) {
+        return cata::nullopt;
+    }
+    const window_dimensions dim = get_window_dimensions( g->w_overmap );
+    const int &fw = dim.scaled_font_size.x;
+    const int &fh = dim.scaled_font_size.y;
+    const point &win_min = dim.window_pos_pixel;
+    const int width = ( TERMX - OVERMAP_LEGEND_WIDTH ) * overmap_font->width;
+    const int height = OVERMAP_WINDOW_HEIGHT * overmap_font->height;
+    const point win_size( width, height );
+    const point win_max = win_min + win_size;
+    // Translate mouse coordinates to map coordinates based on tile size
+    // Check if click is within bounds of the window we care about
+    const inclusive_rectangle<point> win_bounds( win_min, win_max );
+    if( !win_bounds.contains( coordinate ) ) {
+        return cata::nullopt;
+    }
+    const point screen_pos = coordinate - win_min;
+    point selected;
+    selected.x = screen_pos.x / tilecontext->get_tile_width();
+    selected.y = screen_pos.y / tilecontext->get_tile_height();
+
+    point center( width / tilecontext->get_tile_width() / 4,
+                  height / tilecontext->get_tile_height() / 2 );
+    return tripoint( selected - center, 0 );
 }
 
 cata::optional<tripoint> input_context::get_coordinates( const catacurses::window &capture_win_ )

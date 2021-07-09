@@ -1626,7 +1626,7 @@ static tripoint_abs_omt display( const tripoint_abs_omt &orig,
                 }
                 curs += edge_scroll;
             }
-        } else if( action == "SELECT" && ( mouse_pos = ictxt.get_coordinates( g->w_overmap ) ) ) {
+        } else if( action == "SELECT" && ( mouse_pos = ictxt.get_coordinates_overmap() ) ) {
             curs += mouse_pos->xy();
         } else if( action == "CENTER" ) {
             curs = orig;

@@ -715,6 +715,7 @@ class input_context
          *       Eventually this should be made more flexible.
          */
         cata::optional<tripoint> get_coordinates( const catacurses::window &capture_win_ );
+        cata::optional<tripoint> get_coordinates_overmap();
 
         // Below here are shortcuts for registering common key combinations.
         void register_directions();
