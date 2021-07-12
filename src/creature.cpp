@@ -55,8 +55,6 @@
 
 struct mutation_branch;
 
-static const anatomy_id anatomy_human_anatomy( "human_anatomy" );
-
 static const efftype_id effect_blind( "blind" );
 static const efftype_id effect_bounced( "bounced" );
 static const efftype_id effect_downed( "downed" );
@@ -2160,7 +2158,7 @@ std::vector<bodypart_id> Creature::get_all_body_parts_of_type(
             continue;
         }
         if( elem.first->limb_type == part_type ) {
-            bodyparts.push_back( elem.first );
+            bodyparts.emplace_back( elem.first );
         }
     }
 
